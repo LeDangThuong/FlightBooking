@@ -7,7 +7,7 @@ Welcome to our awesome React + Vite template! This template provides a minimal s
 Clone this project to kickstart your React development journey:
 
 ```bash
-git clone https://github.com/your-username/your-awesome-project.git
-cd your-awesome-project
+git clone https://github.com/LeDangThuong/FlightBooking.git
+cd FlightBooking
 npm install
 npm run dev
