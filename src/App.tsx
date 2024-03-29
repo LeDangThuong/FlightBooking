@@ -1,25 +1,16 @@
-import { useState } from 'react'
-import viteLogo from '/vite.svg'
-import { Button } from './components/ui/button'
+import React from 'react'
+import { Login } from './layouts/auth/login'
+import { SignUp } from './layouts/auth/SignUp'
+import { ForgotPassword } from './layouts/auth/ForgotPassword'
+import { VerifyCode } from './layouts/auth/VerifyCode'
+import { SetPassword } from './layouts/auth/SetPassword'
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
     <>
       <div>
-        <a href='https://vitejs.dev' target='_blank'>
-          <img src={viteLogo} alt='Vite logo' />
-        </a>
+        <SetPassword />
       </div>
-      <h1>Vite + React</h1>
-      <div>
-        <Button onClick={() => setCount((count) => count + 1)}>count is {count}</Button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p>Click on the Vite and React logos to learn more</p>
     </>
   )
 }

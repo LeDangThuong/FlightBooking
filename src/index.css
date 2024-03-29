@@ -1,6 +1,10 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.background{
+  background-image: url(./assets/images/background.jpg);
+}
  
 @layer base {
   :root {
@@ -73,4 +77,10 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+
+input:focus ~ .input-text,
+input:valid ~ .input-text{
+  @apply  bg-white  transform -translate-y-4 translate-x-1;
 }
