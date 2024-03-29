@@ -46,7 +46,7 @@ export const ForgotPassword = () => {
       <div className=' flex flex-1 h-screen w-full justify-center items-center '>
         <div className='w-full pr-10 pl-10 xl:pr-40 xl:pl-40 md:pr-30 md:pl-30'>
           <div className='mb-3'>
-            <img src={Logo} alt='Logo' />
+            <img src={Logo} alt='Logo' className='my-10' />
             <div className='flex my-3 items-center'>
               <FaAngleLeft size={18} />
               <h1 className='mx-1'>Back to login</h1>

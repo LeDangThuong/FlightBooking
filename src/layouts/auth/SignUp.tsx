@@ -45,7 +45,7 @@ export const SignUp = () => {
       <div className='flex flex-1 justify-center items-center h-screen w-full'>
         <div className='w-full pr-10 pl-10 xl:pr-40 xl:pl-40 md:pr-30 md:pl-30'>
           <div className='mb-3'>
-            <img src={Logo} alt='Logo' />
+            <img src={Logo} alt='Logo' className='my-10' />
           </div>
           <h1 className='text-[30px] font-bold mb-2'>Sign up</h1>
           <h3 className='font-thin mb-4'>Let’s get you all st up so you can access your personal account.</h3>
