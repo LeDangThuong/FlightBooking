@@ -4,11 +4,12 @@ interface InputProp {
   title: string
   type: string
   id: string
+  className?: string
 }
 
-export const Input: FC<InputProp> = ({ id, title, type }) => {
+export const Input: FC<InputProp> = ({ id, title, type, className }) => {
   return (
-    <div className='relative mb-2'>
+    <div className={`relative mb-3 ${className}`}>
       <input
         type={type}
         id={id}
