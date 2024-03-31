@@ -1,17 +1,9 @@
-import { Route, Routes } from 'react-router-dom'
-import HomePage from './modules/home/pages/HomePage'
-import MainLayout from './layouts/MainLayout'
+import useRouteElements from './hooks/useRouteElements'
 
 function App() {
-  return (
-    <>
-      <MainLayout>
-        <Routes>
-          <Route path='/' element={<HomePage />} />
-        </Routes>
-      </MainLayout>
-    </>
-  )
+  const routeElements = useRouteElements()
+
+  return <>{routeElements}</>
 }
 
 export default App

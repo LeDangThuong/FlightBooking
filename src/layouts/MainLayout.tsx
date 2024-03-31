@@ -3,14 +3,14 @@ import Header from './Header'
 import Footer from './Footer'
 
 interface MainLayoutProps {
-  children: React.ReactNode
+  children?: React.ReactNode
 }
 
-const MainLayout = (props: MainLayoutProps) => {
+const MainLayout = ({ children }: MainLayoutProps) => {
   return (
     <div>
       <Header />
-      {props.children}
+      <main>{children}</main>
       <Footer />
     </div>
   )
