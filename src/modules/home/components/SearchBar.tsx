@@ -123,7 +123,7 @@ const SearchBar = () => {
               </div>
             </div>
           </div>
-          <DatePickerWithRange className='text-black border border-[#79747e] rounded h-14 items-center' />
+          <DatePickerWithRange className='text-black border border-[#79747e] rounded h-14' />
           {/* <div className='flex flex-col justify-start items-start flex-grow h-14 rounded-tl rounded-tr'>
             <div className='flex flex-col justify-start items-start self-stretch flex-grow-0 flex-shrink-0 gap-2.5 rounded bg-white border border-[#79747e]'>
               <div className='flex justify-start items-center flex-grow-0 flex-shrink-0 w-[210px] pl-4 py-2 rounded-tl rounded-tr'>
