@@ -13,7 +13,7 @@ const ReviewList = () => {
             Reviews
           </p>
           <p className='flex-grow-0 flex-shrink-0 text-base text-left text-black'>
-            What people says about Golobe facilities
+            What people says about Globe facilities
           </p>
         </div>
         <Button className='flex justify-center items-center flex-grow-0 flex-shrink-0 h-10 px-4 py-2 rounded border border-[#8dd3bb] text-black hover:opacity-85'>
