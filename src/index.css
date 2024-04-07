@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+.background {
+  background-image: url(./assets/images/background.jpg);
+}
+
 html {
   background-color: #fff;
   height: 100%;
