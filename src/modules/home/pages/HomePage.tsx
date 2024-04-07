@@ -7,7 +7,7 @@ import SearchBar from '../components/SearchBar'
 
 const HomePage = () => {
   return (
-    <div className='bg-white min-h-screen flex flex-col text-white mb-80'>
+    <div className='bg-white min-h-screen flex flex-col text-white mb-80 w-full'>
       <div className='relative h-[600px] mb-20'>
         <img className='w-full h-full rounded-lg object-cover' src={backgroundImage} alt='background' />
         <div className='absolute inset-0 bg-gradient-to-b from-black to-transparent'></div>
