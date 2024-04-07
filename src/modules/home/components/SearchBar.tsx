@@ -1,4 +1,5 @@
 import { Button } from '@/components/ui/button'
+import { DatePickerWithRange } from '@/components/ui/dateRangePicker'
 import React from 'react'
 
 const SearchBar = () => {
@@ -122,7 +123,8 @@ const SearchBar = () => {
               </div>
             </div>
           </div>
-          <div className='flex flex-col justify-start items-start flex-grow h-14 rounded-tl rounded-tr'>
+          <DatePickerWithRange className='text-black border border-[#79747e] rounded h-14 items-center' />
+          {/* <div className='flex flex-col justify-start items-start flex-grow h-14 rounded-tl rounded-tr'>
             <div className='flex flex-col justify-start items-start self-stretch flex-grow-0 flex-shrink-0 gap-2.5 rounded bg-white border border-[#79747e]'>
               <div className='flex justify-start items-center flex-grow-0 flex-shrink-0 w-[210px] pl-4 py-2 rounded-tl rounded-tr'>
                 <div className='flex flex-col justify-center items-start flex-grow h-10 relative'>
@@ -137,7 +139,7 @@ const SearchBar = () => {
                 </div>
               </div>
             </div>
-          </div>
+          </div> */}
           <div className='flex flex-col justify-start items-start flex-grow h-14 rounded-tl rounded-tr'>
             <div className='flex flex-col justify-start items-start self-stretch flex-grow-0 flex-shrink-0 gap-2.5 rounded bg-white border border-[#79747e]'>
               <div className='flex justify-start items-center self-stretch flex-grow-0 flex-shrink-0 pl-4 py-2 rounded-tl rounded-tr'>
