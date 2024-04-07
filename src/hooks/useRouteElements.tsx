@@ -1,4 +1,4 @@
-import MainLayout from '@/layouts/MainLayout'
+import LandingPageLayout from '@/layouts/LandingPageLayout'
 import HomePage from '@/modules/home/pages/HomePage'
 import { useRoutes } from 'react-router-dom'
 
@@ -7,9 +7,9 @@ export default function useRouteElements() {
     {
       path: '/',
       element: (
-        <MainLayout>
+        <LandingPageLayout>
           <HomePage />
-        </MainLayout>
+        </LandingPageLayout>
       )
     }
   ])
