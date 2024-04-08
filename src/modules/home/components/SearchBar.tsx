@@ -5,7 +5,7 @@ import React from 'react'
 const SearchBar = () => {
   return (
     <div
-      className='flex flex-col justify-start items-start w-[1232px] absolute left-[104px] top-[480px] gap-8 px-8 pt-4 pb-8 rounded-2xl bg-white'
+      className='flex flex-col justify-start items-start w-[1232px] absolute left-1/2 transform -translate-x-1/2 top-[480px] gap-8 px-8 pt-4 pb-8 rounded-2xl bg-white'
       style={{ boxShadow: '0px 4px 16px 0 rgba(141,211,187,0.15)' }}
     >
       <div className='flex flex-col justify-start items-start flex-grow-0 flex-shrink-0 gap-12'>
