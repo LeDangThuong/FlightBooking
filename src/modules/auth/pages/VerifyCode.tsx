@@ -1,10 +1,10 @@
 import React, { useState } from 'react'
 import Logo from '../../assets/svgs/Logo.svg'
 import { FaAngleLeft } from 'react-icons/fa6'
-import { Input } from '@/components/login/Input'
-import { ButtonGreen } from '@/components/login/ButtonGreen'
-import { ButtonIcon } from '@/components/login/ButtonIcon'
-import { Slides } from '@/components/login/Slides'
+import { Input } from '@/modules/auth/components/Input'
+import { ButtonGreen } from '@/modules/auth/components/ButtonGreen'
+import { ButtonIcon } from '@/modules/auth/components/ButtonIcon'
+import { Slides } from '@/modules/auth/components/Slides'
 
 export const VerifyCode = () => {
   const slides = [
@@ -55,7 +55,7 @@ export const VerifyCode = () => {
           <h1 className='text-[30px] font-bold mb-2'>Verify code</h1>
           <h3 className='font-thin mb-4'>An authentication code has been sent to your email (Code with 6 digits).</h3>
 
-          <Input id='code' type='text' title='Enter code' className='my-5' />
+          <Input id='code' type='text' title='Enter code' className='my-5' onChange={() => {}} />
 
           <div className='flex justify-center items-center mb-6'>
             <div className='flex grow'>

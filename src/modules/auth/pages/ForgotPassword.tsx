@@ -1,10 +1,10 @@
-import { Slides } from '@/components/login/Slides'
+import { Slides } from '@/modules/auth/components/Slides'
 import React, { useState } from 'react'
 import Logo from '../../assets/svgs/Logo.svg'
 import { FaAngleLeft } from 'react-icons/fa6'
-import { Input } from '@/components/login/Input'
-import { ButtonGreen } from '@/components/login/ButtonGreen'
-import { ButtonIcon } from '@/components/login/ButtonIcon'
+import { Input } from '@/modules/auth/components/Input'
+import { ButtonGreen } from '@/modules/auth/components/ButtonGreen'
+import { ButtonIcon } from '@/modules/auth/components/ButtonIcon'
 
 export const ForgotPassword = () => {
   const slides = [
@@ -57,7 +57,7 @@ export const ForgotPassword = () => {
             Don’t worry, happens to all of us. Enter your email below to recover your password.
           </h3>
 
-          <Input id='email' type='text' title='Email' className='my-5' />
+          <Input id='email' type='text' title='Email' className='my-5' onChange={() => {}} />
 
           <ButtonGreen title='Submit' onClick={() => {}} />
 

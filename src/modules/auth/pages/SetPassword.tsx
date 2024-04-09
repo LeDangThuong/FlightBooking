@@ -1,9 +1,9 @@
 import React, { useState } from 'react'
 import Logo from '../../assets/svgs/Logo.svg'
 import { FaAngleLeft } from 'react-icons/fa6'
-import { Input } from '@/components/login/Input'
-import { ButtonGreen } from '@/components/login/ButtonGreen'
-import { Slides } from '@/components/login/Slides'
+import { Input } from '@/modules/auth/components/Input'
+import { ButtonGreen } from '@/modules/auth/components/ButtonGreen'
+import { Slides } from '@/modules/auth/components/Slides'
 
 export const SetPassword = () => {
   const slides = [
@@ -57,8 +57,8 @@ export const SetPassword = () => {
             Your previous password has been reseted. Please set a new password for your account.
           </h3>
 
-          <Input id='createpassword' type='password' title='Create password' className='my-5' />
-          <Input id='reenterpassword' type='password' title='Re-enter password' className='my-5' />
+          <Input id='createpassword' type='password' title='Create password' className='my-5' onChange={() => {}} />
+          <Input id='reenterpassword' type='password' title='Re-enter password' className='my-5' onChange={() => {}} />
 
           <ButtonGreen title='Set password' onClick={() => {}} />
         </div>
