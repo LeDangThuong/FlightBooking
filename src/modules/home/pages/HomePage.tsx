@@ -25,10 +25,12 @@ const HomePage = () => {
           </div>
         </p>
       </div>
-      <SearchBar />
-      <LocationList />
-      <OptionSection />
-      <ReviewList />
+      <div className='mx-32'>
+        <SearchBar />
+        <LocationList />
+        <OptionSection />
+        <ReviewList />
+      </div>
     </div>
   )
 }

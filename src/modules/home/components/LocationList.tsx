@@ -4,7 +4,7 @@ import { LocationItem } from './LocationItem'
 
 const LocationList = () => {
   return (
-    <div className='flex flex-col justify-start items-center gap-10 mt-44 px-32 w-full'>
+    <div className='flex flex-col justify-start items-center gap-10 mt-44 w-full'>
       <div className='flex flex-col sm:flex-row justify-between items-start gap-6 w-full'>
         <div className='flex flex-col justify-start items-start gap-4'>
           <p className='text-[32px] font-semibold text-left text-black'>Plan your perfect trip</p>

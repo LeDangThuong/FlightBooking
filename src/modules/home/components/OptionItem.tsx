@@ -1,27 +1,21 @@
-import { Button } from '@/components/ui/button'
 import React from 'react'
+import { Button } from '@/components/ui/button'
 import optionImg from '@/assets/images/landing_background.png'
 
 const OptionItem = () => {
   return (
-    <div
-      className='flex-grow-0 flex-shrink-0 w-[604px] h-[559px] relative'
-      style={{ filter: 'drop-shadow(0px 4px 16px rgba(17,34,17,0.05))' }}
-    >
-      <img
-        src={optionImg}
-        className='w-[604px] h-[559px] absolute left-[-1.5px] top-[-1.5px] rounded-[20px] object-none'
-      />
-      <div className='absolute inset-0 rounded-[20px] bg-gradient-to-b from-transparent to-black'></div>
-      <div className='w-[604px] h-[280px] absolute left-0 top-[279px]'>
-        <div className='flex flex-col justify-start items-center absolute left-[114px] top-[93px] gap-4'>
-          <div className='flex flex-col justify-start items-start flex-grow-0 flex-shrink-0 relative gap-2'>
-            <p className='flex-grow-0 flex-shrink-0 w-[389px] text-[40px] font-bold text-center text-white'>Flights</p>
-            <p className='flex-grow-0 flex-shrink-0 w-[389px] text-base text-center text-white'>
+    <div className='w-full h-[559px] relative' style={{ filter: 'drop-shadow(0px 4px 16px rgba(17,34,17,0.05))' }}>
+      <img src={optionImg} className='w-full h-[559px] absolute left-0 top-0 rounded-2xl object-cover' />
+      <div className='absolute inset-0 rounded-2xl bg-gradient-to-b from-transparent to-black'></div>
+      <div className='absolute inset-x-0 bottom-0 transform -translate-y-1/2'>
+        <div className='flex flex-col justify-start items-center gap-4 h-full px-6'>
+          <div className='flex flex-col justify-start items-center gap-2'>
+            <p className='text-4xl font-bold text-center text-white'>Flights</p>
+            <p className='text-base text-center text-white'>
               Search Flights &amp; Places Hire to our most popular destinations
             </p>
           </div>
-          <Button className='flex justify-center items-center flex-grow-0 flex-shrink-0 h-10 px-4 py-2 rounded bg-[#8DD3BB]  text-[#112211] hover:opacity-85 gap-1'>
+          <Button className='rounded bg-[#8DD3BB]  text-[#112211] hover:opacity-85 gap-1'>
             <svg
               width={17}
               height={16}
