@@ -1,7 +1,14 @@
 import React from 'react'
 import logo from '../../../assets/images/logo_vnairline.png'
+import { useNavigate } from 'react-router-dom'
 
 export const FlightTicket = () => {
+  const navigate = useNavigate()
+
+  const handViewDetail = () => {
+    navigate('/detail_flight')
+  }
+
   return (
     <div
       className='flex justify-between items-center w-full h-fit  px-8 pt-4 pb-4 my-3 rounded-2xl bg-white '
@@ -92,7 +99,7 @@ export const FlightTicket = () => {
               </div>
             </div>
 
-            <div className='grow'>
+            <div className='grow' onClick={handViewDetail}>
               <div className='w-full h-10 flex-col justify-start items-start gap-2.5 inline-flex'>
                 <div className='self-stretch h-12 px-4 py-2 bg-green-300 rounded justify-center items-center gap-1 inline-flex'>
                   <div className="text-neutral-900 text-sm font-semibold font-['Montserrat']">View Deals</div>

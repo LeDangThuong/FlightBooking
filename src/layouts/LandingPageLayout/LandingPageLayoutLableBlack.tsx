@@ -9,10 +9,10 @@ interface LandingPageLayoutProps {
 
 export default function LandingPageLayoutLableBlack({ children }: LandingPageLayoutProps) {
   return (
-    <>
+    <div>
       <HeaderLableBlack className=' absolute z-10' />
       {children}
       <Footer />
-    </>
+    </div>
   )
 }

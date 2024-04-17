@@ -4,6 +4,7 @@ import { ForgotPassword } from '@/modules/auth/pages/ForgotPassword'
 import { SetPassword } from '@/modules/auth/pages/SetPassword'
 import { SignUp } from '@/modules/auth/pages/SignUp'
 import { Login } from '@/modules/auth/pages/login'
+import { DetailsFlight } from '@/modules/flight_flow/pages/Details_Flight'
 import FlightListing from '@/modules/flight_flow/pages/Flight_Listing'
 import HomePage from '@/modules/home/pages/HomePage'
 import { useRoutes } from 'react-router-dom'
@@ -40,6 +41,14 @@ export default function useRouteElements() {
       element: (
         <LandingPageLayoutLableBlack>
           <FlightListing />
+        </LandingPageLayoutLableBlack>
+      )
+    },
+    {
+      path: '/detail_flight',
+      element: (
+        <LandingPageLayoutLableBlack>
+          <DetailsFlight />
         </LandingPageLayoutLableBlack>
       )
     }
