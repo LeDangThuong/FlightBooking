@@ -1,5 +1,5 @@
 import React from 'react'
-import logo from '../../assets/icons/Logo.svg'
+import logo from '../../assets/svgs/Logo.svg'
 import { Link, useNavigate } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { twMerge } from 'tailwind-merge'
@@ -8,7 +8,7 @@ interface HeaderProps {
   className?: string
 }
 
-const Header = ({ className }: HeaderProps) => {
+const HeaderLableBlack = ({ className }: HeaderProps) => {
   const navigate = useNavigate()
 
   const handleSignOut = () => {
@@ -19,13 +19,13 @@ const Header = ({ className }: HeaderProps) => {
 
   return (
     <header>
-      <nav className={twMerge('bg-transparent border-gray-200 w-full', className)}>
+      <nav className={twMerge('bg-white border-gray-200 w-full shadow ', className)}>
         <div className='max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4'>
           <ul className='flex flex-col font-medium p-4 md:p-0 mt-4 border border-gray-100 rounded-lg bg-transparent md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0   '>
             <li>
               <Link
                 to='#'
-                className='flex flex-row items-center gap-2 py-2 px-3 md:p-0 text-white  rounded hover:text-[#8DD3BB]'
+                className='flex flex-row items-center gap-2 py-2 px-3 md:p-0 text-black  rounded hover:text-[#8DD3BB]'
                 aria-current='page'
               >
                 <svg width='24' height='24' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'>
@@ -40,7 +40,7 @@ const Header = ({ className }: HeaderProps) => {
             <li>
               <Link
                 to='#'
-                className='flex flex-row items-center gap-2 py-2 px-3 md:p-0 text-white rounded hover:text-[#8DD3BB] '
+                className='flex flex-row items-center gap-2 py-2 px-3 md:p-0 text-black rounded hover:text-[#8DD3BB] '
               >
                 <svg width='24' height='24' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'>
                   <path
@@ -93,4 +93,4 @@ const Header = ({ className }: HeaderProps) => {
   )
 }
 
-export default Header
+export default HeaderLableBlack

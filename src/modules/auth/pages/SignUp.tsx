@@ -1,9 +1,12 @@
 import { Slides } from '@/modules/auth/components/Slides'
-import Logo from '../../assets/svgs/Logo.svg'
-import React, { useState } from 'react'
+import Logo from '../../../assets/svgs/Logo.svg'
+import React, { ChangeEvent, useState } from 'react'
 import { Input } from '@/modules/auth/components/Input'
 import { ButtonGreen } from '@/modules/auth/components/ButtonGreen'
 import { ButtonIcon } from '@/modules/auth/components/ButtonIcon'
+import { signup } from '@/services/UserService'
+import { useNavigate } from 'react-router-dom'
+import { CircleLoader } from 'react-spinners'
 
 export const SignUp = () => {
   const slides = [
@@ -24,7 +27,74 @@ export const SignUp = () => {
     }
   ]
 
+  const navigate = useNavigate()
+
   const [currentIndex, setCurrentIndex] = useState(0)
+
+  const [isLoading, setIsLoading] = useState(false)
+
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
+  const [fullName, setfullName] = useState('')
+  const [email, setEmail] = useState('')
+  const [dayOfBirth, setDayOfBirth] = useState('')
+  const [phoneNumber, setPhoneNumber] = useState('')
+  const [checkAgree, setCheckAgree] = useState(false)
+
+  const handlerUsername = (event: ChangeEvent<HTMLInputElement>) => {
+    setUsername(event.target.value)
+  }
+
+  const handlerPassword = (event: ChangeEvent<HTMLInputElement>) => {
+    setPassword(event.target.value)
+  }
+
+  const handlerConfirmPassword = (event: ChangeEvent<HTMLInputElement>) => {
+    setConfirmPassword(event.target.value)
+  }
+
+  const handlerFullname = (event: ChangeEvent<HTMLInputElement>) => {
+    setfullName(event.target.value)
+    console.log(fullName)
+  }
+
+  const handlerEmail = (event: ChangeEvent<HTMLInputElement>) => {
+    setEmail(event.target.value)
+  }
+
+  const handlerPhoneNumber = (event: ChangeEvent<HTMLInputElement>) => {
+    setPhoneNumber(event.target.value)
+  }
+
+  const handlerDayOfBirth = (event: ChangeEvent<HTMLInputElement>) => {
+    setDayOfBirth(event.target.value)
+  }
+
+  const handleCheckboxChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setCheckAgree(event.target.checked)
+  }
+
+  const handlerCreateAccount = async () => {
+    if (
+      !checkAgree ||
+      username.trim().length == 0 ||
+      password.trim().length == 0 ||
+      email.trim().length == 0 ||
+      fullName.trim().length == 0 ||
+      dayOfBirth.trim().length == 0
+    )
+      return
+    setIsLoading(true)
+    try {
+      const isSuccess = await signup(username, password, email, fullName, new Date(dayOfBirth))
+      setIsLoading(false)
+      if (isSuccess) {
+        navigate('/')
+      }
+    } catch (error) {}
+    setIsLoading(false)
+  }
 
   const prevSlide = () => {
     const isFirstSlide = currentIndex === 0
@@ -41,6 +111,11 @@ export const SignUp = () => {
   }
   return (
     <div className='flex'>
+      {isLoading && (
+        <div className='overlay'>
+          <CircleLoader color={'#36D7B7'} loading={isLoading} size={150} />
+        </div>
+      )}
       <Slides slides={slides} currentIndex={currentIndex} prevSlide={prevSlide} nextSlide={nextSlide} />
       <div className='flex flex-1 justify-center items-center h-screen w-full'>
         <div className='w-full pr-10 pl-10 xl:pr-40 xl:pl-40 md:pr-30 md:pl-30'>
@@ -51,22 +126,22 @@ export const SignUp = () => {
           <h3 className='font-thin mb-4'>Let’s get you all st up so you can access your personal account.</h3>
 
           <div className='flex gap-2'>
-            <Input id='fullname' type='text' title='Full name' onChange={() => {}} />
-            <Input id='dayofbirth' type='date' title='Day of birth' className='w-[50%]' onChange={() => {}} />
+            <Input id='fullname' type='text' title='Full name' onChange={handlerFullname} />
+            <Input id='dayofbirth' type='date' title='Day of birth' className='w-[50%]' onChange={handlerDayOfBirth} />
           </div>
 
           <div className='flex gap-2'>
-            <Input id='email' type='email' title='Email' onChange={() => {}} />
-            <Input id='phone' type='phone' title='Phone number' className='w-[50%]' onChange={() => {}} />
+            <Input id='email' type='email' title='Email' onChange={handlerEmail} />
+            <Input id='phone' type='phone' title='Phone number' className='w-[50%]' onChange={handlerPhoneNumber} />
           </div>
 
-          <Input id='username' type='text' title='Username' onChange={() => {}} />
-          <Input id='password' type='password' title='Password' onChange={() => {}} />
-          <Input id='confirm' type='password' title='Confirm password' onChange={() => {}} />
+          <Input id='username' type='text' title='Username' onChange={handlerUsername} />
+          <Input id='password' type='password' title='Password' onChange={handlerPassword} />
+          <Input id='confirm' type='password' title='Confirm password' onChange={handlerConfirmPassword} />
 
           <div className='flex justify-center items-center mb-6'>
             <div className='flex grow'>
-              <input type='checkbox' className='cursor-pointer' />
+              <input type='checkbox' className='cursor-pointer' onChange={handleCheckboxChange} checked={checkAgree} />
               <h3 className='font-semibold ml-2 text-xs justify-center'>I agree to all the </h3>
               <h3 className=' font-normal ml-2 text-xs text-[#FA837F] cursor-pointer'>Terms</h3>
               <h3 className='font-semibold ml-2 text-xs justify-center'>and </h3>
@@ -74,7 +149,7 @@ export const SignUp = () => {
             </div>
           </div>
 
-          <ButtonGreen title='Create account' onClick={() => {}} />
+          <ButtonGreen title='Create account' onClick={handlerCreateAccount} />
 
           <div className='flex justify-center items-center mt-3'>
             <h1 className='text-sm font-normal mr-2'>Already have an account?</h1>

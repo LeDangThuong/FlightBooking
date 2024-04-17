@@ -1,10 +1,12 @@
 import { Slides } from '@/modules/auth/components/Slides'
-import React, { useState } from 'react'
-import Logo from '../../assets/svgs/Logo.svg'
+import React, { ChangeEvent, useState } from 'react'
+import Logo from '../../../assets/svgs/Logo.svg'
 import { FaAngleLeft } from 'react-icons/fa6'
 import { Input } from '@/modules/auth/components/Input'
 import { ButtonGreen } from '@/modules/auth/components/ButtonGreen'
 import { ButtonIcon } from '@/modules/auth/components/ButtonIcon'
+import { forgotPassword } from '@/services/UserService'
+import { CircleLoader } from 'react-spinners'
 
 export const ForgotPassword = () => {
   const slides = [
@@ -27,6 +29,22 @@ export const ForgotPassword = () => {
 
   const [currentIndex, setCurrentIndex] = useState(0)
 
+  const [email, setEmail] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
+
+  const handlerForgotPassword = async () => {
+    setIsLoading(true)
+    try {
+      await forgotPassword(email)
+    } catch (error) {}
+
+    setIsLoading(false)
+  }
+
+  const handlerEmail = (event: ChangeEvent<HTMLInputElement>) => {
+    setEmail(event.target.value)
+  }
+
   const prevSlide = () => {
     const isFirstSlide = currentIndex === 0
     const newIndex = isFirstSlide ? slides.length - 1 : currentIndex - 1
@@ -43,6 +61,11 @@ export const ForgotPassword = () => {
 
   return (
     <div className='flex'>
+      {isLoading && (
+        <div className='overlay'>
+          <CircleLoader color={'#36D7B7'} loading={isLoading} size={150} />
+        </div>
+      )}
       <div className=' flex flex-1 h-screen w-full justify-center items-center '>
         <div className='w-full pr-10 pl-10 xl:pr-40 xl:pl-40 md:pr-30 md:pl-30'>
           <div className='mb-3'>
@@ -57,9 +80,9 @@ export const ForgotPassword = () => {
             Don’t worry, happens to all of us. Enter your email below to recover your password.
           </h3>
 
-          <Input id='email' type='text' title='Email' className='my-5' onChange={() => {}} />
+          <Input id='email' type='text' title='Email' className='my-5' onChange={handlerEmail} />
 
-          <ButtonGreen title='Submit' onClick={() => {}} />
+          <ButtonGreen title='Submit' onClick={handlerForgotPassword} />
 
           <div className='flex mt-5'>
             <div className='border-t-2 grow mt-3'></div>
