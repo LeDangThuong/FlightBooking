@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import Logo from '../../assets/svgs/Logo.svg'
+import Logo from '../../../assets/svgs/Logo.svg'
 import { FaAngleLeft } from 'react-icons/fa6'
 import { Input } from '@/modules/auth/components/Input'
 import { ButtonGreen } from '@/modules/auth/components/ButtonGreen'

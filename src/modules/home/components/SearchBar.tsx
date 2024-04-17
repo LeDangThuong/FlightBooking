@@ -1,8 +1,14 @@
 import { Button } from '@/components/ui/button'
 import { DatePickerWithRange } from '@/components/ui/dateRangePicker'
 import React from 'react'
+import { useNavigate } from 'react-router-dom'
 
 const SearchBar = () => {
+  const navigate = useNavigate()
+  const handleShowFlight = () => {
+    navigate('/flight_listing')
+  }
+
   return (
     <div
       className='flex flex-col justify-start items-start w-[1232px] absolute left-1/2 transform -translate-x-1/2 top-[480px] gap-8 px-8 pt-4 pb-8 rounded-2xl bg-white'
@@ -178,7 +184,10 @@ const SearchBar = () => {
           </svg>
           <p>Add Promo Code</p>
         </Button>
-        <Button className='flex justify-center items-center flex-grow-0 flex-shrink-0 h-12 px-4 py-2 rounded  bg-[#8dd3bb] text-black hover:opacity-85 gap-1'>
+        <Button
+          onClick={handleShowFlight}
+          className='flex justify-center items-center flex-grow-0 flex-shrink-0 h-12 px-4 py-2 rounded  bg-[#8dd3bb] text-black hover:opacity-85 gap-1'
+        >
           <svg
             width={16}
             height={16}

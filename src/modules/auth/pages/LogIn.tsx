@@ -1,13 +1,18 @@
 import React, { ChangeEvent, useState } from 'react'
-import Logo from '../../assets/svgs/Logo.svg'
+import Logo from '../../../assets/svgs/Logo.svg'
 
 import { Slides } from '@/modules/auth/components/Slides'
 import { Input } from '@/modules/auth/components/Input'
 import { ButtonGreen } from '@/modules/auth/components/ButtonGreen'
 import { ButtonIcon } from '@/modules/auth/components/ButtonIcon'
 import { login } from '@/services/UserService'
+import { useNavigate } from 'react-router-dom'
+import { CircleLoader } from 'react-spinners'
 
 export const Login = () => {
+  const navigate = useNavigate()
+  const [isLoading, setIsLoading] = useState(false)
+
   const slides = [
     {
       url: 'https://www.usatoday.com/gcdn/presto/2019/06/23/USAT/c3a9f051-bd6c-4b39-b5b9-38244deec783-GettyImages-932651818.jpg'
@@ -54,16 +59,41 @@ export const Login = () => {
   }
 
   async function handleLogin() {
+    setIsLoading(true)
     try {
       console.log(username, password)
       const token = await login(username, password)
+
+      if (token) {
+        const isLoggedIn = localStorage.getItem('token')
+
+        const role = localStorage.getItem('role')
+
+        if (!isLoggedIn && role === 'CUSTOMER') {
+          navigate('/home')
+        }
+      }
     } catch (error) {
       console.log('Đăng nhập thất bại', error)
     }
+    setIsLoading(false)
+  }
+
+  const handleSignup = () => {
+    navigate('/signup')
+  }
+
+  const handlerResetPassword = () => {
+    navigate('/forgot-password')
   }
 
   return (
     <div className='flex'>
+      {isLoading && (
+        <div className='overlay'>
+          <CircleLoader color={'#36D7B7'} loading={isLoading} size={150} />
+        </div>
+      )}
       <div className=' flex flex-1 h-screen w-full justify-center items-center '>
         <div className='w-full pr-10 pl-10 xl:pr-40 xl:pl-40 md:pr-30 md:pl-30'>
           <div className='mb-3'>
@@ -81,7 +111,9 @@ export const Login = () => {
               <h3 className='font-semibold ml-2 text-xs justify-center'>Remember me</h3>
             </div>
 
-            <h3 className=' font-normal ml-2 text-xs text-[#FA837F] cursor-pointer'>Forgot password</h3>
+            <h3 onClick={handlerResetPassword} className=' font-normal ml-2 text-xs text-[#FA837F] cursor-pointer'>
+              Forgot password
+            </h3>
           </div>
 
           <ButtonGreen
@@ -93,7 +125,9 @@ export const Login = () => {
 
           <div className='flex justify-center items-center mt-3'>
             <h1 className='text-sm font-normal mr-2'>Don't have an account?</h1>
-            <h1 className='text-[14px] font-semibold text-[#FA837F] cursor-pointer '>Sign up</h1>
+            <h1 onClick={handleSignup} className='text-[14px] font-semibold text-[#FA837F] cursor-pointer '>
+              Sign up
+            </h1>
           </div>
 
           <div className='flex mt-5'>
