@@ -7,8 +7,14 @@ import fastfood from '../../../assets/svgs/fastfood.svg'
 import stopwatch from '../../../assets/svgs/stopwatch.svg'
 import airlineseat from '../../../assets/svgs/airline-seat.svg'
 import { FlightItem } from '../components/FlightItem'
+import { useNavigate } from 'react-router-dom'
 
 export const DetailsFlight = () => {
+  const navigate = useNavigate()
+
+  const handleFlightItem = () => {
+    navigate('/booking_detail')
+  }
   return (
     <div className='bg-[#FAFBFC] h-fit flex flex-col  text-white  w-full px-32 mb-52 '>
       <div className='w-full h-[17px] justify-start items-end gap-2 inline-flex mt-24 mb-5'>
@@ -189,9 +195,9 @@ export const DetailsFlight = () => {
         </div>
       </div>
 
-      <FlightItem />
-      <FlightItem />
-      <FlightItem />
+      <FlightItem onClick={handleFlightItem} />
+      <FlightItem onClick={handleFlightItem} />
+      <FlightItem onClick={handleFlightItem} />
     </div>
   )
 }

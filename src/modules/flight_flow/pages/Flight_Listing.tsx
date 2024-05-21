@@ -4,6 +4,7 @@ import logo from '../../../assets/images/logo_vnairline.png'
 
 import { Fillter } from '../components/Fillter'
 import { FlightTicket } from '../components/FlightTicket'
+import { FlightTicket2 } from '../components/FlightTicket2'
 
 const FlightListing = () => {
   const [selectTab, setSelectTab] = useState('Cheapest')
@@ -124,7 +125,7 @@ const FlightListing = () => {
             </div>
           </div>
           <div className='my-2'></div>
-          <FlightTicket />
+          <FlightTicket2 />
           <FlightTicket />
           <FlightTicket />
           <FlightTicket />
