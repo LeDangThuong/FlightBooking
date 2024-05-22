@@ -7,8 +7,14 @@ import fastfood from '../../../assets/svgs/fastfood.svg'
 import stopwatch from '../../../assets/svgs/stopwatch.svg'
 import airlineseat from '../../../assets/svgs/airline-seat.svg'
 import { FlightItem } from '../components/FlightItem'
+import { useNavigate } from 'react-router-dom'
 
 export const DetailsFlight = () => {
+  const navigate = useNavigate()
+
+  const handleFlightItem = () => {
+    navigate('/booking_detail')
+  }
   return (
     <div className='bg-[#FAFBFC] h-fit flex flex-col  text-white  w-full px-32 mb-52 '>
       <div className='w-full h-[17px] justify-start items-end gap-2 inline-flex mt-24 mb-5'>
@@ -189,9 +195,26 @@ export const DetailsFlight = () => {
         </div>
       </div>
 
-      <FlightItem />
-      <FlightItem />
-      <FlightItem />
+      <FlightItem onClick={handleFlightItem} />
+      <FlightItem onClick={handleFlightItem} />
+      <FlightItem onClick={handleFlightItem} />
+
+      <div className='h-2'></div>
+
+      <div className='flex justify-between'>
+        <div>
+          <span className="text-slate-900 text-3xl font-semibold font-['Montserrat'] leading-9 mr-2">Total: </span>
+          <span className="text-rose-400 text-3xl font-bold font-['Montserrat'] leading-9">$208,00</span>
+        </div>
+
+        <div className='w-fit h-12 flex-col justify-start items-start gap-2.5 inline-flex'>
+          <div className='self-stretch h-12 px-4 py-2 bg-green-300 rounded justify-center items-center gap-1 inline-flex'>
+            <div className="text-neutral-900 text-sm font-semibold font-['Montserrat']">Continue booking</div>
+          </div>
+        </div>
+      </div>
+
+      <div className='h-2'></div>
     </div>
   )
 }

@@ -1,15 +1,21 @@
-import React from 'react'
+import React, { FC } from 'react'
 import logo from '../../../assets/images/logo_emirates.png'
 import airplane from '../../../assets/svgs/airplane.svg'
 import wifi from '../../../assets/svgs/wifi.svg'
 import fastfood from '../../../assets/svgs/fastfood.svg'
 import stopwatch from '../../../assets/svgs/stopwatch.svg'
 import airlineseat from '../../../assets/svgs/airline-seat.svg'
+import { useNavigate } from 'react-router-dom'
 
-export const FlightItem = () => {
+interface FlightItemProps {
+  onClick?: React.MouseEventHandler<HTMLDivElement>
+}
+
+export const FlightItem: FC<FlightItemProps> = ({ onClick }) => {
   return (
     <div
-      className='flex flex-col justify-between items-center w-full h-fit  px-8 pt-4 pb-4 rounded-2xl bg-white my-4 gap-6 '
+      onClick={onClick}
+      className='flex flex-col justify-between items-center w-full h-fit  px-8 pt-4 pb-4 rounded-2xl bg-white hover:bg-slate-50  my-4 gap-6 '
       style={{ boxShadow: '0px 4px 16px 0 rgba(141,211,187,0.15)' }}
     >
       <div className='flex w-[100%] justify-between '>
@@ -27,19 +33,19 @@ export const FlightItem = () => {
         </div>
 
         <div className='flex gap-6 items-center'>
-          <img className='w-10 h-10' src={airplane} />
+          <img className='w-8 h-8' src={airplane} />
           <div className=' h-12 border border-slate-200'></div>
 
-          <img className='w-10 h-10' src={wifi} />
+          <img className='w-8 h-8' src={wifi} />
           <div className=' h-12 border border-slate-200'></div>
 
-          <img className='w-10 h-10' src={stopwatch} />
+          <img className='w-8 h-8' src={stopwatch} />
           <div className=' h-12 border border-slate-200'></div>
 
-          <img className='w-10 h-10' src={fastfood} />
+          <img className='w-8 h-8' src={fastfood} />
           <div className=' h-12 border border-slate-200'></div>
 
-          <img className='w-10 h-10' src={airlineseat} />
+          <img className='w-8 h-8' src={airlineseat} />
         </div>
       </div>
 
