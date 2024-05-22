@@ -2,7 +2,11 @@ import React, { useState } from 'react'
 import logo from '../../../assets/images/logo_vnairline.png'
 import airplane from '../../../assets/svgs/airplane.svg'
 
-export const FlightTicket2 = () => {
+interface FightTicket2Props {
+  onClickChooseFlight?: () => void
+}
+
+export const FlightTicket2: React.FC<FightTicket2Props> = ({ onClickChooseFlight }) => {
   const [selectTab, setSelectTab] = useState<null | number>(null)
 
   const handleSelectTab = (tab: number) => {
@@ -258,7 +262,10 @@ export const FlightTicket2 = () => {
               </svg>
             </div>
 
-            <div className='w-[159px] h-10 flex-col justify-start items-start gap-2.5 inline-flex'>
+            <div
+              className='w-[159px] h-10 flex-col justify-start items-start gap-2.5 inline-flex'
+              onClick={onClickChooseFlight}
+            >
               <div className='self-stretch h-12 px-4 py-2 bg-green-300 rounded justify-center items-center gap-1 inline-flex'>
                 <div className="text-neutral-900 text-sm font-semibold font-['Montserrat']">Choose Flight</div>
               </div>

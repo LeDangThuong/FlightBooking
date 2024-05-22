@@ -6,6 +6,7 @@ import logo from '../../../assets/images/logo_vnairline.png'
 import exit from '../../../assets/svgs/exit.svg'
 import airplane from '../../../assets/svgs/airplane.svg'
 import { SelectFlight } from './SelectFlight'
+import { useNavigate } from 'react-router-dom'
 
 export const Fillter = () => {
   const [sliderValue, setSliderValue] = useState<number[]>([50, 100])
@@ -13,6 +14,12 @@ export const Fillter = () => {
 
   const maxPriceValue = 1200
   const hours = 864
+
+  const navigate = useNavigate()
+
+  const handViewDetail = () => {
+    navigate('/detail_flight')
+  }
 
   function secondsToTime(seconds: number): string {
     const hours = Math.floor(seconds / 3600) // Tính số giờ
@@ -81,9 +88,25 @@ export const Fillter = () => {
             <img className='w-6 h-6' src={flightup} />
             <div className="text-black text-sm font-medium font-['Montserrat'] mx-4">Your Flight</div>
           </div>
+          <SelectFlight />
+          <SelectFlight />
+          <div className='h-2'></div>
+          <div className='w-full h-[0px] border border-zinc-500/opacity-50'></div>
+          <div className='h-2'></div>
+          <div className="w-[268px] text-black text-sm font-semibold font-['Montserrat']">Subtotal</div>
+          <div className='flex justify-center items-center'>
+            <div className="text-right text-rose-400 text-2xl font-bold font-['Montserrat']">$104,00</div>
+            <div className="text-right text-black text-sm font-normal font-['Montserrat']">/Passenger</div>
+          </div>
+          <div className='h-2'></div>
 
-          <SelectFlight />
-          <SelectFlight />
+          <div className='flex w-full justify-center' onClick={handViewDetail}>
+            <div className='w-[159px] h-8 px-4 py-2 bg-green-300 rounded-[19px] justify-center items-center gap-1 inline-flex'>
+              <div className="text-white text-sm font-semibold font-['Montserrat']">Booking now</div>
+            </div>
+          </div>
+
+          <div className='h-2'></div>
         </div>
 
         <div className='self-stretch justify-between items-start inline-flex mt-2'>
