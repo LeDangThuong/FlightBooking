@@ -1,14 +1,42 @@
-import { FC } from 'react'
+import { FC, useEffect, useState } from 'react'
 import arrow from '../../../assets/svgs/arrow.svg'
 import logo from '../../../assets/images/logo_vnairline.png'
 import exit from '../../../assets/svgs/exit.svg'
 import airplane from '../../../assets/svgs/airplane.svg'
+import { Flight } from '@/models/Flight'
+import { Airport } from '@/models/Airport'
+import { Airline } from '@/models/Airline'
+import { getAirport } from '@/services/AirportService'
+import { getAirline } from '@/services/AirlineService'
+import { format } from 'date-fns'
 
 interface SelectFlightProps {
-  onClick?: React.MouseEventHandler<HTMLDivElement>
+  onClickClose?: React.MouseEventHandler<HTMLDivElement>
+  index: number
+  flight: Flight
 }
 
-export const SelectFlight: FC<SelectFlightProps> = ({ onClick }) => {
+export const SelectFlight: FC<SelectFlightProps> = ({ onClickClose, flight, index }) => {
+  const departureTime = format(flight.departureDate, 'HH:mm')
+  const arrivalTime = format(flight.arrivalDate, 'HH:mm')
+
+  const departureDate = format(flight.departureDate, 'EEE, dd MMMM yyyy')
+
+  const [departureAirport, setDepartureAirport] = useState<Airport | null>(null)
+  const [arrivalAirport, setArrivalAirport] = useState<Airport | null>(null)
+  const [airline, setAirline] = useState<Airline | null>(null)
+
+  const setAirport = async () => {
+    setDepartureAirport(await getAirport(flight.departureAirportId))
+    setArrivalAirport(await getAirport(flight.arrivalAirportId))
+    setAirline(await getAirline(flight.planeId))
+  }
+
+  //const flightDuration = calculateTimeDifference(flight.departureDate, flight.arrivalDate)
+
+  useEffect(() => {
+    setAirport()
+  }, [])
   return (
     <div className='flex flex-col w-full'>
       <div className='h-2'></div>
@@ -18,28 +46,35 @@ export const SelectFlight: FC<SelectFlightProps> = ({ onClick }) => {
 
       <div className='flex '>
         <div className='w-[35px] h-[35px] bg-green-300 rounded-[10px] flex justify-center items-center'>
-          <div className="text-white text-sm font-medium font-['Montserrat']">1</div>
+          <div className="text-white text-sm font-medium font-['Montserrat']">{index + 1}</div>
         </div>
 
         <div className='w-2'></div>
 
         <div className='flex flex-col items-start justify-center'>
-          <div className="text-zinc-500 text-[10px] font-medium font-['Montserrat']">Sun, 07 November 2024</div>
+          <div className="text-zinc-500 text-[10px] font-medium font-['Montserrat']">{departureDate}</div>
 
           <div className='flex justify-center  items-center '>
-            <div className="text-center text-black text-[10px] font-semibold font-['Montserrat']">SGN</div>
+            <div className="text-center text-black text-[10px] font-semibold font-['Montserrat']">
+              {departureAirport?.iataCode}
+            </div>
             <div className='w-2'></div>
             <img className='w-6 h-6' src={arrow} />
             <div className='w-2'></div>
-            <div className="text-center text-black text-[10px] font-semibold font-['Montserrat']">HAN</div>
+            <div className="text-center text-black text-[10px] font-semibold font-['Montserrat']">
+              {arrivalAirport?.iataCode}
+            </div>
           </div>
         </div>
       </div>
 
       <div className='flex justify-between items-center w-full'>
-        <img className='w-25 h-20' src={logo} />
-        <div className="text-neutral-900 text-xs font-medium font-['Montserrat']">Vietnam Airlines</div>
-        <div className='w-[17px] h-[17px] rounded-xl border border-green-300 flex-col justify-center items-center gap-[13px] inline-flex'>
+        <img className='w-25 h-20' src={airline?.logoUrl} />
+        <div className="text-neutral-900 text-xs font-medium font-['Montserrat']">{airline?.airlineName}</div>
+        <div
+          className='w-[17px] h-[17px] rounded-xl border border-green-300 flex-col justify-center items-center gap-[13px] inline-flex'
+          onClick={onClickClose}
+        >
           <div className='h-12 py-2 rounded justify-center items-center gap-1 inline-flex'>
             <img className='w-6 h-6' src={exit} />
           </div>
@@ -50,10 +85,12 @@ export const SelectFlight: FC<SelectFlightProps> = ({ onClick }) => {
         <div className='flex flex-col'>
           <div className='text-center'>
             <span className="text-black text-sm font-semibold font-['Montserrat']">
-              21:50
+              {departureTime}
               <br />
             </span>
-            <span className="text-zinc-500 text-sm font-semibold font-['Montserrat']">SGN</span>
+            <span className="text-zinc-500 text-sm font-semibold font-['Montserrat']">
+              {departureAirport?.iataCode}
+            </span>
           </div>
         </div>
 
@@ -75,10 +112,10 @@ export const SelectFlight: FC<SelectFlightProps> = ({ onClick }) => {
         <div className='flex flex-col'>
           <div className='text-center'>
             <span className="text-black text-sm font-semibold font-['Montserrat']">
-              21:50
+              {arrivalTime}
               <br />
             </span>
-            <span className="text-zinc-500 text-sm font-semibold font-['Montserrat']">SGN</span>
+            <span className="text-zinc-500 text-sm font-semibold font-['Montserrat']">{arrivalAirport?.iataCode}</span>
           </div>
         </div>
       </div>

@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-const API_URL = 'https://flightbookingbe-production.up.railway.app/'
+const API_URL = 'https://flightbooking-be.onrender.com/'
 
 const login = async (username: string, password: string) => {
   console.log(username, password)

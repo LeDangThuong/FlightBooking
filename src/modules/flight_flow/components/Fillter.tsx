@@ -7,15 +7,28 @@ import exit from '../../../assets/svgs/exit.svg'
 import airplane from '../../../assets/svgs/airplane.svg'
 import { SelectFlight } from './SelectFlight'
 import { useNavigate } from 'react-router-dom'
+import { Flight } from '@/models/Flight'
+import { useDispatch, useSelector } from 'react-redux'
+import { RootState } from '@/redux/store'
+import { setSelectFlights } from '@/redux/slice/flightSlice'
 
-export const Fillter = () => {
+interface FillterProps {}
+
+export const Fillter: React.FC<FillterProps> = () => {
   const [sliderValue, setSliderValue] = useState<number[]>([50, 100])
   const [sliderValueTime, setSliderValueTime] = useState<number[]>([50, 100])
+
+  const dispatch = useDispatch()
+  const selectFlights = useSelector((state: RootState) => state.flight.selectFlights)
 
   const maxPriceValue = 1200
   const hours = 864
 
   const navigate = useNavigate()
+
+  const handleCloseFlight = (flight: Flight) => {
+    dispatch(setSelectFlights(selectFlights.filter((i) => i != flight)))
+  }
 
   const handViewDetail = () => {
     navigate('/detail_flight')
@@ -88,14 +101,20 @@ export const Fillter = () => {
             <img className='w-6 h-6' src={flightup} />
             <div className="text-black text-sm font-medium font-['Montserrat'] mx-4">Your Flight</div>
           </div>
-          <SelectFlight />
-          <SelectFlight />
+
+          {selectFlights.map((flight, index) => (
+            <SelectFlight flight={flight} index={index} onClickClose={() => handleCloseFlight(flight)} />
+          ))}
+          {/* <SelectFlight />
+          <SelectFlight /> */}
           <div className='h-2'></div>
           <div className='w-full h-[0px] border border-zinc-500/opacity-50'></div>
           <div className='h-2'></div>
           <div className="w-[268px] text-black text-sm font-semibold font-['Montserrat']">Subtotal</div>
           <div className='flex justify-center items-center'>
-            <div className="text-right text-rose-400 text-2xl font-bold font-['Montserrat']">$104,00</div>
+            <div className="text-right text-rose-400 text-2xl font-bold font-['Montserrat']">
+              ${selectFlights.reduce((accumulator, currentValue) => accumulator + currentValue.economyPrice, 0)}
+            </div>
             <div className="text-right text-black text-sm font-normal font-['Montserrat']">/Passenger</div>
           </div>
           <div className='h-2'></div>

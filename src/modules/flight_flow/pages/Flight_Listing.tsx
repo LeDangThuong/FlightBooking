@@ -5,9 +5,27 @@ import logo from '../../../assets/images/logo_vnairline.png'
 import { Fillter } from '../components/Fillter'
 import { FlightTicket } from '../components/FlightTicket'
 import { FlightTicket2 } from '../components/FlightTicket2'
+import { useDispatch, useSelector } from 'react-redux'
+import { RootState } from '@/redux/store'
+import { Flight } from '@/models/Flight'
+import { setSelectFlights } from '@/redux/slice/flightSlice'
 
 const FlightListing = () => {
   const [selectTab, setSelectTab] = useState('Cheapest')
+
+  const dispatch = useDispatch()
+  const flights = useSelector((state: RootState) => state.flight.flights)
+  const selectFlights = useSelector((state: RootState) => state.flight.selectFlights)
+
+  //const [selectFlights, setSelectFlight] = useState<Flight[]>([])
+
+  const handleSelectFlight = (flight: Flight) => {
+    if (!selectFlights.includes(flight)) {
+      dispatch(setSelectFlights([...selectFlights, flight]))
+    }
+
+    console.log(selectFlights)
+  }
 
   return (
     <div className='bg-[#FAFBFC] h-full flex flex-col  text-white  w-full'>
@@ -104,8 +122,10 @@ const FlightListing = () => {
 
           <div className='w-full h-[18px] mt-4 items-start flex justify-between'>
             <div>
-              <span className="text-neutral-900 text-sm font-semibold font-['Montserrat']">Showing 4 of </span>
-              <span className="text-rose-400 text-sm font-semibold font-['Montserrat']">257 places</span>
+              <span className="text-neutral-900 text-sm font-semibold font-['Montserrat']">
+                Showing {flights.length} of{' '}
+              </span>
+              <span className="text-rose-400 text-sm font-semibold font-['Montserrat']">{flights.length} places</span>
             </div>
             <div className='justify-start items-start gap-1 flex'>
               <div className='flex gap-1'>
@@ -125,10 +145,15 @@ const FlightListing = () => {
             </div>
           </div>
           <div className='my-2'></div>
+
+          {flights.map((flight) => (
+            <FlightTicket2 flight={flight} onClickChooseFlight={() => handleSelectFlight(flight)} />
+          ))}
+
+          {/* <FlightTicket2 />
           <FlightTicket2 />
           <FlightTicket2 />
-          <FlightTicket2 />
-          <FlightTicket2 />
+          <FlightTicket2 /> */}
           {/* <FlightTicket />
           <FlightTicket />
           <FlightTicket /> */}

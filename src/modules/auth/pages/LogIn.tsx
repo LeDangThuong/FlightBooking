@@ -69,7 +69,7 @@ export const Login = () => {
 
         const role = localStorage.getItem('role')
 
-        if (!isLoggedIn && role === 'CUSTOMER') {
+        if (!isLoggedIn) {
           navigate('/home')
         }
       }

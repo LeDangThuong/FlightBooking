@@ -8,12 +8,16 @@ import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Calendar } from '@/components/ui/calendar'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { useDispatch } from 'react-redux'
+import { setDateRange } from '@/redux/slice/flightSlice'
 
 export function DatePickerWithRange({ className }: React.HTMLAttributes<HTMLDivElement>) {
   const [date, setDate] = React.useState<DateRange | undefined>({
     from: new Date(),
     to: addDays(new Date(), 1)
   })
+
+  const dispatch = useDispatch()
 
   return (
     <div className={cn('grid gap-2')}>
@@ -47,7 +51,10 @@ export function DatePickerWithRange({ className }: React.HTMLAttributes<HTMLDivE
             mode='range'
             defaultMonth={date?.from}
             selected={date}
-            onSelect={setDate}
+            onSelect={(value) => {
+              setDate(value)
+              dispatch(setDateRange(date!))
+            }}
             numberOfMonths={2}
             classNames={{
               day_range_start: 'bg-[#8DD3BB] font-bold',
