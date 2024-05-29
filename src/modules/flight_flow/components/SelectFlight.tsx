@@ -7,7 +7,7 @@ import { Flight } from '@/models/Flight'
 import { Airport } from '@/models/Airport'
 import { Airline } from '@/models/Airline'
 import { getAirport } from '@/services/AirportService'
-import { getAirline } from '@/services/AirlineService'
+import { getAirlineByPlaneId } from '@/services/AirlineService'
 import { format } from 'date-fns'
 
 interface SelectFlightProps {
@@ -21,15 +21,18 @@ export const SelectFlight: FC<SelectFlightProps> = ({ onClickClose, flight, inde
   const arrivalTime = format(flight.arrivalDate, 'HH:mm')
 
   const departureDate = format(flight.departureDate, 'EEE, dd MMMM yyyy')
+  const [loading, setLoading] = useState<boolean>(false)
 
   const [departureAirport, setDepartureAirport] = useState<Airport | null>(null)
   const [arrivalAirport, setArrivalAirport] = useState<Airport | null>(null)
   const [airline, setAirline] = useState<Airline | null>(null)
 
   const setAirport = async () => {
+    setLoading(true)
     setDepartureAirport(await getAirport(flight.departureAirportId))
     setArrivalAirport(await getAirport(flight.arrivalAirportId))
-    setAirline(await getAirline(flight.planeId))
+    setAirline(await getAirlineByPlaneId(flight.planeId))
+    setLoading(false)
   }
 
   //const flightDuration = calculateTimeDifference(flight.departureDate, flight.arrivalDate)
@@ -37,7 +40,9 @@ export const SelectFlight: FC<SelectFlightProps> = ({ onClickClose, flight, inde
   useEffect(() => {
     setAirport()
   }, [])
-  return (
+  return loading ? (
+    <div></div>
+  ) : (
     <div className='flex flex-col w-full'>
       <div className='h-2'></div>
 
@@ -117,12 +122,6 @@ export const SelectFlight: FC<SelectFlightProps> = ({ onClickClose, flight, inde
             </span>
             <span className="text-zinc-500 text-sm font-semibold font-['Montserrat']">{arrivalAirport?.iataCode}</span>
           </div>
-        </div>
-      </div>
-
-      <div className='flex w-full justify-center items-center  '>
-        <div className='w-[170px] h-8 px-4 py-2 bg-green-300 rounded-[19px] justify-center items-center gap-1 inline-flex'>
-          <div className="text-white text-sm font-semibold font-['Montserrat']">Change departure</div>
         </div>
       </div>
 

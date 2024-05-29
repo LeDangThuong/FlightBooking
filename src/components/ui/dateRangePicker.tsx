@@ -8,14 +8,17 @@ import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Calendar } from '@/components/ui/calendar'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { setDateRange } from '@/redux/slice/flightSlice'
+import { RootState } from '@/redux/store'
 
 export function DatePickerWithRange({ className }: React.HTMLAttributes<HTMLDivElement>) {
-  const [date, setDate] = React.useState<DateRange | undefined>({
-    from: new Date(),
-    to: addDays(new Date(), 1)
-  })
+  // const [date, setDate] = React.useState<DateRange | undefined>({
+  //   from: new Date(),
+  //   to: addDays(new Date(), 1)
+  // })
+
+  const dateRange = useSelector((state: RootState) => state.flight.dateRange)
 
   const dispatch = useDispatch()
 
@@ -28,17 +31,17 @@ export function DatePickerWithRange({ className }: React.HTMLAttributes<HTMLDivE
             variant={'outline'}
             className={cn(
               'w-[300px] h-14 justify-start text-left font-normal rounded',
-              !date && 'text-muted-foreground',
+              !dateRange && 'text-muted-foreground',
               className
             )}
           >
-            {date?.from ? (
-              date.to ? (
+            {dateRange?.from ? (
+              dateRange.to ? (
                 <>
-                  {format(date.from, 'LLL dd, y')} - {format(date.to, 'LLL dd, y')}
+                  {format(dateRange.from, 'LLL dd, y')} - {format(dateRange.to, 'LLL dd, y')}
                 </>
               ) : (
-                format(date.from, 'LLL dd, y')
+                format(dateRange.from, 'LLL dd, y')
               )
             ) : (
               <span>Depart-Return</span>
@@ -49,11 +52,10 @@ export function DatePickerWithRange({ className }: React.HTMLAttributes<HTMLDivE
           <Calendar
             initialFocus
             mode='range'
-            defaultMonth={date?.from}
-            selected={date}
+            defaultMonth={dateRange?.from}
+            selected={dateRange}
             onSelect={(value) => {
-              setDate(value)
-              dispatch(setDateRange(date!))
+              dispatch(setDateRange(value!))
             }}
             numberOfMonths={2}
             classNames={{

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import photo5 from '../../../assets/images/photo5.png'
 import logo from '../../../assets/images/logo_emirates.png'
 import airplane from '../../../assets/svgs/airplane.svg'
@@ -6,8 +6,16 @@ import wifi from '../../../assets/svgs/wifi.svg'
 import fastfood from '../../../assets/svgs/fastfood.svg'
 import stopwatch from '../../../assets/svgs/stopwatch.svg'
 import airlineseat from '../../../assets/svgs/airline-seat.svg'
-import { FlightItem } from '../components/FlightItem'
+
 import { useNavigate } from 'react-router-dom'
+import { useDispatch, useSelector } from 'react-redux'
+import { RootState } from '@/redux/store'
+import { FlightItem } from '../components/FlightItem'
+import { SeatCode } from '../components/SeatCode'
+import { SeatChoose } from '../components/SeatChoose'
+import { getSeatStatus } from '@/services/SeatService'
+import { Seat, groupSeatByClass } from '@/models/Seat'
+import { setPassenger } from '@/redux/slice/flightSlice'
 
 export const DetailsFlight = () => {
   const navigate = useNavigate()
@@ -15,6 +23,22 @@ export const DetailsFlight = () => {
   const handleFlightItem = () => {
     navigate('/booking_detail')
   }
+  const dispatch = useDispatch()
+  const selectFlights = useSelector((state: RootState) => state.flight.selectFlights)
+  const passenger = useSelector((state: RootState) => state.flight.passenger)
+
+  const [seatData, setSeatData] = useState<Record<string, Record<string, Seat[]>> | null>(null)
+
+  const getSeats = async () => {
+    const listSeats = await getSeatStatus(1)
+    const groupedSeat = groupSeatByClass(listSeats)
+    setSeatData(groupedSeat)
+  }
+
+  useEffect(() => {
+    getSeats()
+  })
+
   return (
     <div className='bg-[#FAFBFC] h-fit flex flex-col  text-white  w-full px-32 mb-52 '>
       <div className='w-full h-[17px] justify-start items-end gap-2 inline-flex mt-24 mb-5'>
@@ -195,11 +219,77 @@ export const DetailsFlight = () => {
         </div>
       </div>
 
+      <div className='flex flex-col w-[300px] justify-start items-start flex-grow h-14 rounded-tl rounded-tr'>
+        <div className='flex flex-col justify-start items-start self-stretch flex-grow-0 flex-shrink-0 gap-2.5 rounded bg-white border border-[#79747e]'>
+          <div className='flex justify-start items-center self-stretch flex-grow-0 flex-shrink-0 pl-4 py-2 rounded-tl rounded-tr'>
+            <div className='flex flex-col justify-center items-start flex-grow h-10 relative'>
+              <div className='flex justify-start items-center flex-grow-0 flex-shrink-0 relative w-full'>
+                <input
+                  type='number'
+                  className=' appearance-none
+                      rounded w-full py-2 px-2 text-gray-700 leading-tight focus:outline-none'
+                  value={passenger}
+                  onChange={(value) => {
+                    if (Number.parseInt(value.target.value) >= 1) {
+                      dispatch(setPassenger(Number.parseInt(value.target.value)))
+                    }
+                  }}
+                />
+                {/* <p className='flex-grow-0 flex-shrink-0 text-base text-left text-[#1c1b1f]'>1 Passenger</p> */}
+              </div>
+              <div className='flex justify-start items-center flex-grow-0 flex-shrink-0 absolute left-[-4px] top-[-16px] px-1 bg-white'>
+                <p className='flex-grow-0 flex-shrink-0 text-sm text-left text-[#1c1b1f]'>Passenger</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {selectFlights.map((flight) => (
+        <div className='flex flex-col'>
+          <FlightItem flight={flight} numberSeats={passenger} />
+        </div>
+      ))}
+
+      {/* <FlightItem onClick={handleFlightItem} />
       <FlightItem onClick={handleFlightItem} />
-      <FlightItem onClick={handleFlightItem} />
-      <FlightItem onClick={handleFlightItem} />
+      <FlightItem onClick={handleFlightItem} /> */}
 
       <div className='h-2'></div>
+
+      <div>
+        <div className="text-neutral-900 text-2xl font-semibold font-['Montserrat']">Choose seat:</div>
+      </div>
+
+      <div className='h-2'></div>
+
+      {/* {seatData ? (
+        Object.entries(seatData).map(([seatClass, rows]) => (
+          <div key={seatClass}>
+            <div className="text-center text-rose-400 text-2xl font-bold font-['Montserrat'] my-3">{seatClass}</div>
+
+            {Object.entries(rows).map(([initial, seats]) => (
+              <div key={initial} className='flex relative'>
+                <div className='absolute'>
+                  <SeatCode code={initial} />
+                </div>
+
+                <div className='flex w-full justify-center items-center'>
+                  {seats.map((seat) => (
+                    <div>
+                      <SeatChoose code={seat.key} selected={false} />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        ))
+      ) : (
+        <p>Loading...</p>
+      )} */}
+
+      <div className='h-5'></div>
 
       <div className='flex justify-between'>
         <div>
@@ -208,7 +298,17 @@ export const DetailsFlight = () => {
         </div>
 
         <div className='w-fit h-12 flex-col justify-start items-start gap-2.5 inline-flex'>
-          <div className='self-stretch h-12 px-4 py-2 bg-green-300 rounded justify-center items-center gap-1 inline-flex'>
+          <div
+            className='self-stretch h-12 px-4 py-2 bg-green-300 rounded justify-center items-center gap-1 inline-flex'
+            onClick={async () => {
+              console.log(224)
+              const seatRespone = await getSeatStatus(1)
+
+              const groupSeat = groupSeatByClass(seatRespone)
+
+              console.log(groupSeat)
+            }}
+          >
             <div className="text-neutral-900 text-sm font-semibold font-['Montserrat']">Continue booking</div>
           </div>
         </div>

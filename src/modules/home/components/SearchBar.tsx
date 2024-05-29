@@ -1,26 +1,50 @@
 import { Button } from '@/components/ui/button'
 import { DatePickerWithRange } from '@/components/ui/dateRangePicker'
 import { Airport } from '@/models/Airport'
-import { searchFlights, setTypeTicket } from '@/redux/slice/flightSlice'
+import {
+  searchFlights,
+  setTypeTicket,
+  setArrivalAirportState,
+  setDepartureAirportState
+} from '@/redux/slice/flightSlice'
 import { RootState } from '@/redux/store'
 import { getAllAirport } from '@/services/AirportService'
-import { searchFlightOneWay } from '@/services/FlightService'
+import { searchFlightOneWay, searchFlightRoundTrip } from '@/services/FlightService'
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
+import toast, { Toaster } from 'react-hot-toast'
 
 const SearchBar = () => {
   const navigate = useNavigate()
+
+  const notify = () => toast('Here is your toast.')
+
   const handleShowFlight = async () => {
-    const flight = await searchFlightOneWay(departureAirport!, arrivalAirport!, dateRange.from!)
+    if (departureAirport === undefined || arrivalAirport === undefined) {
+      notify()
+      return
+    }
+
+    if (typeTicket === 'ONE_WAY') {
+      const flight = await searchFlightOneWay(departureAirport!, arrivalAirport!, dateRange.from!)
+      dispatch(searchFlights(flight))
+    } else if (typeTicket === 'ROUND_TRIP') {
+      const flight = await searchFlightRoundTrip(departureAirport!, arrivalAirport!, dateRange.from!, dateRange.to!)
+      dispatch(searchFlights(flight))
+    }
+
+    dispatch(setDepartureAirportState(departureAirport!))
+    dispatch(setArrivalAirportState(arrivalAirport!))
 
     navigate('/flight_listing')
-
-    dispatch(searchFlights(flight))
   }
 
   const typeTicket = useSelector((state: RootState) => state.flight.typeTicket)
   const dateRange = useSelector((state: RootState) => state.flight.dateRange)
+
+  const departureAirportState = useSelector((state: RootState) => state.flight.departureAirport)
+  const arrivalAirportState = useSelector((state: RootState) => state.flight.arrivalAirport)
 
   const dispatch = useDispatch()
 
@@ -69,8 +93,13 @@ const SearchBar = () => {
 
     console.log(airports)
 
-    setDepartureAirport(airports[0])
-    setArrivalAirport(airports[1])
+    if (departureAirportState !== undefined) {
+      setDepartureAirport(departureAirportState)
+    }
+
+    if (arrivalAirportState !== undefined) {
+      setArrivalAirport(arrivalAirportState)
+    }
   }, [])
 
   return (
@@ -130,11 +159,11 @@ const SearchBar = () => {
         <div className='flex gap-4'>
           <div
             className='w-fit h-12 flex-col justify-start items-start gap-2.5 inline-flex'
-            onClick={() => dispatch(setTypeTicket('one-way'))}
+            onClick={() => dispatch(setTypeTicket('ONE_WAY'))}
           >
             <div
               className={
-                typeTicket === 'one-way'
+                typeTicket === 'ONE_WAY'
                   ? 'h-12 px-4 py-2 bg-green-300 rounded justify-center items-center gap-1 inline-flex'
                   : 'h-12 px-4 py-2 bg-white rounded justify-center items-center gap-1 inline-flex border-black border-[1px]'
               }
@@ -153,11 +182,11 @@ const SearchBar = () => {
 
           <div
             className='w-fit h-12 flex-col justify-start items-start gap-2.5 inline-flex'
-            onClick={() => dispatch(setTypeTicket('round-trip'))}
+            onClick={() => dispatch(setTypeTicket('ROUND_TRIP'))}
           >
             <div
               className={
-                typeTicket === 'round-trip'
+                typeTicket === 'ROUND_TRIP'
                   ? 'h-12 px-4 py-2 bg-green-300 rounded justify-center items-center gap-1 inline-flex'
                   : 'h-12 px-4 py-2 bg-white rounded justify-center items-center gap-1 inline-flex border-black border-[1px]'
               }
@@ -289,22 +318,7 @@ const SearchBar = () => {
             </div>
           </div>
           <DatePickerWithRange className='text-black border border-[#79747e] rounded h-14' />
-          {/* <div className='flex flex-col justify-start items-start flex-grow h-14 rounded-tl rounded-tr'>
-            <div className='flex flex-col justify-start items-start self-stretch flex-grow-0 flex-shrink-0 gap-2.5 rounded bg-white border border-[#79747e]'>
-              <div className='flex justify-start items-center flex-grow-0 flex-shrink-0 w-[210px] pl-4 py-2 rounded-tl rounded-tr'>
-                <div className='flex flex-col justify-center items-start flex-grow h-10 relative'>
-                  <div className='flex justify-start items-center flex-grow-0 flex-shrink-0 relative'>
-                    <p className='flex-grow-0 flex-shrink-0 text-base text-left text-[#1c1b1f]'>
-                      07 Nov 22 - 13 Nov 22
-                    </p>
-                  </div>
-                  <div className='flex justify-start items-center flex-grow-0 flex-shrink-0 absolute left-[-4px] top-[-16px] px-1 bg-white'>
-                    <p className='flex-grow-0 flex-shrink-0 text-sm text-left text-[#1c1b1f]'>Depart- Return</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div> */}
+
           <div className='flex flex-col justify-start items-start flex-grow h-14 rounded-tl rounded-tr'>
             <div className='flex flex-col justify-start items-start self-stretch flex-grow-0 flex-shrink-0 gap-2.5 rounded bg-white border border-[#79747e]'>
               <div className='flex justify-start items-center self-stretch flex-grow-0 flex-shrink-0 pl-4 py-2 rounded-tl rounded-tr'>

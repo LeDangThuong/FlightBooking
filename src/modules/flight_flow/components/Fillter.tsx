@@ -90,8 +90,7 @@ export const Fillter: React.FC<FillterProps> = () => {
     setTimeValue([sliderValueTime[0] * hours, sliderValueTime[1] * hours])
   }
   return (
-    <>
-      <div className="text-neutral-900 text-xl font-semibold font-['Montserrat']">Filters</div>
+    <div className='flex flex-col gap-6'>
       <div className='w-full h-[87px] flex-col justify-start items-start flex'>
         <div
           className='flex flex-col  justify-between items-start w-full h-fit  px-8 pt-4 pb-2 rounded-2xl bg-white '
@@ -127,6 +126,8 @@ export const Fillter: React.FC<FillterProps> = () => {
 
           <div className='h-2'></div>
         </div>
+
+        <div className="text-neutral-900 text-xl font-semibold font-['Montserrat']">Filters</div>
 
         <div className='self-stretch justify-between items-start inline-flex mt-2'>
           <div className="text-neutral-900 text-base font-semibold font-['Montserrat']">Price</div>
@@ -252,6 +253,6 @@ export const Fillter: React.FC<FillterProps> = () => {
           </div>
         </div>
       </div>
-    </>
+    </div>
   )
 }

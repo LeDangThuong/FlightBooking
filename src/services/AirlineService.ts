@@ -3,9 +3,9 @@ import axios from 'axios'
 
 const API_URL = 'https://flightbooking-be.onrender.com/'
 
-export const getAirline = async (id: number) : Promise<Airline> => {
+export const getAirlineByPlaneId = async (id: number) : Promise<Airline> => {
     try{    
-        const response = await axios.get<Airline>(`${API_URL}airlines/${id}`)
+        const response = await axios.get<Airline>(`${API_URL}airlines/get-airline-by-planeId?planeId=${id}`)
 
         return response.data;
 

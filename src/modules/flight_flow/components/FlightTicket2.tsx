@@ -7,7 +7,7 @@ import { getAirport } from '@/services/AirportService'
 import { Airport } from '@/models/Airport'
 import { calculateTimeDifference } from '@/utils/calculateTimeDifference'
 import { Airline } from '@/models/Airline'
-import { getAirline } from '@/services/AirlineService'
+import { getAirlineByPlaneId } from '@/services/AirlineService'
 
 interface FightTicket2Props {
   flight: Flight
@@ -20,14 +20,19 @@ export const FlightTicket2: React.FC<FightTicket2Props> = ({ onClickChooseFlight
   const departureTime = format(flight.departureDate, 'HH:mm')
   const arrivalTime = format(flight.arrivalDate, 'HH:mm')
 
+  const [loading, setLoading] = useState<boolean>(false)
+
   const [departureAirport, setDepartureAirport] = useState<Airport | null>(null)
   const [arrivalAirport, setArrivalAirport] = useState<Airport | null>(null)
   const [airline, setAirline] = useState<Airline | null>(null)
 
   const setAirport = async () => {
+    setLoading(true)
     setDepartureAirport(await getAirport(flight.departureAirportId))
     setArrivalAirport(await getAirport(flight.arrivalAirportId))
-    setAirline(await getAirline(flight.planeId))
+    setAirline(await getAirlineByPlaneId(flight.planeId))
+
+    setLoading(false)
   }
 
   //const flightDuration = calculateTimeDifference(flight.departureDate, flight.arrivalDate)
@@ -47,7 +52,9 @@ export const FlightTicket2: React.FC<FightTicket2Props> = ({ onClickChooseFlight
     setSelectTab(tab)
   }
 
-  return (
+  return loading ? (
+    <div></div>
+  ) : (
     <div
       className='flex justify-between items-center w-full h-fit  px-8 pt-4 pb-4 my-3 rounded-2xl bg-white '
       style={{ boxShadow: '0px 4px 16px 0 rgba(141,211,187,0.15)' }}

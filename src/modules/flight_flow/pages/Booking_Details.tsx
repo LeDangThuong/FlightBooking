@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { FlightItem } from '../components/FlightItem'
+
 import { SelectRadio } from '../components/SelectRadio'
 import photo4 from '../../../assets/images/photo4.png'
 
@@ -47,7 +47,7 @@ export const BookingDetails = () => {
 
       <div className='flex gap-7'>
         <div className='flex flex-col grow'>
-          <FlightItem />
+          {/* <FlightItem /> */}
 
           <div
             className='flex flex-col justify-between items-center w-full h-fit  px-2 pt-4 pb-4 rounded-2xl bg-white hover:bg-slate-50  my-4  '
