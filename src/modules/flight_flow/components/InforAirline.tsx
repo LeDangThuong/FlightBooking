@@ -1,110 +1,15 @@
-import React, { useEffect, useState } from 'react'
+import { Flight } from '@/models/Flight'
 import photo5 from '../../../assets/images/photo5.png'
-import logo from '../../../assets/images/logo_emirates.png'
-import airplane from '../../../assets/svgs/airplane.svg'
-import wifi from '../../../assets/svgs/wifi.svg'
-import fastfood from '../../../assets/svgs/fastfood.svg'
-import stopwatch from '../../../assets/svgs/stopwatch.svg'
-import airlineseat from '../../../assets/svgs/airline-seat.svg'
 
-import { useNavigate } from 'react-router-dom'
-import { useDispatch, useSelector } from 'react-redux'
-import { RootState } from '@/redux/store'
-import { FlightItem } from '../components/FlightItem'
-import { SeatCode } from '../components/SeatCode'
-import { SeatChoose } from '../components/SeatChoose'
-import { getSeatStatus } from '@/services/SeatService'
-import { Seat, groupSeatByClass } from '@/models/Seat'
-import { setPassenger } from '@/redux/slice/flightSlice'
-import { InforAirline } from '../components/InforAirline'
+interface InforAirlineProps {
+  flight: Flight
+  // onChange: (event: Event, value: number | number[], activeThumb: number) => void
+}
 
-export const DetailsFlight = () => {
-  const navigate = useNavigate()
-
-  const handleFlightItem = () => {
-    navigate('/passenger_information')
-  }
-  const dispatch = useDispatch()
-  const selectFlights = useSelector((state: RootState) => state.flight.selectFlights)
-  const passenger = useSelector((state: RootState) => state.flight.passenger)
-  const bookingTempDeparture = useSelector((state: RootState) => state.flight.bookingTempDeparture)
-  const bookingTempReturn = useSelector((state: RootState) => state.flight.bookingTempReturn)
-
-  const [seatData, setSeatData] = useState<Record<string, Record<string, Seat[]>> | null>(null)
-
-  const getSeats = async () => {
-    const listSeats = await getSeatStatus(1)
-    const groupedSeat = groupSeatByClass(listSeats)
-    setSeatData(groupedSeat)
-  }
-
-  useEffect(() => {
-    getSeats()
-  })
-
+export const InforAirline: React.FC<InforAirlineProps> = ({ flight }) => {
   return (
-    <div className='bg-[#FAFBFC] h-fit flex flex-col  text-white  w-full px-32 mb-52 '>
-      <div className='w-full h-[17px] justify-start items-end gap-2 inline-flex mt-24 mb-5'>
-        <div className="text-rose-400 text-sm font-medium font-['Montserrat']">Turkey</div>
-        <svg width='16' height='16' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg'>
-          <g opacity='0.75'>
-            <path
-              d='M6 3.5L10.5 8L6 12.5'
-              stroke='#112211'
-              stroke-width='1.5'
-              stroke-linecap='round'
-              stroke-linejoin='round'
-            />
-          </g>
-        </svg>
-
-        <div className="text-rose-400 text-sm font-medium font-['Montserrat']">Istanbul</div>
-        <svg width='16' height='16' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg'>
-          <g opacity='0.75'>
-            <path
-              d='M6 3.5L10.5 8L6 12.5'
-              stroke='#112211'
-              stroke-width='1.5'
-              stroke-linecap='round'
-              stroke-linejoin='round'
-            />
-          </g>
-        </svg>
-
-        <div className="opacity-75 text-neutral-900 text-sm font-medium font-['Montserrat']">
-          CVK Park Bosphorus Hotel Istanbul
-        </div>
-      </div>
-
-      <div className='flex flex-col w-[300px] justify-start items-start flex-grow h-14 rounded-tl rounded-tr'>
-        <div className='flex flex-col justify-start items-start self-stretch flex-grow-0 flex-shrink-0 gap-2.5 rounded bg-white border border-[#79747e]'>
-          <div className='flex justify-start items-center self-stretch flex-grow-0 flex-shrink-0 pl-4 py-2 rounded-tl rounded-tr'>
-            <div className='flex flex-col justify-center items-start flex-grow h-10 relative'>
-              <div className='flex justify-start items-center flex-grow-0 flex-shrink-0 relative w-full'>
-                <input
-                  type='number'
-                  className=' appearance-none
-                      rounded w-full py-2 px-2 text-gray-700 leading-tight focus:outline-none'
-                  value={passenger}
-                  onChange={(value) => {
-                    if (Number.parseInt(value.target.value) >= 1) {
-                      dispatch(setPassenger(Number.parseInt(value.target.value)))
-                    }
-                  }}
-                />
-                {/* <p className='flex-grow-0 flex-shrink-0 text-base text-left text-[#1c1b1f]'>1 Passenger</p> */}
-              </div>
-              <div className='flex justify-start items-center flex-grow-0 flex-shrink-0 absolute left-[-4px] top-[-16px] px-1 bg-white'>
-                <p className='flex-grow-0 flex-shrink-0 text-sm text-left text-[#1c1b1f]'>Passenger</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className='h-2'></div>
-
-      {/* <div className='flex justify-between  '>
+    <div className='flex flex-col'>
+      <div className='flex justify-between  '>
         <div className='flex flex-col gap-2'>
           <div className="text-neutral-900 text-2xl font-bold font-['TradeGothic LT Extended']">
             Emirates A380 Airbus
@@ -140,7 +45,6 @@ export const DetailsFlight = () => {
         </div>
 
         <div className='flex flex-col gap-2'>
-          <div className="text-right text-rose-400 text-[32px] font-bold font-['Montserrat']">$240</div>
           <div className='flex gap-3 '>
             <div className='w-12 h-12 flex-col justify-start items-start gap-2.5 inline-flex'>
               <div className='w-12 h-12 px-2 py-2 rounded border border-green-300 justify-center items-center gap-1 inline-flex'>
@@ -179,26 +83,6 @@ export const DetailsFlight = () => {
       </div>
 
       <img className='w-[1232px] my-5 h-[395px] rounded-xl' src={photo5} />
-
-      <div className='flex justify-between my-4'>
-        <div className="text-neutral-900 text-2xl font-bold font-['TradeGothic LT Extended']">
-          Basic Economy Features
-        </div>
-        <div className='flex gap-5'>
-          <div className='flex items-center gap-2'>
-            <input type='checkbox' />
-            <div className="text-neutral-900 text-sm font-medium font-['Montserrat']">Economy</div>
-          </div>
-          <div className='flex items-center gap-1'>
-            <input type='checkbox' />
-            <div className="text-neutral-900 text-sm font-medium font-['Montserrat']">First Class</div>
-          </div>
-          <div className='flex items-center gap-1'>
-            <input type='checkbox' />
-            <div className="text-neutral-900 text-sm font-medium font-['Montserrat']">Busines Class</div>
-          </div>
-        </div>
-      </div>
 
       <div className='flex gap-5 my-5'>
         <img className='w-[120px] h-[120px]  rounded-xl object-cover' src={photo5} />
@@ -248,76 +132,7 @@ export const DetailsFlight = () => {
             </div>
           </div>
         </div>
-      </div> */}
-
-      {selectFlights.map((flight, index) => (
-        <div className='flex flex-col mb-6'>
-          <InforAirline flight={flight} />
-          <FlightItem typeFlight={index === 0 ? 'DEPARTURE' : 'RETURN'} flight={flight} numberSeats={passenger} />
-        </div>
-      ))}
-
-      {/* <FlightItem onClick={handleFlightItem} />
-      <FlightItem onClick={handleFlightItem} />
-      <FlightItem onClick={handleFlightItem} /> */}
-
-      <div className='h-2'></div>
-
-      <div>
-        <div className="text-neutral-900 text-2xl font-semibold font-['Montserrat']">Choose seat:</div>
       </div>
-
-      <div className='h-2'></div>
-
-      {/* {seatData ? (
-        Object.entries(seatData).map(([seatClass, rows]) => (
-          <div key={seatClass}>
-            <div className="text-center text-rose-400 text-2xl font-bold font-['Montserrat'] my-3">{seatClass}</div>
-
-            {Object.entries(rows).map(([initial, seats]) => (
-              <div key={initial} className='flex relative'>
-                <div className='absolute'>
-                  <SeatCode code={initial} />
-                </div>
-
-                <div className='flex w-full justify-center items-center'>
-                  {seats.map((seat) => (
-                    <div>
-                      <SeatChoose code={seat.key} selected={false} />
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
-        ))
-      ) : (
-        <p>Loading...</p>
-      )} */}
-
-      <div className='h-5'></div>
-
-      <div className='flex justify-between'>
-        <div>
-          <span className="text-slate-900 text-3xl font-semibold font-['Montserrat'] leading-9 mr-2">Total: </span>
-          <span className="text-rose-400 text-3xl font-bold font-['Montserrat'] leading-9">
-            $
-            {(bookingTempDeparture !== undefined ? bookingTempDeparture?.price : 0) +
-              (bookingTempReturn !== undefined ? bookingTempReturn?.price : 0)}
-          </span>
-        </div>
-
-        <div className='w-fit h-12 flex-col justify-start items-start gap-2.5 inline-flex'>
-          <div
-            className='self-stretch h-12 px-4 py-2 bg-green-300 rounded justify-center items-center gap-1 inline-flex'
-            onClick={handleFlightItem}
-          >
-            <div className="text-neutral-900 text-sm font-semibold font-['Montserrat']">Continue booking</div>
-          </div>
-        </div>
-      </div>
-
-      <div className='h-2'></div>
     </div>
   )
 }

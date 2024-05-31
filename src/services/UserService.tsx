@@ -1,6 +1,7 @@
 import axios from 'axios'
+import { User } from '../models/User'
 
-const API_URL = 'https://flightbookingbe-production.up.railway.app/'
+const API_URL = 'https://flightbooking-be.onrender.com/'
 
 const login = async (username: string, password: string) => {
   console.log(username, password)
@@ -57,6 +58,22 @@ const forgotPassword = async (email: string) => {
     }
   } catch (error) {
     throw new Error('Vui lòng thử lại.')
+  }
+}
+
+export const getUserByUsername = async (username: string): Promise<User> => {
+  try {
+    const response = await axios.put<User>(`${API_URL}users/${username}`, {
+      fullName: 'string',
+      phoneNumber: 'string',
+      address: 'string',
+      dayOfBirth: '2024-05-30T08:45:26.054Z'
+    })
+
+    return response.data
+  } catch (e) {
+    console.error('Error fetching users:', e)
+    throw e
   }
 }
 

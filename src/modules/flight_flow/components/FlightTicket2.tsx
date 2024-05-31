@@ -1,13 +1,47 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import logo from '../../../assets/images/logo_vnairline.png'
 import airplane from '../../../assets/svgs/airplane.svg'
+import { Flight } from '@/models/Flight'
+import { format } from 'date-fns'
+import { getAirport } from '@/services/AirportService'
+import { Airport } from '@/models/Airport'
+import { calculateTimeDifference } from '@/utils/calculateTimeDifference'
+import { Airline } from '@/models/Airline'
+import { getAirlineByPlaneId } from '@/services/AirlineService'
 
 interface FightTicket2Props {
+  flight: Flight
   onClickChooseFlight?: () => void
 }
 
-export const FlightTicket2: React.FC<FightTicket2Props> = ({ onClickChooseFlight }) => {
+export const FlightTicket2: React.FC<FightTicket2Props> = ({ onClickChooseFlight, flight }) => {
   const [selectTab, setSelectTab] = useState<null | number>(null)
+
+  const departureTime = format(flight.departureDate, 'HH:mm')
+  const arrivalTime = format(flight.arrivalDate, 'HH:mm')
+
+  const [loading, setLoading] = useState<boolean>(false)
+
+  const [departureAirport, setDepartureAirport] = useState<Airport | null>(null)
+  const [arrivalAirport, setArrivalAirport] = useState<Airport | null>(null)
+  const [airline, setAirline] = useState<Airline | null>(null)
+
+  const setAirport = async () => {
+    setLoading(true)
+    setDepartureAirport(await getAirport(flight.departureAirportId))
+    setArrivalAirport(await getAirport(flight.arrivalAirportId))
+    setAirline(await getAirlineByPlaneId(flight.planeId))
+
+    setLoading(false)
+  }
+
+  //const flightDuration = calculateTimeDifference(flight.departureDate, flight.arrivalDate)
+
+  useEffect(() => {
+    setAirport()
+  }, [])
+
+  //const departureAirport = await getAirport(flight.departureAirportId);
 
   const handleSelectTab = (tab: number) => {
     if (tab === selectTab) {
@@ -18,18 +52,22 @@ export const FlightTicket2: React.FC<FightTicket2Props> = ({ onClickChooseFlight
     setSelectTab(tab)
   }
 
-  return (
+  return loading ? (
+    <div></div>
+  ) : (
     <div
       className='flex justify-between items-center w-full h-fit  px-8 pt-4 pb-4 my-3 rounded-2xl bg-white '
       style={{ boxShadow: '0px 4px 16px 0 rgba(141,211,187,0.15)' }}
     >
-      <img src={logo} alt='Logo' className='my-10' />
+      <img src={airline?.logoUrl} alt='Logo' className='my-10' width={200} height={200} />
       <div className='grow'>
         <div className='flex flex-col gap-3'>
           <div className='flex w-full justify-between'>
-            <div className="text-neutral-900 text-xs font-medium font-['Montserrat']">Vietnam Airlines</div>
+            <div className="text-neutral-900 text-xs font-medium font-['Montserrat']">{airline?.airlineName}</div>
             <div className='w-fit h-[29px] justify-end items-center inline-flex'>
-              <div className="text-right text-rose-400 text-2xl font-bold font-['Montserrat']">$104,00</div>
+              <div className="text-right text-rose-400 text-2xl font-bold font-['Montserrat']">
+                ${flight.economyPrice}
+              </div>
               <div className="text-right text-black text-sm font-normal font-['Montserrat']">/Passenger</div>
             </div>
           </div>
@@ -37,10 +75,12 @@ export const FlightTicket2: React.FC<FightTicket2Props> = ({ onClickChooseFlight
           <div className='w-full h-9  py-px justify-center items-center gap-[25px] flex '>
             <div className='text-center'>
               <span className="text-black text-sm font-semibold font-['Montserrat']">
-                21:50
+                {departureTime}
                 <br />
               </span>
-              <span className="text-zinc-500 text-sm font-semibold font-['Montserrat']">HAN</span>
+              <span className="text-zinc-500 text-sm font-semibold font-['Montserrat']">
+                {departureAirport?.iataCode}
+              </span>
             </div>
 
             <svg width='60' height='6' viewBox='0 0 39 6' fill='none' xmlns='http://www.w3.org/2000/svg'>
@@ -59,14 +99,18 @@ export const FlightTicket2: React.FC<FightTicket2Props> = ({ onClickChooseFlight
             </svg>
             <div className='text-center'>
               <span className="text-black text-sm font-semibold font-['Montserrat']">
-                01:50
+                {arrivalTime}
                 <br />
               </span>
-              <span className="text-zinc-500 text-sm font-semibold font-['Montserrat']">SGN</span>
+              <span className="text-zinc-500 text-sm font-semibold font-['Montserrat']">
+                {arrivalAirport?.iataCode}
+              </span>
             </div>
             <div className='opacity-40 w-fit flex'>
               <div className="text-neutral-900 text-sm font-medium font-['Montserrat'] w-fit">Total time: </div>
-              <div className="text-neutral-900 text-sm font-bold font-['Montserrat'] w-fit">2h 28m</div>
+              <div className="text-neutral-900 text-sm font-bold font-['Montserrat'] w-fit">
+                {/* {flight.departureDate.getMilliseconds().toString()}h {}m */}
+              </div>
             </div>
           </div>
 

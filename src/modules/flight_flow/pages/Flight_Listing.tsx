@@ -5,21 +5,51 @@ import logo from '../../../assets/images/logo_vnairline.png'
 import { Fillter } from '../components/Fillter'
 import { FlightTicket } from '../components/FlightTicket'
 import { FlightTicket2 } from '../components/FlightTicket2'
+import { useDispatch, useSelector } from 'react-redux'
+import { RootState } from '@/redux/store'
+import { Flight } from '@/models/Flight'
+import { setSelectFlights } from '@/redux/slice/flightSlice'
 
 const FlightListing = () => {
   const [selectTab, setSelectTab] = useState('Cheapest')
 
+  const dispatch = useDispatch()
+  const flights = useSelector((state: RootState) => state.flight.flights)
+  const selectFlights = useSelector((state: RootState) => state.flight.selectFlights)
+  const typeTicket = useSelector((state: RootState) => state.flight.typeTicket)
+
+  //const [selectFlights, setSelectFlight] = useState<Flight[]>([])
+
+  const handleSelectFlight = (flight: Flight) => {
+    if (typeTicket === 'ONE_WAY' && selectFlights.length === 1) {
+      console.log('Chỉ được chọn 1 vé')
+      return
+    }
+
+    if (typeTicket === 'ROUND_TRIP' && selectFlights.length === 2) {
+      console.log('Chỉ được chọn 2 vé')
+      return
+    }
+
+    if (!selectFlights.includes(flight)) {
+      dispatch(setSelectFlights([...selectFlights, flight]))
+    }
+
+    console.log(selectFlights)
+  }
+
   return (
-    <div className='bg-[#FAFBFC] h-full flex flex-col  text-white  w-full'>
+    <div className='bg-[#FAFBFC] h-full flex flex-col justify-start text-white  w-full gap-6'>
+      <div className='h-1'></div>
       <div className='mx-32'>
         <SearchBar />
       </div>
-      <div className='flex my-72 mx-32  space-x-6'>
-        <div className='grow-0 w-[343px] h-[880px]'>
+      <div className='flex   mx-32  space-x-6'>
+        <div className='grow-0 '>
           <Fillter />
         </div>
         <div className='grow-0 w-[0.50px] h-[1360px] opacity-25 bg-neutral-900' />
-        <div className='grow h-[880px] flex flex-col '>
+        <div className='grow h-fit flex flex-col '>
           <div
             className='flex justify-between items-center w-full h-fit  px-8 pt-4 pb-1 rounded-2xl bg-white '
             style={{ boxShadow: '0px 4px 16px 0 rgba(141,211,187,0.15)' }}
@@ -104,8 +134,10 @@ const FlightListing = () => {
 
           <div className='w-full h-[18px] mt-4 items-start flex justify-between'>
             <div>
-              <span className="text-neutral-900 text-sm font-semibold font-['Montserrat']">Showing 4 of </span>
-              <span className="text-rose-400 text-sm font-semibold font-['Montserrat']">257 places</span>
+              <span className="text-neutral-900 text-sm font-semibold font-['Montserrat']">
+                Showing {flights.length} of{' '}
+              </span>
+              <span className="text-rose-400 text-sm font-semibold font-['Montserrat']">{flights.length} places</span>
             </div>
             <div className='justify-start items-start gap-1 flex'>
               <div className='flex gap-1'>
@@ -125,10 +157,15 @@ const FlightListing = () => {
             </div>
           </div>
           <div className='my-2'></div>
+
+          {flights.map((flight) => (
+            <FlightTicket2 flight={flight} onClickChooseFlight={() => handleSelectFlight(flight)} />
+          ))}
+
+          {/* <FlightTicket2 />
           <FlightTicket2 />
           <FlightTicket2 />
-          <FlightTicket2 />
-          <FlightTicket2 />
+          <FlightTicket2 /> */}
           {/* <FlightTicket />
           <FlightTicket />
           <FlightTicket /> */}
