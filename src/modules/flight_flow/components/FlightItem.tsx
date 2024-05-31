@@ -21,23 +21,30 @@ import { SeatCode } from './SeatCode'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight'
 import { calculateTotalPriceBeforeBooking } from '@/services/BookingService'
+import { BookingTemp } from '@/models/BookingTemp'
+import { useDispatch } from 'react-redux'
+import { setBookingTempDeparture, setBookingTempReturn } from '@/redux/slice/flightSlice'
 
 interface FlightItemProps {
   flight: Flight
+  typeFlight: string
   onClick?: React.MouseEventHandler<HTMLDivElement>
   numberSeats: number
 }
 
-export const FlightItem: FC<FlightItemProps> = ({ onClick, flight, numberSeats }) => {
+export const FlightItem: FC<FlightItemProps> = ({ onClick, flight, numberSeats, typeFlight }) => {
   const departureTime = format(flight.departureDate, 'HH:mm')
   const arrivalTime = format(flight.arrivalDate, 'HH:mm')
 
   const departureDate = format(flight.departureDate, 'EEE, dd MMMM yyyy')
+  const dispatch = useDispatch()
 
   const [loading, setLoading] = useState<boolean>(false)
   const [showChooseSeat, setShowChooseSeat] = useState<boolean>(false)
 
   const [priceTicket, setPriceTicket] = useState<number>(0)
+
+  const [bookingTemps, setBookingTemp] = useState<BookingTemp>()
 
   const [selectSeat, setSelectSeat] = useState<string[]>([])
 
@@ -89,6 +96,18 @@ export const FlightItem: FC<FlightItemProps> = ({ onClick, flight, numberSeats }
     setAirport()
     getSeats()
   }, [])
+
+  useEffect(() => {
+    const booking = { price: priceTicket, selectSeats: selectSeat } as BookingTemp
+
+    setBookingTemp(booking)
+
+    if (typeFlight === 'DEPARTURE') {
+      dispatch(setBookingTempDeparture(booking))
+    } else if (typeFlight === 'RETURN') {
+      dispatch(setBookingTempReturn(booking))
+    }
+  }, [selectSeat, priceTicket, typeFlight, dispatch])
 
   return (
     <div
@@ -218,7 +237,7 @@ export const FlightItem: FC<FlightItemProps> = ({ onClick, flight, numberSeats }
             </div>
           ))
         ) : (
-          <p>Loading...</p>
+          <div></div>
         )}
       </div>
     </div>

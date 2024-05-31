@@ -5,13 +5,17 @@ import { Slides } from '@/modules/auth/components/Slides'
 import { Input } from '@/modules/auth/components/Input'
 import { ButtonGreen } from '@/modules/auth/components/ButtonGreen'
 import { ButtonIcon } from '@/modules/auth/components/ButtonIcon'
-import { login } from '@/services/UserService'
+import { getUserByUsername, login } from '@/services/UserService'
 import { useNavigate } from 'react-router-dom'
 import { CircleLoader } from 'react-spinners'
+import { useDispatch } from 'react-redux'
+import { setCurrentUser } from '@/redux/slice/userSlice'
 
 export const Login = () => {
   const navigate = useNavigate()
   const [isLoading, setIsLoading] = useState(false)
+
+  const dispatch = useDispatch()
 
   const slides = [
     {
@@ -68,6 +72,12 @@ export const Login = () => {
         const isLoggedIn = localStorage.getItem('token')
 
         const role = localStorage.getItem('role')
+
+        const user = await getUserByUsername(username)
+
+        console.log(user)
+
+        dispatch(setCurrentUser(user))
 
         if (!isLoggedIn) {
           navigate('/home')

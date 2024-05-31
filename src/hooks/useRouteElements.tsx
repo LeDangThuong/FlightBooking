@@ -7,6 +7,7 @@ import { Login } from '@/modules/auth/pages/login'
 import { BookingDetails } from '@/modules/flight_flow/pages/Booking_Details'
 import { DetailsFlight } from '@/modules/flight_flow/pages/Details_Flight'
 import FlightListing from '@/modules/flight_flow/pages/Flight_Listing'
+import { PassengerInformation } from '@/modules/flight_flow/pages/Passenger_Information'
 import HomePage from '@/modules/home/pages/HomePage'
 import { useRoutes } from 'react-router-dom'
 
@@ -58,6 +59,14 @@ export default function useRouteElements() {
       element: (
         <LandingPageLayoutLableBlack>
           <BookingDetails />
+        </LandingPageLayoutLableBlack>
+      )
+    },
+    {
+      path: '/passenger_information',
+      element: (
+        <LandingPageLayoutLableBlack>
+          <PassengerInformation />
         </LandingPageLayoutLableBlack>
       )
     }

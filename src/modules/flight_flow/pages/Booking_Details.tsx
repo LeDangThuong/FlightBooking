@@ -13,7 +13,7 @@ export const BookingDetails = () => {
 
   return (
     <div className='bg-[#FAFBFC] h-fit flex flex-col  text-white  w-full px-32 mb-52 '>
-      <div className='w-full h-[17px] justify-start items-end gap-2 inline-flex mt-24 mb-5'>
+      <div className='w-full h-[17px] justify-start items-end gap-2 inline-flex mt-6 mb-5'>
         <div className="text-rose-400 text-sm font-medium font-['Montserrat']">Turkey</div>
         <svg width='16' height='16' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg'>
           <g opacity='0.75'>

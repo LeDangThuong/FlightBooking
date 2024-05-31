@@ -5,6 +5,8 @@ import { Airport } from "@/models/Airport";
 import { searchFlightOneWay } from "@/services/FlightService";
 import { DateRange } from "react-day-picker";
 import { addDays } from "date-fns";
+import { BookingTemp } from "@/models/BookingTemp";
+import { Passenger } from "@/models/Passenger";
 
 
 
@@ -17,6 +19,9 @@ interface FlightState{
     departureAirport: Airport | undefined
     arrivalAirport: Airport | undefined
     passenger: number
+    bookingTempDeparture: BookingTemp | undefined
+    bookingTempReturn: BookingTemp | undefined
+    passengerInfor: Passenger[]
 }
 
 const initialState: FlightState = {
@@ -30,7 +35,10 @@ const initialState: FlightState = {
 
     departureAirport: undefined,
     arrivalAirport: undefined,
-    passenger : 1
+    passenger : 1,
+    bookingTempDeparture: undefined,
+    bookingTempReturn: undefined,
+    passengerInfor: []
 }
 
 export const flightSlice = createSlice({
@@ -62,11 +70,30 @@ export const flightSlice = createSlice({
         },
         setPassenger:  (state, action: PayloadAction<number>) =>{
             state.passenger = action.payload
+
+            state.passengerInfor = Array.from({ length: action.payload }, (_, index) => ({
+                id: index,
+                fullName: '',
+                email: '',
+                personalId: '',
+                seatNumber: ''
+              }))
+        },
+        setBookingTempDeparture:  (state, action: PayloadAction<BookingTemp>) =>{
+            state.bookingTempDeparture = action.payload
+        },
+
+        setBookingTempReturn:  (state, action: PayloadAction<BookingTemp>) =>{
+            state.bookingTempReturn = action.payload
+        },
+        setPassengerInfor:  (state, action: PayloadAction<Passenger[]>) =>{
+            state.passengerInfor = action.payload
         },
     }
 })
 
-export const {setTypeTicket, searchFlights, setSelectFlights, setDateRange, setDepartureAirportState, setArrivalAirportState, setPassenger} = flightSlice.actions;
+export const {setTypeTicket, searchFlights, setSelectFlights, setDateRange, setDepartureAirportState, 
+    setArrivalAirportState, setPassenger, setBookingTempDeparture, setBookingTempReturn, setPassengerInfor} = flightSlice.actions;
 
 export const selectTypeTicket = (state: RootState) => state.flight.typeTicket;
 
