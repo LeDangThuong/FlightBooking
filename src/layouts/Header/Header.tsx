@@ -1,6 +1,6 @@
 import React from 'react'
 import logo from '../../assets/icons/Logo.svg'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { twMerge } from 'tailwind-merge'
 
@@ -9,6 +9,14 @@ interface HeaderProps {
 }
 
 const Header = ({ className }: HeaderProps) => {
+  const navigate = useNavigate()
+
+  const handleSignOut = () => {
+    localStorage.removeItem('token')
+    localStorage.removeItem('role')
+    navigate('/')
+  }
+
   return (
     <header>
       <nav className={twMerge('bg-transparent border-gray-200 w-full', className)}>
@@ -46,8 +54,10 @@ const Header = ({ className }: HeaderProps) => {
           </ul>
 
           <div className='flex gap-2 md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse'>
-            <Button className='text-white hover:text-[#8DD3BB] font-semibold'>Login</Button>
-            <Button className='text-black bg-white hover:bg-[#8DD3BB] font-semibold'>Sign Up</Button>
+            {/* <Button  className='text-white hover:text-[#8DD3BB] font-semibold'>Login</Button> */}
+            <Button onClick={handleSignOut} className='text-black bg-white hover:bg-[#8DD3BB] font-semibold'>
+              Sign Out
+            </Button>
             <Button
               data-collapse-toggle='navbar-cta'
               className='inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600'
