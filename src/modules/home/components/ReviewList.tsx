@@ -9,7 +9,7 @@ const ReviewList = () => {
       <div className='flex justify-between items-start  gap-6 w-full'>
         <div className='flex flex-col justify-start items-start self-stretch flex-grow gap-4'>
           <p className='self-stretch text-[32px] font-semibold text-black'>Reviews</p>
-          <p className='text-base text-black'>What people says about Globe facilities</p>
+          <p className='text-base text-black'>What people says about Golobe facilities</p>
         </div>
         <Button className='rounded border border-[#8dd3bb] text-black hover:opacity-85'>See All</Button>
       </div>
