@@ -4,6 +4,9 @@ import { FaAngleLeft } from 'react-icons/fa6'
 import { Input } from '@/modules/auth/components/Input'
 import { ButtonGreen } from '@/modules/auth/components/ButtonGreen'
 import { Slides } from '@/modules/auth/components/Slides'
+import { CircleLoader } from 'react-spinners'
+import { resetPassword } from '@/services/UserService'
+import { useNavigate } from 'react-router-dom'
 
 export const SetPassword = () => {
   const slides = [
@@ -40,9 +43,41 @@ export const SetPassword = () => {
     setCurrentIndex(newIndex)
   }
 
+  const [newPassword, setNewPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
+  const navigate = useNavigate()
+
+  const handleNewPassword = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setNewPassword(e.target.value)
+  }
+
+  const handleConfirmPassword = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setConfirmPassword(e.target.value)
+  }
+
+  const handleResetPassword = async () => {
+    try {
+      setIsLoading(true)
+      const codeOTP = parseInt(localStorage.getItem('codeOTP')!)
+      const email = localStorage.getItem('email')
+      const success = await resetPassword(codeOTP, email!, newPassword, confirmPassword)
+      setIsLoading(false)
+      if (success) {
+        navigate('/')
+      }
+    } catch (error) {
+      console.log('🚀 ~ file: SetPassword.tsx:handleResetPassword ~ error')
+    }
+  }
+
   return (
     <div className='flex'>
-      {' '}
+      {isLoading && (
+        <div className='overlay'>
+          <CircleLoader color={'#36D7B7'} loading={isLoading} size={150} />
+        </div>
+      )}
       <div className=' flex flex-1 h-screen w-full justify-center items-center '>
         <div className='w-full pr-10 pl-10 xl:pr-40 xl:pl-40 md:pr-30 md:pl-30'>
           <div className='mb-3'>
@@ -57,10 +92,22 @@ export const SetPassword = () => {
             Your previous password has been reseted. Please set a new password for your account.
           </h3>
 
-          <Input id='createpassword' type='password' title='Create password' className='my-5' onChange={() => {}} />
-          <Input id='reenterpassword' type='password' title='Re-enter password' className='my-5' onChange={() => {}} />
+          <Input
+            id='createpassword'
+            type='password'
+            title='Create password'
+            className='my-5'
+            onChange={handleNewPassword}
+          />
+          <Input
+            id='reenterpassword'
+            type='password'
+            title='Re-enter password'
+            className='my-5'
+            onChange={handleConfirmPassword}
+          />
 
-          <ButtonGreen title='Set password' onClick={() => {}} />
+          <ButtonGreen title='Set password' onClick={handleResetPassword} />
         </div>
       </div>
       <Slides slides={slides} currentIndex={currentIndex} prevSlide={prevSlide} nextSlide={nextSlide} />

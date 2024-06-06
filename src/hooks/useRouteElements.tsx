@@ -6,7 +6,8 @@ import LandingPageLayoutLableBlack from '@/layouts/LandingPageLayout/LandingPage
 import { ForgotPassword } from '@/modules/auth/pages/ForgotPassword'
 import { SetPassword } from '@/modules/auth/pages/SetPassword'
 import { SignUp } from '@/modules/auth/pages/SignUp'
-import { Login } from '@/modules/auth/pages/LogIn'
+import { VerifyCode } from '@/modules/auth/pages/VerifyCode'
+import { Login } from '@/modules/auth/pages/login'
 import { BookingDetails } from '@/modules/flight_flow/pages/Booking_Details'
 import { DetailsFlight } from '@/modules/flight_flow/pages/Details_Flight'
 import FlightListing from '@/modules/flight_flow/pages/Flight_Listing'
@@ -46,6 +47,10 @@ export default function useRouteElements() {
     {
       path: '/reset-password',
       element: <SetPassword />
+    },
+    {
+      path: '/verify-code',
+      element: <VerifyCode />
     },
     {
       path: '/forgot-password',
