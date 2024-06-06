@@ -11,10 +11,36 @@ const CheckoutForm = () => {
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string | null>(null);
   const [showNewCardForm, setShowNewCardForm] = useState(false);
   const [customerId, setCustomerId] = useState<string | null>(null);
-  const [token, setToken] = useState<string | null>('eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0aHVvbmdsZSIsImlhdCI6MTcxNzY4MjM2MiwiZXhwIjoxNzE3Njk2NzYyfQ.vpamDBm-JX9_vMT77vTQ4I9R3VImA1bUvztMgv9GTvk');
+  const [token, setToken] = useState<string | null>('eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0aHVvbmdsZSIsImlhdCI6MTcxNzY5NTUyNiwiZXhwIjoxNzE3NzA5OTI2fQ.yiWzzOU-HcWPRZVjDNQUar_I1Lru2OiRhFrn8rutM_c');
 
   const baseUrl = 'http://localhost:7050/payment';
   const email = 'ledangthuong2003@gmail.com';
+  const bookingData =
+  {
+    bookingRequestDTO: {
+      flightId: 1,
+      bookerFullName: "Le Dang Thuong",
+      bookerEmail: "ledangthuong2003@gmail.com",
+      bookerPersonalId: "123456789",
+      userId: 1,
+      bookingDate: "2024-06-06T17:24:47.084Z",
+      passengers: [
+        {
+          fullName: "Le Dang Thuong",
+          email: "ledangthuong2003@gmail.com",
+          personalId: "123",
+          seatNumber: "A1"
+        },
+        {
+          fullName: "Le Dang Thuong",
+          email: "ledangthuong2003@gmail.com",
+          personalId: "123",
+          seatNumber: "A2"
+        }
+      ]
+    },
+    seatNumber: ["A1", "A2"]
+  };
 
   useEffect(() => {
     const fetchCustomerAndPaymentMethods = async () => {
@@ -107,8 +133,9 @@ const CheckoutForm = () => {
           throw new Error('Payment method not selected');
         }
 
-        const paymentResponse = await axios.post(`${baseUrl}/create-payment`, null, {
-          params: { token, amount: 5000, flightId: 1 }
+        const paymentResponse = await axios.post(`${baseUrl}/create-payment`, bookingData, {
+          params: { token, amount: 1800, flightId: 1 }
+          ,
           // Đoạn này set token với amount của người dùng nhé, flight ID thì là cái flight đặt
         });
         const paymentIntentClientSecret = paymentResponse.data.clientSecret;
