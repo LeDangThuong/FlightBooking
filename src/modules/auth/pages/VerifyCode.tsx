@@ -1,10 +1,13 @@
-import React, { useState } from 'react'
-import Logo from '../../assets/svgs/Logo.svg'
+import React, { ChangeEvent, useState } from 'react'
+import Logo from '../../../assets/svgs/Logo.svg'
 import { FaAngleLeft } from 'react-icons/fa6'
 import { Input } from '@/modules/auth/components/Input'
 import { ButtonGreen } from '@/modules/auth/components/ButtonGreen'
 import { ButtonIcon } from '@/modules/auth/components/ButtonIcon'
 import { Slides } from '@/modules/auth/components/Slides'
+import { verifyCode } from '@/services/UserService'
+import { useNavigate } from 'react-router-dom'
+import { CircleLoader } from 'react-spinners'
 
 export const VerifyCode = () => {
   const slides = [
@@ -26,6 +29,9 @@ export const VerifyCode = () => {
   ]
 
   const [currentIndex, setCurrentIndex] = useState(0)
+  const [isLoading, setIsLoading] = useState(false)
+  const [codeOTP, setCodeOTP] = useState<number>()
+  const navigate = useNavigate()
 
   const prevSlide = () => {
     const isFirstSlide = currentIndex === 0
@@ -41,8 +47,31 @@ export const VerifyCode = () => {
     setCurrentIndex(newIndex)
   }
 
+  const handlerVerifyCode = async () => {
+    setIsLoading(true)
+    try {
+      const email = localStorage.getItem('email')
+      const success = await verifyCode(codeOTP!, email!)
+      setIsLoading(false)
+      if (success) {
+        navigate('/reset-password')
+      }
+    } catch (error) {
+      setIsLoading(false)
+    }
+  }
+
+  const handleCodeOTP = (event: ChangeEvent<HTMLInputElement>) => {
+    setCodeOTP(parseInt(event.target.value))
+  }
+
   return (
     <div className='flex'>
+      {isLoading && (
+        <div className='overlay'>
+          <CircleLoader color={'#36D7B7'} loading={isLoading} size={150} />
+        </div>
+      )}
       <div className=' flex flex-1 h-screen w-full justify-center items-center '>
         <div className='w-full pr-10 pl-10 xl:pr-40 xl:pl-40 md:pr-30 md:pl-30'>
           <div className='mb-3'>
@@ -55,7 +84,7 @@ export const VerifyCode = () => {
           <h1 className='text-[30px] font-bold mb-2'>Verify code</h1>
           <h3 className='font-thin mb-4'>An authentication code has been sent to your email (Code with 6 digits).</h3>
 
-          <Input id='code' type='text' title='Enter code' className='my-5' onChange={() => {}} />
+          <Input id='code' type='text' title='Enter code' className='my-5' onChange={handleCodeOTP} />
 
           <div className='flex justify-center items-center mb-6'>
             <div className='flex grow'>
@@ -64,7 +93,7 @@ export const VerifyCode = () => {
             </div>
           </div>
 
-          <ButtonGreen title='Verify' onClick={() => {}} />
+          <ButtonGreen title='Verify' onClick={handlerVerifyCode} />
         </div>
       </div>
 
