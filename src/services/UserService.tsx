@@ -77,4 +77,49 @@ export const getUserByUsername = async (username: string): Promise<User> => {
   }
 }
 
+export const verifyCode = async (codeOTP: number, email: string) => {
+  try {
+    const response = await axios.post(`${API_URL}auth/check-otp`, null, {
+      params: {
+        codeOTP: codeOTP,
+        email: email
+      },
+      headers: {
+        Accept: 'application/hal+json'
+      }
+    })
+
+    if (response.status === 200) {
+      return true
+    }
+  } catch (error) {
+    throw new Error('Vui lòng nhập đầy đủ.')
+  }
+}
+
+export const resetPassword = async (codeOTP: number, email: string, newPassword: string, confirmPassword: string) => {
+  try {
+    const response = await axios.put(
+      `${API_URL}auth/reset-password`,
+      {
+        email,
+        newPassword,
+        confirmPassword,
+        otp: codeOTP
+      },
+      {
+        headers: {
+          Accept: 'application/hal+json'
+        }
+      }
+    )
+
+    if (response.status === 200) {
+      return true
+    }
+  } catch (error) {
+    throw new Error('Vui lòng nhập đầy đủ.')
+  }
+}
+
 export { login, signup, forgotPassword }

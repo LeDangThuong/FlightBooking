@@ -7,6 +7,7 @@ import { ButtonGreen } from '@/modules/auth/components/ButtonGreen'
 import { ButtonIcon } from '@/modules/auth/components/ButtonIcon'
 import { forgotPassword } from '@/services/UserService'
 import { CircleLoader } from 'react-spinners'
+import { useNavigate } from 'react-router-dom'
 
 export const ForgotPassword = () => {
   const slides = [
@@ -27,6 +28,8 @@ export const ForgotPassword = () => {
     }
   ]
 
+  const navigate = useNavigate()
+
   const [currentIndex, setCurrentIndex] = useState(0)
 
   const [email, setEmail] = useState('')
@@ -35,10 +38,16 @@ export const ForgotPassword = () => {
   const handlerForgotPassword = async () => {
     setIsLoading(true)
     try {
-      await forgotPassword(email)
-    } catch (error) {}
+      const success = await forgotPassword(email)
+      setIsLoading(false)
+      if (success) {
+        console.log('success')
 
-    setIsLoading(false)
+        localStorage.setItem('email', email)
+
+        navigate('/verify-code')
+      }
+    } catch (error) {}
   }
 
   const handlerEmail = (event: ChangeEvent<HTMLInputElement>) => {
