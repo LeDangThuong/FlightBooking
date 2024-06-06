@@ -30,7 +30,7 @@ const CheckoutForm = () => {
         try {
             // Tạo khách hàng trên Stripe
             const customerResponse = await axios.post(`${baseUrl}/create-customer`, null, {
-                params: { email: 'ledangthuong2003@gmail.com' }
+                params: { email: 'ledangthuong2003@gmail.com' } // sửa email của người dùng
             });
             let customerId = customerResponse.data.customerId;
 
@@ -44,10 +44,6 @@ const CheckoutForm = () => {
             const confirmResult = await stripe.confirmCardSetup(clientSecret, {
                 payment_method: {
                     card: cardElement,
-                    billing_details: {
-                        email: 'ledangthuong2003@gmail.com',
-                        phone: '+84987654321',
-                    },
                 },
             });
 
@@ -65,6 +61,7 @@ const CheckoutForm = () => {
             // Tạo PaymentIntent để tiến hành thanh toán
             const paymentResponse = await axios.post(`${baseUrl}/create-payment`, null, {
                 params: { token, amount: 5000, flightId: 1 }
+                // Đoạn này set token với amount của người dùng nhé, flight ID thì là cái flight đặt
             });
             const paymentIntentClientSecret = paymentResponse.data.clientSecret;
 
