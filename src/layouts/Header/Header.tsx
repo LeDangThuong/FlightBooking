@@ -17,6 +17,10 @@ const Header = ({ className }: HeaderProps) => {
     navigate('/')
   }
 
+  const handleUser = () => {
+    navigate('/profile')
+  }
+
   return (
     <header>
       <nav className={twMerge('bg-transparent border-gray-200 w-full', className)}>
@@ -58,6 +62,9 @@ const Header = ({ className }: HeaderProps) => {
             <Button onClick={handleSignOut} className='text-black bg-white hover:bg-[#8DD3BB] font-semibold'>
               Sign Out
             </Button>
+            <Button onClick={handleUser} className='text-black bg-white hover:bg-[#8DD3BB] font-semibold'>
+              User
+            </Button>
             <Button
               data-collapse-toggle='navbar-cta'
               className='inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600'
@@ -83,7 +90,7 @@ const Header = ({ className }: HeaderProps) => {
             </Button>
           </div>
           <div className='items-center justify-between hidden w-full md:flex md:w-auto md:order-1' id='navbar-cta'>
-            <Link to='/' className='flex items-center space-x-3 rtl:space-x-reverse'>
+            <Link to='/home' className='flex items-center space-x-3 rtl:space-x-reverse'>
               <img src={logo} className='h-8' alt='Flight Booking Logo' />
             </Link>
           </div>

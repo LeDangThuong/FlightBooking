@@ -34,7 +34,8 @@ export default function useRouteElements() {
         <MainLayout>
           <ProfilePage />
         </MainLayout>
-
+      )
+    },
 
     {
       path: '/',
@@ -86,7 +87,6 @@ export default function useRouteElements() {
         <LandingPageLayoutLableBlack>
           <PassengerInformation />
         </LandingPageLayoutLableBlack>
-
       )
     }
   ])

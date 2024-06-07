@@ -14,6 +14,8 @@ import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import toast, { Toaster } from 'react-hot-toast'
+import { getAllReviews } from '@/services/ReviewService'
+import { setReviews } from '@/redux/slice/reviewSlice'
 
 const SearchBar = () => {
   const navigate = useNavigate()
@@ -81,6 +83,7 @@ const SearchBar = () => {
     const fetchData = async () => {
       try {
         const data = await getAllAirport()
+        dispatch(setReviews(await getAllReviews()))
         setAirports(data)
         setLoading(false)
       } catch (error) {

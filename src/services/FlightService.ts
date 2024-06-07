@@ -3,7 +3,8 @@ import { Flight } from '@/models/Flight';
 import axios from 'axios';
 import {  format } from "date-fns";
 
-const API_URL = 'https://flightbooking-be.onrender.com/'
+// const API_URL = 'https://flightbooking-be.onrender.com/'
+const API_URL = 'http://localhost:7050/'
 
 export const searchFlightOneWay = async (departureAirport: Airport, arrivalAirport: Airport, departureDate: Date) => {
     console.log(departureDate.toISOString())
