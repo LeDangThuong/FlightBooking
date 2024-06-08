@@ -7,7 +7,7 @@ import { Airport } from '@/models/Airport'
 import { useEffect, useState } from 'react'
 import { getAllAirport } from '@/services/AirportService'
 import { searchFlightOneWay, searchFlightRoundTrip } from '@/services/FlightService'
-import { searchFlights, setTypeTicket } from '@/redux/slice/flightSlice'
+import { searchFlights, setPassenger, setTypeTicket } from '@/redux/slice/flightSlice'
 import { RootState } from '@/redux/store'
 
 const SearchBar = () => {
@@ -27,6 +27,7 @@ const SearchBar = () => {
 
   const dateRange = useSelector((state: RootState) => state.flight.dateRange)
   const typeTicket = useSelector((state: RootState) => state.flight.typeTicket)
+  const passenger = useSelector((state: RootState) => state.flight.passenger)
 
   const [airports, setAirports] = useState<Airport[]>([])
 
@@ -253,11 +254,22 @@ const SearchBar = () => {
             <div className='flex flex-col justify-start items-start self-stretch flex-grow-0 flex-shrink-0 gap-2.5 rounded bg-white border border-[#79747e]'>
               <div className='flex justify-start items-center self-stretch flex-grow-0 flex-shrink-0 pl-4 py-2 rounded-tl rounded-tr'>
                 <div className='flex flex-col justify-center items-start flex-grow h-10 relative'>
-                  <div className='flex justify-start items-center flex-grow-0 flex-shrink-0 relative'>
-                    <p className='flex-grow-0 flex-shrink-0 text-base text-left text-[#1c1b1f]'>1 Passenger, Economy</p>
+                  <div className='flex justify-start items-center flex-grow-0 flex-shrink-0 relative w-full'>
+                    <input
+                      type='number'
+                      className=' appearance-none
+                      rounded w-full py-2 px-2 text-gray-700 leading-tight focus:outline-none'
+                      value={passenger}
+                      onChange={(value) => {
+                        if (Number.parseInt(value.target.value) >= 1) {
+                          dispatch(setPassenger(Number.parseInt(value.target.value)))
+                        }
+                      }}
+                    />
+                    {/* <p className='flex-grow-0 flex-shrink-0 text-base text-left text-[#1c1b1f]'>1 Passenger</p> */}
                   </div>
                   <div className='flex justify-start items-center flex-grow-0 flex-shrink-0 absolute left-[-4px] top-[-16px] px-1 bg-white'>
-                    <p className='flex-grow-0 flex-shrink-0 text-sm text-left text-[#1c1b1f]'>Passenger - Class</p>
+                    <p className='flex-grow-0 flex-shrink-0 text-sm text-left text-[#1c1b1f]'>Passenger </p>
                   </div>
                 </div>
               </div>

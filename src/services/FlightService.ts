@@ -3,8 +3,8 @@ import { Flight } from '@/models/Flight';
 import axios from 'axios';
 import {  format } from "date-fns";
 
-// const API_URL = 'https://flightbooking-be.onrender.com/'
-const API_URL = 'http://localhost:7050/'
+const API_URL = 'https://flightbooking-be.onrender.com/'
+// const API_URL = 'http://localhost:7050/'
 
 export const searchFlightOneWay = async (departureAirport: Airport, arrivalAirport: Airport, departureDate: Date) => {
     console.log(departureDate.toISOString())
@@ -49,5 +49,15 @@ export const searchFlightRoundTrip= async (departureAirport: Airport, arrivalAir
         console.error('Error fetching users:', e);
         throw e;
 
+    }
+}
+
+export const getSeatStatus = async (flightId: number) => {
+    try{
+        const response = await axios.get(`${API_URL}flight/${flightId}/get-seat-status?flightId=${flightId}`);
+        return response.data;
+    }catch(e){
+        console.error('Error fetching users:', e);
+        throw e;
     }
 }

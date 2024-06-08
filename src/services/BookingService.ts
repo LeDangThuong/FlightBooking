@@ -7,9 +7,9 @@ import { useSelector } from 'react-redux'
 const API_URL = 'https://flightbooking-be.onrender.com/'
 
 
-export const calculateTotalPriceBeforeBooking = async (flightId: number, selectedSeats: string[]) : Promise<number> => {
-    try{    
-        const response = await axios.post<number>(`${API_URL}booking/calculate-total-price-before-booking`, { flightId, selectedSeats});
+export const calculateTotalPriceAfterBooking = async (flightId: number, selectedSeats: string[]) : Promise<number> => {
+    try {    
+        const response = await axios.post<number>(`${API_URL}booking/calculate-total-price-after-booking?flightId=${flightId}`, selectedSeats);
 
         return response.data;
 
@@ -18,6 +18,34 @@ export const calculateTotalPriceBeforeBooking = async (flightId: number, selecte
         console.error('Error fetching users:', e);
         throw e;
 
+    }
+}
+
+export const holdSeatBeforeBooking = async (flightId: number, selectedSeats: string[]) => {
+    try {
+        const response = await axios.post(`${API_URL}booking/hold-seat-before-booking?flightId=${flightId}`, selectedSeats);
+        
+        if (response.status === 200 ) {
+            return true
+        }
+
+        return false
+    } catch (error) {
+        throw error
+    }
+}
+
+export const bookSeatBeforeBooking = async (flightId: number, selectedSeats: string[]) => {
+    
+    try {
+        const response = await axios.post(`${API_URL}booking/book-seat-before-booking?flightId=${flightId}`, selectedSeats);
+        if (response.status === 200) {
+            return true
+        }
+
+        return false
+    } catch (error) {
+        throw error
     }
 }
 

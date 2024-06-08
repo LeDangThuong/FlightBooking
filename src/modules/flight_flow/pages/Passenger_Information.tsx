@@ -6,6 +6,8 @@ import { useEffect, useState } from 'react'
 import { setPassengerInfor } from '@/redux/slice/flightSlice'
 import { fillInforPassengerToCreateBooking } from '@/services/BookingService'
 import { getUserByUsername } from '@/services/UserService'
+import { setBookingDepartureData } from '@/redux/slice/bookingSlice'
+import { useNavigate } from 'react-router-dom'
 
 export const PassengerInformation = () => {
   const passenger = useSelector((state: RootState) => state.flight.passenger)
@@ -24,6 +26,8 @@ export const PassengerInformation = () => {
     dispatch(setPassengerInfor(newPassengers))
   }
 
+  const navigate = useNavigate()
+
   async function handleFillInforPassengerToCreateBooking() {
     // const user = await getUserByUsername('sangt2202')
 
@@ -32,33 +36,76 @@ export const PassengerInformation = () => {
     // return
 
     //setIsLoading(true)
+
     try {
       selectFlights.forEach(async (flight, index) => {
         if (index === 0) {
-          const success = await fillInforPassengerToCreateBooking(
-            flight.id,
-            bookingTempDeparture!.selectSeats,
-            currentUser!,
-            passengerInfor
-          )
+          const bookingData = {
+            bookingRequestDTO: {
+              flightId: flight.id,
+              bookerFullName: passengerInfor[0].fullName,
+              bookerEmail: passengerInfor[0].email,
+              bookerPersonalId: passengerInfor[0].personalId,
+              userId: currentUser?.id,
+              bookingDate: new Date(),
+              passengers: passengerInfor.map((passenger, index) => ({
+                fullName: passenger.fullName,
+                email: passenger.email,
+                personalId: passenger.personalId,
+                seatNumber: bookingTempDeparture!.selectSeats[index]
+              }))
+            },
+            seatNumber: bookingTempDeparture!.selectSeats
+          }
 
-          console.log(success)
+          dispatch(setBookingDepartureData(bookingData))
+          // const success = await fillInforPassengerToCreateBooking(
+          //   flight.id,
+          //   bookingTempDeparture!.selectSeats,
+          //   currentUser!,
+          //   passengerInfor
+          // )
+
+          // console.log(success)
         } else {
-          const success = await fillInforPassengerToCreateBooking(
-            flight.id,
-            bookingTempReturn!.selectSeats,
-            currentUser!,
-            passengerInfor
-          )
+          const bookingData = {
+            bookingRequestDTO: {
+              flightId: flight.id,
+              bookerFullName: passengerInfor[0].fullName,
+              bookerEmail: passengerInfor[0].email,
+              bookerPersonalId: passengerInfor[0].personalId,
+              userId: currentUser?.id,
+              bookingDate: new Date(),
+              passengers: passengerInfor.map((passenger, index) => ({
+                fullName: passenger.fullName,
+                email: passenger.email,
+                personalId: passenger.personalId,
+                seatNumber: bookingTempReturn!.selectSeats[index]
+              }))
+            },
+            seatNumber: bookingTempReturn!.selectSeats
+          }
 
-          console.log(success)
+          dispatch(setBookingDepartureData(bookingData))
+          // const success = await fillInforPassengerToCreateBooking(
+          //   flight.id,
+          //   bookingTempReturn!.selectSeats,
+          //   currentUser!,
+          //   passengerInfor
+          // )
+
+          // console.log(success)
         }
       })
     } catch (error) {
       console.log(error)
     }
     //setIsLoading(false)
+    navigate('/payment')
   }
+  useEffect(() => {
+    console.log(passengerInfor)
+  })
 
   return (
     <div className='bg-[#FAFBFC] h-fit flex flex-col  text-white  w-full px-32 mb-52 pt-3 '>

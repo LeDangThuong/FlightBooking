@@ -38,7 +38,13 @@ const initialState: FlightState = {
     passenger : 1,
     bookingTempDeparture: undefined,
     bookingTempReturn: undefined,
-    passengerInfor: []
+    passengerInfor: [{
+        id: 0,
+        fullName: '',
+        email: '',
+        personalId: '',
+        seatNumber: ''
+      }]
 }
 
 export const flightSlice = createSlice({
@@ -79,11 +85,11 @@ export const flightSlice = createSlice({
                 seatNumber: ''
               }))
         },
-        setBookingTempDeparture:  (state, action: PayloadAction<BookingTemp>) =>{
+        setBookingTempDeparture:  (state, action: PayloadAction<BookingTemp | undefined>) =>{
             state.bookingTempDeparture = action.payload
         },
 
-        setBookingTempReturn:  (state, action: PayloadAction<BookingTemp>) =>{
+        setBookingTempReturn:  (state, action: PayloadAction<BookingTemp | undefined>) =>{
             state.bookingTempReturn = action.payload
         },
         setPassengerInfor:  (state, action: PayloadAction<Passenger[]>) =>{

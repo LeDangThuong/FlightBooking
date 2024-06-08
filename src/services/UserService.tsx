@@ -1,8 +1,8 @@
 import axios from 'axios'
 import { User } from '../models/User'
 
-// const API_URL = 'https://flightbooking-be.onrender.com/'
-const API_URL = 'http://localhost:7050/'
+const API_URL = 'https://flightbooking-be.onrender.com/'
+// const API_URL = 'http://localhost:7050/'
 
 const login = async (username: string, password: string) => {
   console.log(username, password)
@@ -64,12 +64,7 @@ const forgotPassword = async (email: string) => {
 
 export const getUserByUsername = async (username: string): Promise<User> => {
   try {
-    const response = await axios.put<User>(`${API_URL}users/${username}`, {
-      fullName: 'string',
-      phoneNumber: 'string',
-      address: 'string',
-      dayOfBirth: '2024-05-30T08:45:26.054Z'
-    })
+    const response = await axios.get<User>(`${API_URL}users/username?username=${username}`)
 
     return response.data
   } catch (e) {

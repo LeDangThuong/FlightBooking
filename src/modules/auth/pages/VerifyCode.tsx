@@ -54,6 +54,7 @@ export const VerifyCode = () => {
       const success = await verifyCode(codeOTP!, email!)
       setIsLoading(false)
       if (success) {
+        localStorage.setItem('codeOTP', codeOTP!.toString())
         navigate('/reset-password')
       }
     } catch (error) {

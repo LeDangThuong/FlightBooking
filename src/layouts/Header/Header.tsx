@@ -21,6 +21,10 @@ const Header = ({ className }: HeaderProps) => {
     navigate('/profile')
   }
 
+  const handleToHome = () => {
+    navigate('/home')
+  }
+
   return (
     <header>
       <nav className={twMerge('bg-transparent border-gray-200 w-full', className)}>
@@ -42,8 +46,8 @@ const Header = ({ className }: HeaderProps) => {
               </Link>
             </li>
             <li>
-              <Link
-                to='#'
+              <div
+                onClick={handleToHome}
                 className='flex flex-row items-center gap-2 py-2 px-3 md:p-0 text-white rounded hover:text-[#8DD3BB] '
               >
                 <svg width='24' height='24' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'>
@@ -53,7 +57,7 @@ const Header = ({ className }: HeaderProps) => {
                   />
                 </svg>
                 Find Stays
-              </Link>
+              </div>
             </li>
           </ul>
 

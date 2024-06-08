@@ -83,7 +83,7 @@ const HeaderLableBlack = ({ className }: HeaderProps) => {
             </Button>
           </div>
           <div className='items-center justify-between hidden w-full md:flex md:w-auto md:order-1' id='navbar-cta'>
-            <Link to='/' className='flex items-center space-x-3 rtl:space-x-reverse'>
+            <Link to='/home' className='flex items-center space-x-3 rtl:space-x-reverse'>
               <img src={logo} className='h-8' alt='Flight Booking Logo' />
             </Link>
           </div>

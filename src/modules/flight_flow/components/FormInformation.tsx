@@ -24,6 +24,8 @@ export const FormInformation: React.FC<FormInformationProps> = ({ passenger, ind
   const [showSelectGender, setShowSelectGender] = useState<Boolean>(false)
   const genders = ['Male', 'Female']
 
+  console.log(passenger)
+
   return (
     <div className='flex flex-col gap-4'>
       <div className='flex gap-2'>

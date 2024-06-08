@@ -5,7 +5,8 @@ import {
   searchFlights,
   setTypeTicket,
   setArrivalAirportState,
-  setDepartureAirportState
+  setDepartureAirportState,
+  setPassenger
 } from '@/redux/slice/flightSlice'
 import { RootState } from '@/redux/store'
 import { getAllAirport } from '@/services/AirportService'
@@ -44,6 +45,7 @@ const SearchBar = () => {
 
   const typeTicket = useSelector((state: RootState) => state.flight.typeTicket)
   const dateRange = useSelector((state: RootState) => state.flight.dateRange)
+  const passenger = useSelector((state: RootState) => state.flight.passenger)
 
   const departureAirportState = useSelector((state: RootState) => state.flight.departureAirport)
   const arrivalAirportState = useSelector((state: RootState) => state.flight.arrivalAirport)
@@ -83,7 +85,7 @@ const SearchBar = () => {
     const fetchData = async () => {
       try {
         const data = await getAllAirport()
-        dispatch(setReviews(await getAllReviews()))
+        // dispatch(setReviews(await getAllReviews()))
         setAirports(data)
         setLoading(false)
       } catch (error) {
@@ -331,6 +333,12 @@ const SearchBar = () => {
                       type='number'
                       className=' appearance-none
                       rounded w-full py-2 px-2 text-gray-700 leading-tight focus:outline-none'
+                      value={passenger}
+                      onChange={(value) => {
+                        if (Number.parseInt(value.target.value) >= 1) {
+                          dispatch(setPassenger(Number.parseInt(value.target.value)))
+                        }
+                      }}
                     />
                     {/* <p className='flex-grow-0 flex-shrink-0 text-base text-left text-[#1c1b1f]'>1 Passenger</p> */}
                   </div>

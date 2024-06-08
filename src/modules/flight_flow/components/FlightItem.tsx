@@ -14,16 +14,16 @@ import { getAirport } from '@/services/AirportService'
 import { getAirlineByPlaneId } from '@/services/AirlineService'
 import { Plane } from '@/models/Plane'
 import { getPlaneDetailByPlaneId } from '@/services/PlaneService'
-import { Seat, groupSeatByClass } from '@/models/Seat'
-import { getSeatStatus } from '@/services/SeatService'
+import { Seat, SeatResponse, groupSeatByClass } from '@/models/Seat'
 import { SeatChoose } from './SeatChoose'
 import { SeatCode } from './SeatCode'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight'
-import { calculateTotalPriceBeforeBooking } from '@/services/BookingService'
+import { calculateTotalPriceAfterBooking } from '@/services/BookingService'
 import { BookingTemp } from '@/models/BookingTemp'
 import { useDispatch } from 'react-redux'
 import { setBookingTempDeparture, setBookingTempReturn } from '@/redux/slice/flightSlice'
+import { getSeatStatus } from '@/services/FlightService'
 
 interface FlightItemProps {
   flight: Flight
@@ -59,7 +59,7 @@ export const FlightItem: FC<FlightItemProps> = ({ onClick, flight, numberSeats, 
         newSelectSeat = prevSelectSeat
       }
 
-      calculateTotalPriceBeforeBooking(flight.id, newSelectSeat).then(setPriceTicket)
+      calculateTotalPriceAfterBooking(flight.id, newSelectSeat).then(setPriceTicket)
 
       return newSelectSeat
     })
@@ -76,8 +76,20 @@ export const FlightItem: FC<FlightItemProps> = ({ onClick, flight, numberSeats, 
   const [seatData, setSeatData] = useState<Record<string, Record<string, Seat[]>> | null>(null)
 
   const getSeats = async () => {
-    const listSeats = await getSeatStatus(flight.planeId)
+    //const listSeats = flight.seatStatuses
+
+    // console.log(listSeats)
+
+    const listSeats = await getSeatStatus(flight.id)
+    console.log(listSeats)
+
+    // const seats = JSON.parse(listSeats) as SeatResponse
+
+    // console.log(seats)
+
     const groupedSeat = groupSeatByClass(listSeats)
+
+    console.log(groupedSeat)
     setSeatData(groupedSeat)
   }
 
@@ -197,45 +209,49 @@ export const FlightItem: FC<FlightItemProps> = ({ onClick, flight, numberSeats, 
           </div>
           <div className='flex items-center'>
             <SeatChoose code={''} selected={true} inavailable={true} />
-            <div className="opacity-60 text-neutral-900 text-base font-medium font-['Montserrat']">Ghế đã bán</div>
+            <div className="opacity-60 text-neutral-900 text-base font-medium font-['Montserrat']">
+              Ghế không thể chọn
+            </div>
           </div>
         </div>
         {showChooseSeat && seatData ? (
-          Object.entries(seatData).map(([seatClass, rows]) => (
-            <div key={seatClass}>
-              <div className="text-center text-rose-400 text-2xl font-bold font-['Montserrat'] my-3">{seatClass}</div>
+          Object.entries(seatData)
 
-              {Object.entries(rows).map(([initial, seats]) => (
-                <div key={initial} className='flex relative'>
-                  <div className='absolute'>
-                    <SeatCode code={initial} />
-                  </div>
+            .map(([seatClass, rows]) => (
+              <div key={seatClass}>
+                <div className="text-center text-rose-400 text-2xl font-bold font-['Montserrat'] my-3">{seatClass}</div>
 
-                  <div className='flex w-full justify-center items-center'>
-                    {seats.map((seat) => {
-                      if (seat.status === 'AVAILABLE') {
-                        return (
-                          <div
-                            onClick={() => {
-                              handleSelectSeat(seat.key)
-                            }}
-                          >
-                            <SeatChoose code={seat.key} selected={selectSeat.includes(seat.key)} />
-                          </div>
-                        )
-                      } else {
-                        return (
-                          <div>
-                            <SeatChoose code={seat.key} selected={false} inavailable={true} />
-                          </div>
-                        )
-                      }
-                    })}
+                {Object.entries(rows).map(([initial, seats]) => (
+                  <div key={initial} className='flex relative'>
+                    <div className='absolute'>
+                      <SeatCode code={initial} />
+                    </div>
+
+                    <div className='flex w-full justify-center items-center'>
+                      {seats.map((seat) => {
+                        if (seat.status === 'AVAILABLE') {
+                          return (
+                            <div
+                              onClick={() => {
+                                handleSelectSeat(seat.key)
+                              }}
+                            >
+                              <SeatChoose code={seat.key} selected={selectSeat.includes(seat.key)} />
+                            </div>
+                          )
+                        } else {
+                          return (
+                            <div>
+                              <SeatChoose code={seat.key} selected={false} inavailable={true} />
+                            </div>
+                          )
+                        }
+                      })}
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
-          ))
+                ))}
+              </div>
+            ))
         ) : (
           <div></div>
         )}
