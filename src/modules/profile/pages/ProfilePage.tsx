@@ -1,5 +1,5 @@
-import React from 'react'
-import { Button } from '@/components/ui/button'
+import React, { useRef, useState } from 'react'
+import { Button, buttonVariants } from '@/components/ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import {
@@ -25,30 +25,237 @@ import {
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Checkbox } from '@/components/ui/checkbox'
+import defaultAvatar from '../../../assets/images/default_avatar.jpg'
+import { useDispatch, useSelector } from 'react-redux'
+import { RootState } from '@/redux/store'
+import { format } from 'date-fns'
+import { getUserByUsername, uploadNewAvatar, userChangeInfor } from '@/services/UserService'
+import { setCurrentUser } from '@/redux/slice/userSlice'
+import { DayPicker } from 'react-day-picker'
+import { cn } from '@/lib/utils'
 
 const ProfilePage = () => {
+  const currentUser = useSelector((state: RootState) => state.user.currentUser)
+  const [isEditingName, setIsEditingName] = useState(false)
+  const [newName, setNewName] = useState(currentUser?.fullName || '')
+
+  const [isEditingPhoneNumber, setIsEditingPhoneNumber] = useState(false)
+  const [newPhoneNumber, setNewPhoneNumber] = useState(currentUser?.phoneNumber || '')
+
+  const [isEditingAddress, setIsEditingAddress] = useState(false)
+  const [newAddress, setNewAddress] = useState(currentUser?.address || '')
+
+  const [isEditingPersonalId, setIsEditingPersonalId] = useState(false)
+  const [newPersonalId, setNewPersonalId] = useState(currentUser?.personalId || '')
+
+  const [isEditing, setIsEditing] = useState(false)
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(
+    currentUser?.dayOfBirth ? new Date(currentUser.dayOfBirth) : undefined
+  )
+  const handleEditClick = () => {
+    setIsEditing(true)
+  }
+
+  const handleSaveClick = async () => {
+    if (selectedDate) {
+      try {
+        const success = await userChangeInfor(
+          token!,
+          currentUser?.fullName ?? 'string',
+          selectedDate,
+          currentUser?.gender ?? 'string',
+          currentUser?.address ?? 'string',
+          currentUser?.phoneNumber ?? 'string',
+          currentUser?.personalId ?? 'string'
+        )
+        if (success) {
+          dispatch(setCurrentUser(await getUserByUsername(currentUser?.username!)))
+        }
+      } catch (error) {
+        console.log(error)
+      }
+    }
+    setIsEditing(false)
+  }
+
+  const handleCancelClick = () => {
+    setIsEditing(false)
+    setSelectedDate(currentUser!.dayOfBirth ? new Date(currentUser!.dayOfBirth) : undefined)
+  }
+
+  const dispatch = useDispatch()
+
+  const token = localStorage.getItem('tokenAccess')
+
+  const handleEditNameClick = () => {
+    setIsEditingName(true)
+  }
+  const handleEditPhoneNumberClick = () => {
+    setIsEditingPhoneNumber(true)
+  }
+  const handleEditAddressClick = () => {
+    setIsEditingAddress(true)
+  }
+  const handleEditPersonalIdClick = () => {
+    setIsEditingPersonalId(true)
+  }
+
+  const handleInputNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setNewName(e.target.value)
+  }
+  const handleInputPhoneNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setNewPhoneNumber(e.target.value)
+  }
+  const handleInputAddressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setNewAddress(e.target.value)
+  }
+  const handleInputPersonalIdChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setNewPersonalId(e.target.value)
+  }
+
+  const handleSaveNameClick = async () => {
+    try {
+      const success = await userChangeInfor(
+        token!,
+        newName,
+        currentUser?.dayOfBirth!,
+        currentUser?.gender ?? 'string',
+        currentUser?.address ?? 'string',
+        currentUser?.phoneNumber ?? 'string',
+        currentUser?.personalId ?? 'string'
+      )
+      if (success) {
+        dispatch(setCurrentUser(await getUserByUsername(currentUser?.username!)))
+      }
+    } catch (error) {
+      console.log(error)
+    }
+
+    setIsEditingName(false)
+  }
+
+  const handleSavePhoneNumberClick = async () => {
+    try {
+      const success = await userChangeInfor(
+        token!,
+        currentUser?.fullName ?? 'string',
+        currentUser?.dayOfBirth!,
+        currentUser?.gender ?? 'string',
+        currentUser?.address ?? 'string',
+        newPhoneNumber,
+        currentUser?.personalId ?? 'string'
+      )
+      if (success) {
+        dispatch(setCurrentUser(await getUserByUsername(currentUser?.username!)))
+      }
+    } catch (error) {
+      console.log(error)
+    }
+
+    setIsEditingPhoneNumber(false)
+  }
+  const handleSaveAddressClick = async () => {
+    try {
+      const success = await userChangeInfor(
+        token!,
+        currentUser?.fullName ?? 'string',
+        currentUser?.dayOfBirth!,
+        currentUser?.gender ?? 'string',
+        newAddress,
+        currentUser?.phoneNumber ?? 'string',
+        currentUser?.personalId ?? 'string'
+      )
+      if (success) {
+        dispatch(setCurrentUser(await getUserByUsername(currentUser?.username!)))
+      }
+    } catch (error) {
+      console.log(error)
+    }
+
+    setIsEditingAddress(false)
+  }
+
+  const handleSavePersonalIdClick = async () => {
+    try {
+      const success = await userChangeInfor(
+        token!,
+        currentUser?.fullName ?? 'string',
+        currentUser?.dayOfBirth!,
+        currentUser?.gender ?? 'string',
+        currentUser?.address ?? 'string',
+        currentUser?.phoneNumber ?? 'string',
+        newPersonalId
+      )
+      if (success) {
+        dispatch(setCurrentUser(await getUserByUsername(currentUser?.username!)))
+      }
+    } catch (error) {
+      console.log(error)
+    }
+
+    setIsEditingPersonalId(false)
+  }
+  const handleCancelNameClick = () => {
+    setNewName(currentUser?.fullName || '')
+    setIsEditingName(false)
+  }
+  const handleCancelPhoneNumberClick = () => {
+    setNewPhoneNumber(currentUser?.phoneNumber || '')
+    setIsEditingPhoneNumber(false)
+  }
+
+  const handleCancelAddressClick = () => {
+    setNewAddress(currentUser?.address || '')
+    setIsEditingAddress(false)
+  }
+  const handleCancelPersonalIdClick = () => {
+    setNewPersonalId(currentUser?.personalId || '')
+    setIsEditingPersonalId(false)
+  }
+
+  const [selectedFile, setSelectedFile] = useState<File | null>(null)
+  const [imageUrl, setImageUrl] = useState<string>('initial_image_url.jpg')
+  const fileInputRef = useRef<HTMLInputElement | null>(null)
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files && event.target.files[0]) {
+      const file = event.target.files[0]
+      setSelectedFile(file)
+      setImageUrl(URL.createObjectURL(file)) // Update the image URL to the new file
+      handleUpload(file)
+    }
+  }
+
+  const handleUpload = async (file: File) => {
+    const formData = new FormData()
+    formData.append('avatarFile', file)
+
+    console.log(file)
+
+    try {
+      const success = await uploadNewAvatar(token!, formData)
+      if (success) {
+        dispatch(setCurrentUser(await getUserByUsername(currentUser?.username!)))
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
   return (
     <div className=' flex flex-col overflow-hidden mx-24 my-auto'>
       <div className={`relative w-full h-80 bg-[url('@/assets/images/profileBackground.jpg')] rounded-lg bg-cover`}>
-        <Button className='absolute bottom-6 right-6 bg-[#8DD3BB] hover:opacity-90 flex flex-row gap-1 hover:cursor-pointer z-10'>
-          <svg width='16' height='16' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg'>
-            <path
-              d='M14.7879 6.58204L14.7879 6.58203C14.3533 6.25978 13.8188 6.02292 13.2542 5.89513C13.1567 5.87318 13.0674 5.82396 12.9969 5.7532C12.9263 5.68244 12.8773 5.59305 12.8556 5.49548M14.7879 6.58204L3.75777 4.16193C3.75776 4.16196 3.75775 4.16198 3.75774 4.162M14.7879 6.58204C15.566 7.15846 15.9766 7.9538 15.9766 8.88164C15.9766 9.83825 15.5955 10.6406 14.8747 11.2016C14.2377 11.6968 13.3503 11.9707 12.375 11.9707H8.52344V7.25789L9.63062 8.36447C9.67939 8.4132 9.7373 8.45183 9.80103 8.47811C9.86477 8.5044 9.93307 8.51784 10.002 8.51766C10.071 8.51748 10.1392 8.50368 10.2028 8.47705C10.2664 8.45043 10.3241 8.4115 10.3726 8.36251C10.5776 8.15552 10.565 7.81856 10.3603 7.61352L10.3603 7.6135L8.37001 5.62413L8.35344 5.6407L8.37 5.62413C8.27185 5.52604 8.13876 5.47093 8 5.47093C7.86124 5.47093 7.72815 5.52604 7.63 5.62413L7.62999 5.62413L5.63968 7.61413C5.44114 7.81267 5.4221 8.13721 5.61236 8.34617C5.65998 8.39863 5.71776 8.44087 5.7822 8.47034C5.84664 8.49981 5.9164 8.51589 5.98725 8.51761C6.05809 8.51932 6.12855 8.50663 6.19434 8.4803C6.26013 8.45398 6.3199 8.41457 6.37001 8.36446L7.47656 7.25791V11.9707H4.25C3.12162 11.9707 2.07034 11.5989 1.29 10.9252C0.473229 10.2183 0.0234375 9.241 0.0234375 8.16914C0.0234375 7.10865 0.441194 6.18038 1.23175 5.48172C1.80454 4.97696 2.55534 4.62016 3.38776 4.45211C3.4678 4.43595 3.54294 4.4013 3.60718 4.35091C3.67141 4.30054 3.72297 4.23584 3.75774 4.162M14.7879 6.58204L3.75774 4.162M12.8556 5.49548L12.8784 5.49039L12.8556 5.49552C12.8556 5.49551 12.8556 5.49549 12.8556 5.49548ZM12.8556 5.49548C12.6128 4.41388 12.0904 3.48701 11.3229 2.78487L11.3229 2.78486C10.4308 1.9674 9.25092 1.51758 8 1.51758C6.90032 1.51758 5.88522 1.86221 5.06553 2.51405M5.06553 2.51405C5.06553 2.51404 5.06553 2.51404 5.06554 2.51404L5.05095 2.49572L5.06553 2.51405ZM5.06553 2.51405C4.50983 2.95665 4.06254 3.52029 3.75774 4.162M7.52344 12.0176H8.47656V14.0073C8.47656 14.1337 8.42635 14.2549 8.33698 14.3442C8.24761 14.4336 8.12639 14.4838 8 14.4838C7.87361 14.4838 7.75239 14.4336 7.66302 14.3442C7.57365 14.2549 7.52344 14.1337 7.52344 14.0073V12.0176Z'
-              fill='black'
-              stroke='#112211'
-              stroke-width='0.046875'
-            />
-          </svg>
-          Upload new cover
-        </Button>
         <div className='flex flex-col w-full justify-center items-center absolute top-3/4 gap-2'>
-          <Avatar className='border-4 w-32 h-32 '>
-            <AvatarImage src='https://github.com/shadcn.png' />
+          <Avatar className='border-4 w-32 h-32  cursor-pointer ' onClick={() => fileInputRef.current?.click()}>
+            <AvatarImage src={currentUser?.avatarUrl ?? defaultAvatar} />
             <AvatarFallback>CN</AvatarFallback>
           </Avatar>
-          <span className="  font-['Montserrat'] text-[24px] font-semibold  text-[#112211]  ">John Doe.</span>
+          <input type='file' ref={fileInputRef} onChange={handleFileChange} className='hidden' />
+          <span className="  font-['Montserrat'] text-[24px] font-semibold  text-[#112211]  ">
+            {currentUser?.fullName}
+          </span>
           <span className="  font-['Montserrat'] text-[16px] font-normal opacity-75  text-[#112211]  ">
-            john.doe@gmail.com
+            {currentUser?.email}
           </span>
         </div>
       </div>
@@ -74,44 +281,40 @@ const ProfilePage = () => {
                   <span className=" font-['Montserrat'] text-base font-normal opacity-75  text-[#112211]   whitespace-nowrap ">
                     Name
                   </span>
-                  <span className="   font-['Montserrat'] text-[20px] font-semibold  text-[#112211] ">John Doe</span>
-                </div>
-                <Button className='border-solid border-emerald-500 border-[1px] flex gap-2'>
-                  <svg width='16' height='16' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg'>
-                    <path
-                      d='M14.3559 1.67988L14.3558 1.67985C14.3123 1.63202 14.2595 1.59351 14.2007 1.56665C14.1419 1.53979 14.0782 1.52514 14.0135 1.52358C13.9489 1.52202 13.8846 1.53358 13.8245 1.55757C13.7645 1.58157 13.7099 1.61749 13.6641 1.66316L13.6641 1.66318L13.2776 2.04783C13.2351 2.09031 13.2112 2.14792 13.2112 2.20798C13.2112 2.26803 13.2351 2.32563 13.2775 2.36812C13.2775 2.36812 13.2775 2.36812 13.2776 2.36813L13.6319 2.72186L13.632 2.72191C13.653 2.74306 13.678 2.75985 13.7056 2.7713C13.7331 2.78275 13.7627 2.78864 13.7925 2.78864C13.8224 2.78864 13.8519 2.78275 13.8795 2.7713C13.907 2.75985 13.9321 2.74306 13.9531 2.72191L13.9532 2.72183L14.33 2.34686L14.3301 2.34683M14.3559 1.67988L14.3732 1.66407C14.555 1.86313 14.5372 2.17313 14.3466 2.36345L14.3301 2.34683M14.3559 1.67988C14.5287 1.86901 14.5124 2.16473 14.3301 2.34683M14.3559 1.67988L14.3301 2.34683M6.85472 8.46035L6.8547 8.46037C6.82335 8.49159 6.80056 8.53036 6.78853 8.57294L6.78822 8.57404L6.78819 8.57403L6.5274 9.3508C6.52245 9.36773 6.52213 9.38568 6.52647 9.40278C6.53085 9.42001 6.53979 9.43574 6.55236 9.44831C6.56493 9.46088 6.58066 9.46983 6.59789 9.4742C6.61499 9.47854 6.63294 9.47822 6.64987 9.47328L7.42601 9.21248L7.4271 9.21212L7.4271 9.21214C7.46969 9.20011 7.50846 9.17732 7.53968 9.14597L7.5397 9.14595L13.1709 3.50415C13.1709 3.50414 13.1709 3.50412 13.1709 3.50411C13.2186 3.45585 13.2454 3.3907 13.2454 3.32282C13.2454 3.25494 13.2187 3.1898 13.1709 3.14154L6.85472 8.46035ZM6.85472 8.46035L12.496 2.82911C12.5443 2.78091 12.6098 2.75385 12.678 2.75385C12.7463 2.75385 12.8117 2.78091 12.8601 2.82911L13.1709 3.14149L6.85472 8.46035Z'
-                      fill='black'
-                      stroke='#4C4850'
-                      stroke-width='0.046875'
+                  {isEditingName ? (
+                    <input
+                      type='text'
+                      value={newName}
+                      onChange={handleInputNameChange}
+                      className="font-['Montserrat'] w-[500px] text-[20px] font-semibold text-[#112211] border border-gray-300 rounded p-1"
                     />
-                    <path
-                      d='M12.0731 6.05188L8.26406 9.86844C8.11684 10.016 7.9359 10.1255 7.73688 10.1875L6.9275 10.4584C6.73542 10.5127 6.53234 10.5147 6.3392 10.4644C6.14606 10.414 5.96985 10.313 5.82871 10.1719C5.68758 10.0308 5.58662 9.85456 5.53626 9.66142C5.4859 9.46828 5.48794 9.26521 5.54219 9.07312L5.81313 8.26375C5.87492 8.06478 5.98421 7.88385 6.13156 7.73656L9.94812 3.92688C9.98311 3.89193 10.0069 3.8474 10.0166 3.7989C10.0263 3.75041 10.0214 3.70014 10.0025 3.65445C9.98357 3.60875 9.95154 3.56969 9.91044 3.5422C9.86934 3.51471 9.82101 3.50002 9.77156 3.5H3.25C2.78587 3.5 2.34075 3.68437 2.01256 4.01256C1.68437 4.34075 1.5 4.78587 1.5 5.25V12.75C1.5 13.2141 1.68437 13.6592 2.01256 13.9874C2.34075 14.3156 2.78587 14.5 3.25 14.5H10.75C11.2141 14.5 11.6592 14.3156 11.9874 13.9874C12.3156 13.6592 12.5 13.2141 12.5 12.75V6.22844C12.5 6.17899 12.4853 6.13066 12.4578 6.08956C12.4303 6.04846 12.3912 6.01643 12.3456 5.99753C12.2999 5.97864 12.2496 5.97371 12.2011 5.98338C12.1526 5.99306 12.1081 6.01689 12.0731 6.05188Z'
-                      fill='black'
-                    />
-                  </svg>
-                  Change
-                </Button>
-              </div>
-              <div className='flex justify-between items-center self-stretch  flex-nowrap'>
-                <div className='flex flex-col gap-[8px] items-start  flex-nowrap '>
-                  <span className=" font-['Montserrat'] text-base font-normal opacity-75  text-[#112211] ">Email</span>
-                  <span className=" font-['Montserrat'] text-[20px] font-semibold  text-[#112211] ">
-                    john.doe@gmail.com
-                  </span>
+                  ) : (
+                    <span className="font-['Montserrat'] text-[20px] font-semibold text-[#112211]">
+                      {currentUser?.fullName}
+                    </span>
+                  )}
                 </div>
-                <div className='flex  gap-[8px] items-start  flex-nowrap '>
-                  <Button className='border-solid border-emerald-500 border-[1px] flex gap-2'>
-                    <svg width='16' height='16' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg'>
-                      <path
-                        d='M1.52344 8C1.52344 4.42888 4.42888 1.52344 8 1.52344C11.5711 1.52344 14.4766 4.42888 14.4766 8C14.4766 11.5711 11.5711 14.4766 8 14.4766C4.42888 14.4766 1.52344 11.5711 1.52344 8ZM8.52344 10.5V8.52344H10.5C10.6388 8.52344 10.772 8.46829 10.8701 8.37013C10.9683 8.27196 11.0234 8.13882 11.0234 8C11.0234 7.86118 10.9683 7.72804 10.8701 7.62987C10.772 7.53171 10.6388 7.47656 10.5 7.47656H8.52344V5.5C8.52344 5.36118 8.46829 5.22804 8.37013 5.12987C8.27196 5.03171 8.13882 4.97656 8 4.97656C7.86118 4.97656 7.72804 5.03171 7.62987 5.12987C7.53171 5.22804 7.47656 5.36118 7.47656 5.5V7.47656H5.5C5.36118 7.47656 5.22804 7.53171 5.12987 7.62987C5.03171 7.72804 4.97656 7.86118 4.97656 8C4.97656 8.13882 5.03171 8.27196 5.12987 8.37013C5.22804 8.46829 5.36118 8.52344 5.5 8.52344H7.47656V10.5C7.47656 10.6388 7.53171 10.772 7.62987 10.8701C7.72804 10.9683 7.86118 11.0234 8 11.0234C8.13882 11.0234 8.27196 10.9683 8.37013 10.8701C8.46829 10.772 8.52344 10.6388 8.52344 10.5Z'
-                        fill='black'
-                        stroke='#4C4850'
-                        stroke-width='0.046875'
-                      />
-                    </svg>
-                    Add another email
-                  </Button>
-                  <Button className='border-solid border-emerald-500 border-[1px] flex gap-2'>
+
+                {isEditingName ? (
+                  <div className='flex gap-2'>
+                    <Button
+                      className='border-solid border-emerald-500 border-[1px] flex gap-2 p-1 px-3'
+                      onClick={handleSaveNameClick}
+                    >
+                      Save
+                    </Button>
+                    <Button
+                      className='border-solid border-red-500 border-[1px] flex gap-2 p-1 px-3'
+                      onClick={handleCancelNameClick}
+                    >
+                      Cancel
+                    </Button>
+                  </div>
+                ) : (
+                  <Button
+                    className='border-solid border-emerald-500 border-[1px] flex gap-2'
+                    onClick={handleEditNameClick}
+                  >
                     <svg width='16' height='16' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg'>
                       <path
                         d='M14.3559 1.67988L14.3558 1.67985C14.3123 1.63202 14.2595 1.59351 14.2007 1.56665C14.1419 1.53979 14.0782 1.52514 14.0135 1.52358C13.9489 1.52202 13.8846 1.53358 13.8245 1.55757C13.7645 1.58157 13.7099 1.61749 13.6641 1.66316L13.6641 1.66318L13.2776 2.04783C13.2351 2.09031 13.2112 2.14792 13.2112 2.20798C13.2112 2.26803 13.2351 2.32563 13.2775 2.36812C13.2775 2.36812 13.2775 2.36812 13.2776 2.36813L13.6319 2.72186L13.632 2.72191C13.653 2.74306 13.678 2.75985 13.7056 2.7713C13.7331 2.78275 13.7627 2.78864 13.7925 2.78864C13.8224 2.78864 13.8519 2.78275 13.8795 2.7713C13.907 2.75985 13.9321 2.74306 13.9531 2.72191L13.9532 2.72183L14.33 2.34686L14.3301 2.34683M14.3559 1.67988L14.3732 1.66407C14.555 1.86313 14.5372 2.17313 14.3466 2.36345L14.3301 2.34683M14.3559 1.67988C14.5287 1.86901 14.5124 2.16473 14.3301 2.34683M14.3559 1.67988L14.3301 2.34683M6.85472 8.46035L6.8547 8.46037C6.82335 8.49159 6.80056 8.53036 6.78853 8.57294L6.78822 8.57404L6.78819 8.57403L6.5274 9.3508C6.52245 9.36773 6.52213 9.38568 6.52647 9.40278C6.53085 9.42001 6.53979 9.43574 6.55236 9.44831C6.56493 9.46088 6.58066 9.46983 6.59789 9.4742C6.61499 9.47854 6.63294 9.47822 6.64987 9.47328L7.42601 9.21248L7.4271 9.21212L7.4271 9.21214C7.46969 9.20011 7.50846 9.17732 7.53968 9.14597L7.5397 9.14595L13.1709 3.50415C13.1709 3.50414 13.1709 3.50412 13.1709 3.50411C13.2186 3.45585 13.2454 3.3907 13.2454 3.32282C13.2454 3.25494 13.2187 3.1898 13.1709 3.14154L6.85472 8.46035ZM6.85472 8.46035L12.496 2.82911C12.5443 2.78091 12.6098 2.75385 12.678 2.75385C12.7463 2.75385 12.8117 2.78091 12.8601 2.82911L13.1709 3.14149L6.85472 8.46035Z'
@@ -126,103 +329,269 @@ const ProfilePage = () => {
                     </svg>
                     Change
                   </Button>
-                </div>
+                )}
               </div>
-              <div className='flex justify-between items-center self-stretch flex-nowrap '>
+              <div className='flex justify-between items-center self-stretch  flex-nowrap'>
                 <div className='flex flex-col gap-[8px] items-start  flex-nowrap '>
-                  <span className=" font-['Montserrat'] text-base font-normal opacity-75  text-[#112211] ">
-                    Password
+                  <span className=" font-['Montserrat'] text-base font-normal opacity-75  text-[#112211] ">Email</span>
+                  <span className=" font-['Montserrat'] text-[20px] font-semibold  text-[#112211] ">
+                    {currentUser?.email}
                   </span>
-                  <span className=" font-['Montserrat'] text-[20px] font-semibold  text-[#112211] ">************</span>
                 </div>
-                <Button className='border-solid border-emerald-500 border-[1px] flex gap-2'>
-                  <svg width='16' height='16' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg'>
-                    <path
-                      d='M14.3559 1.67988L14.3558 1.67985C14.3123 1.63202 14.2595 1.59351 14.2007 1.56665C14.1419 1.53979 14.0782 1.52514 14.0135 1.52358C13.9489 1.52202 13.8846 1.53358 13.8245 1.55757C13.7645 1.58157 13.7099 1.61749 13.6641 1.66316L13.6641 1.66318L13.2776 2.04783C13.2351 2.09031 13.2112 2.14792 13.2112 2.20798C13.2112 2.26803 13.2351 2.32563 13.2775 2.36812C13.2775 2.36812 13.2775 2.36812 13.2776 2.36813L13.6319 2.72186L13.632 2.72191C13.653 2.74306 13.678 2.75985 13.7056 2.7713C13.7331 2.78275 13.7627 2.78864 13.7925 2.78864C13.8224 2.78864 13.8519 2.78275 13.8795 2.7713C13.907 2.75985 13.9321 2.74306 13.9531 2.72191L13.9532 2.72183L14.33 2.34686L14.3301 2.34683M14.3559 1.67988L14.3732 1.66407C14.555 1.86313 14.5372 2.17313 14.3466 2.36345L14.3301 2.34683M14.3559 1.67988C14.5287 1.86901 14.5124 2.16473 14.3301 2.34683M14.3559 1.67988L14.3301 2.34683M6.85472 8.46035L6.8547 8.46037C6.82335 8.49159 6.80056 8.53036 6.78853 8.57294L6.78822 8.57404L6.78819 8.57403L6.5274 9.3508C6.52245 9.36773 6.52213 9.38568 6.52647 9.40278C6.53085 9.42001 6.53979 9.43574 6.55236 9.44831C6.56493 9.46088 6.58066 9.46983 6.59789 9.4742C6.61499 9.47854 6.63294 9.47822 6.64987 9.47328L7.42601 9.21248L7.4271 9.21212L7.4271 9.21214C7.46969 9.20011 7.50846 9.17732 7.53968 9.14597L7.5397 9.14595L13.1709 3.50415C13.1709 3.50414 13.1709 3.50412 13.1709 3.50411C13.2186 3.45585 13.2454 3.3907 13.2454 3.32282C13.2454 3.25494 13.2187 3.1898 13.1709 3.14154L6.85472 8.46035ZM6.85472 8.46035L12.496 2.82911C12.5443 2.78091 12.6098 2.75385 12.678 2.75385C12.7463 2.75385 12.8117 2.78091 12.8601 2.82911L13.1709 3.14149L6.85472 8.46035Z'
-                      fill='black'
-                      stroke='#4C4850'
-                      stroke-width='0.046875'
-                    />
-                    <path
-                      d='M12.0731 6.05188L8.26406 9.86844C8.11684 10.016 7.9359 10.1255 7.73688 10.1875L6.9275 10.4584C6.73542 10.5127 6.53234 10.5147 6.3392 10.4644C6.14606 10.414 5.96985 10.313 5.82871 10.1719C5.68758 10.0308 5.58662 9.85456 5.53626 9.66142C5.4859 9.46828 5.48794 9.26521 5.54219 9.07312L5.81313 8.26375C5.87492 8.06478 5.98421 7.88385 6.13156 7.73656L9.94812 3.92688C9.98311 3.89193 10.0069 3.8474 10.0166 3.7989C10.0263 3.75041 10.0214 3.70014 10.0025 3.65445C9.98357 3.60875 9.95154 3.56969 9.91044 3.5422C9.86934 3.51471 9.82101 3.50002 9.77156 3.5H3.25C2.78587 3.5 2.34075 3.68437 2.01256 4.01256C1.68437 4.34075 1.5 4.78587 1.5 5.25V12.75C1.5 13.2141 1.68437 13.6592 2.01256 13.9874C2.34075 14.3156 2.78587 14.5 3.25 14.5H10.75C11.2141 14.5 11.6592 14.3156 11.9874 13.9874C12.3156 13.6592 12.5 13.2141 12.5 12.75V6.22844C12.5 6.17899 12.4853 6.13066 12.4578 6.08956C12.4303 6.04846 12.3912 6.01643 12.3456 5.99753C12.2999 5.97864 12.2496 5.97371 12.2011 5.98338C12.1526 5.99306 12.1081 6.01689 12.0731 6.05188Z'
-                      fill='black'
-                    />
-                  </svg>
-                  Change
-                </Button>
               </div>
+
               <div className='flex justify-between items-center self-stretch  flex-nowrap '>
                 <div className='flex  flex-col gap-[8px] items-start  flex-nowrap '>
                   <span className=" font-['Montserrat'] text-base font-normal opacity-75  text-[#112211] ">
                     Phone number
                   </span>
-                  <span className=" font-['Montserrat'] text-[20px] font-semibold  text-[#112211] ">
-                    +1 000-000-0000
-                  </span>
+                  {isEditingPhoneNumber ? (
+                    <input
+                      type='text'
+                      value={newPhoneNumber}
+                      onChange={handleInputPhoneNumberChange}
+                      className="font-['Montserrat'] w-[500px] text-[20px] font-semibold text-[#112211] border border-gray-300 rounded p-1"
+                    />
+                  ) : (
+                    <span className=" font-['Montserrat'] text-[20px] font-semibold  text-[#112211] ">
+                      {currentUser?.phoneNumber === 'string' || currentUser?.phoneNumber === null
+                        ? 'Not set'
+                        : currentUser?.phoneNumber}
+                    </span>
+                  )}
                 </div>
-                <Button className='border-solid border-emerald-500 border-[1px] flex gap-2'>
-                  <svg width='16' height='16' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg'>
-                    <path
-                      d='M14.3559 1.67988L14.3558 1.67985C14.3123 1.63202 14.2595 1.59351 14.2007 1.56665C14.1419 1.53979 14.0782 1.52514 14.0135 1.52358C13.9489 1.52202 13.8846 1.53358 13.8245 1.55757C13.7645 1.58157 13.7099 1.61749 13.6641 1.66316L13.6641 1.66318L13.2776 2.04783C13.2351 2.09031 13.2112 2.14792 13.2112 2.20798C13.2112 2.26803 13.2351 2.32563 13.2775 2.36812C13.2775 2.36812 13.2775 2.36812 13.2776 2.36813L13.6319 2.72186L13.632 2.72191C13.653 2.74306 13.678 2.75985 13.7056 2.7713C13.7331 2.78275 13.7627 2.78864 13.7925 2.78864C13.8224 2.78864 13.8519 2.78275 13.8795 2.7713C13.907 2.75985 13.9321 2.74306 13.9531 2.72191L13.9532 2.72183L14.33 2.34686L14.3301 2.34683M14.3559 1.67988L14.3732 1.66407C14.555 1.86313 14.5372 2.17313 14.3466 2.36345L14.3301 2.34683M14.3559 1.67988C14.5287 1.86901 14.5124 2.16473 14.3301 2.34683M14.3559 1.67988L14.3301 2.34683M6.85472 8.46035L6.8547 8.46037C6.82335 8.49159 6.80056 8.53036 6.78853 8.57294L6.78822 8.57404L6.78819 8.57403L6.5274 9.3508C6.52245 9.36773 6.52213 9.38568 6.52647 9.40278C6.53085 9.42001 6.53979 9.43574 6.55236 9.44831C6.56493 9.46088 6.58066 9.46983 6.59789 9.4742C6.61499 9.47854 6.63294 9.47822 6.64987 9.47328L7.42601 9.21248L7.4271 9.21212L7.4271 9.21214C7.46969 9.20011 7.50846 9.17732 7.53968 9.14597L7.5397 9.14595L13.1709 3.50415C13.1709 3.50414 13.1709 3.50412 13.1709 3.50411C13.2186 3.45585 13.2454 3.3907 13.2454 3.32282C13.2454 3.25494 13.2187 3.1898 13.1709 3.14154L6.85472 8.46035ZM6.85472 8.46035L12.496 2.82911C12.5443 2.78091 12.6098 2.75385 12.678 2.75385C12.7463 2.75385 12.8117 2.78091 12.8601 2.82911L13.1709 3.14149L6.85472 8.46035Z'
-                      fill='black'
-                      stroke='#4C4850'
-                      stroke-width='0.046875'
-                    />
-                    <path
-                      d='M12.0731 6.05188L8.26406 9.86844C8.11684 10.016 7.9359 10.1255 7.73688 10.1875L6.9275 10.4584C6.73542 10.5127 6.53234 10.5147 6.3392 10.4644C6.14606 10.414 5.96985 10.313 5.82871 10.1719C5.68758 10.0308 5.58662 9.85456 5.53626 9.66142C5.4859 9.46828 5.48794 9.26521 5.54219 9.07312L5.81313 8.26375C5.87492 8.06478 5.98421 7.88385 6.13156 7.73656L9.94812 3.92688C9.98311 3.89193 10.0069 3.8474 10.0166 3.7989C10.0263 3.75041 10.0214 3.70014 10.0025 3.65445C9.98357 3.60875 9.95154 3.56969 9.91044 3.5422C9.86934 3.51471 9.82101 3.50002 9.77156 3.5H3.25C2.78587 3.5 2.34075 3.68437 2.01256 4.01256C1.68437 4.34075 1.5 4.78587 1.5 5.25V12.75C1.5 13.2141 1.68437 13.6592 2.01256 13.9874C2.34075 14.3156 2.78587 14.5 3.25 14.5H10.75C11.2141 14.5 11.6592 14.3156 11.9874 13.9874C12.3156 13.6592 12.5 13.2141 12.5 12.75V6.22844C12.5 6.17899 12.4853 6.13066 12.4578 6.08956C12.4303 6.04846 12.3912 6.01643 12.3456 5.99753C12.2999 5.97864 12.2496 5.97371 12.2011 5.98338C12.1526 5.99306 12.1081 6.01689 12.0731 6.05188Z'
-                      fill='black'
-                    />
-                  </svg>
-                  Change
-                </Button>
+                {isEditingPhoneNumber ? (
+                  <div className='flex gap-2'>
+                    <Button
+                      className='border-solid border-emerald-500 border-[1px] flex gap-2 p-1 px-3'
+                      onClick={handleSavePhoneNumberClick}
+                    >
+                      Save
+                    </Button>
+                    <Button
+                      className='border-solid border-red-500 border-[1px] flex gap-2 p-1 px-3'
+                      onClick={handleCancelPhoneNumberClick}
+                    >
+                      Cancel
+                    </Button>
+                  </div>
+                ) : (
+                  <Button
+                    className='border-solid border-emerald-500 border-[1px] flex gap-2'
+                    onClick={handleEditPhoneNumberClick}
+                  >
+                    <svg width='16' height='16' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg'>
+                      <path
+                        d='M14.3559 1.67988L14.3558 1.67985C14.3123 1.63202 14.2595 1.59351 14.2007 1.56665C14.1419 1.53979 14.0782 1.52514 14.0135 1.52358C13.9489 1.52202 13.8846 1.53358 13.8245 1.55757C13.7645 1.58157 13.7099 1.61749 13.6641 1.66316L13.6641 1.66318L13.2776 2.04783C13.2351 2.09031 13.2112 2.14792 13.2112 2.20798C13.2112 2.26803 13.2351 2.32563 13.2775 2.36812C13.2775 2.36812 13.2775 2.36812 13.2776 2.36813L13.6319 2.72186L13.632 2.72191C13.653 2.74306 13.678 2.75985 13.7056 2.7713C13.7331 2.78275 13.7627 2.78864 13.7925 2.78864C13.8224 2.78864 13.8519 2.78275 13.8795 2.7713C13.907 2.75985 13.9321 2.74306 13.9531 2.72191L13.9532 2.72183L14.33 2.34686L14.3301 2.34683M14.3559 1.67988L14.3732 1.66407C14.555 1.86313 14.5372 2.17313 14.3466 2.36345L14.3301 2.34683M14.3559 1.67988C14.5287 1.86901 14.5124 2.16473 14.3301 2.34683M14.3559 1.67988L14.3301 2.34683M6.85472 8.46035L6.8547 8.46037C6.82335 8.49159 6.80056 8.53036 6.78853 8.57294L6.78822 8.57404L6.78819 8.57403L6.5274 9.3508C6.52245 9.36773 6.52213 9.38568 6.52647 9.40278C6.53085 9.42001 6.53979 9.43574 6.55236 9.44831C6.56493 9.46088 6.58066 9.46983 6.59789 9.4742C6.61499 9.47854 6.63294 9.47822 6.64987 9.47328L7.42601 9.21248L7.4271 9.21212L7.4271 9.21214C7.46969 9.20011 7.50846 9.17732 7.53968 9.14597L7.5397 9.14595L13.1709 3.50415C13.1709 3.50414 13.1709 3.50412 13.1709 3.50411C13.2186 3.45585 13.2454 3.3907 13.2454 3.32282C13.2454 3.25494 13.2187 3.1898 13.1709 3.14154L6.85472 8.46035ZM6.85472 8.46035L12.496 2.82911C12.5443 2.78091 12.6098 2.75385 12.678 2.75385C12.7463 2.75385 12.8117 2.78091 12.8601 2.82911L13.1709 3.14149L6.85472 8.46035Z'
+                        fill='black'
+                        stroke='#4C4850'
+                        stroke-width='0.046875'
+                      />
+                      <path
+                        d='M12.0731 6.05188L8.26406 9.86844C8.11684 10.016 7.9359 10.1255 7.73688 10.1875L6.9275 10.4584C6.73542 10.5127 6.53234 10.5147 6.3392 10.4644C6.14606 10.414 5.96985 10.313 5.82871 10.1719C5.68758 10.0308 5.58662 9.85456 5.53626 9.66142C5.4859 9.46828 5.48794 9.26521 5.54219 9.07312L5.81313 8.26375C5.87492 8.06478 5.98421 7.88385 6.13156 7.73656L9.94812 3.92688C9.98311 3.89193 10.0069 3.8474 10.0166 3.7989C10.0263 3.75041 10.0214 3.70014 10.0025 3.65445C9.98357 3.60875 9.95154 3.56969 9.91044 3.5422C9.86934 3.51471 9.82101 3.50002 9.77156 3.5H3.25C2.78587 3.5 2.34075 3.68437 2.01256 4.01256C1.68437 4.34075 1.5 4.78587 1.5 5.25V12.75C1.5 13.2141 1.68437 13.6592 2.01256 13.9874C2.34075 14.3156 2.78587 14.5 3.25 14.5H10.75C11.2141 14.5 11.6592 14.3156 11.9874 13.9874C12.3156 13.6592 12.5 13.2141 12.5 12.75V6.22844C12.5 6.17899 12.4853 6.13066 12.4578 6.08956C12.4303 6.04846 12.3912 6.01643 12.3456 5.99753C12.2999 5.97864 12.2496 5.97371 12.2011 5.98338C12.1526 5.99306 12.1081 6.01689 12.0731 6.05188Z'
+                        fill='black'
+                      />
+                    </svg>
+                    Change
+                  </Button>
+                )}
               </div>
               <div className='flex justify-between items-center self-stretch  flex-nowrap '>
                 <div className='flex  flex-col gap-[8px] items-start  flex-nowrap '>
                   <span className=" font-['Montserrat'] text-base font-normal opacity-75  text-[#112211] ">
                     Address
                   </span>
-                  <span className=" font-['Montserrat'] text-[20px] font-semibold  text-[#112211] ">
-                    St 32 main downtown, Los Angeles, California, USA
-                  </span>
+                  {isEditingAddress ? (
+                    <input
+                      type='text'
+                      value={newAddress}
+                      onChange={handleInputAddressChange}
+                      className="font-['Montserrat'] w-[500px] text-[20px] font-semibold text-[#112211] border border-gray-300 rounded p-1"
+                    />
+                  ) : (
+                    <span className=" font-['Montserrat'] text-[20px] font-semibold  text-[#112211] ">
+                      {currentUser?.address === 'string' || currentUser?.address === null
+                        ? 'Not set'
+                        : currentUser?.address}
+                    </span>
+                  )}
                 </div>
-                <Button className='border-solid border-emerald-500 border-[1px] flex gap-2'>
-                  <svg width='16' height='16' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg'>
-                    <path
-                      d='M14.3559 1.67988L14.3558 1.67985C14.3123 1.63202 14.2595 1.59351 14.2007 1.56665C14.1419 1.53979 14.0782 1.52514 14.0135 1.52358C13.9489 1.52202 13.8846 1.53358 13.8245 1.55757C13.7645 1.58157 13.7099 1.61749 13.6641 1.66316L13.6641 1.66318L13.2776 2.04783C13.2351 2.09031 13.2112 2.14792 13.2112 2.20798C13.2112 2.26803 13.2351 2.32563 13.2775 2.36812C13.2775 2.36812 13.2775 2.36812 13.2776 2.36813L13.6319 2.72186L13.632 2.72191C13.653 2.74306 13.678 2.75985 13.7056 2.7713C13.7331 2.78275 13.7627 2.78864 13.7925 2.78864C13.8224 2.78864 13.8519 2.78275 13.8795 2.7713C13.907 2.75985 13.9321 2.74306 13.9531 2.72191L13.9532 2.72183L14.33 2.34686L14.3301 2.34683M14.3559 1.67988L14.3732 1.66407C14.555 1.86313 14.5372 2.17313 14.3466 2.36345L14.3301 2.34683M14.3559 1.67988C14.5287 1.86901 14.5124 2.16473 14.3301 2.34683M14.3559 1.67988L14.3301 2.34683M6.85472 8.46035L6.8547 8.46037C6.82335 8.49159 6.80056 8.53036 6.78853 8.57294L6.78822 8.57404L6.78819 8.57403L6.5274 9.3508C6.52245 9.36773 6.52213 9.38568 6.52647 9.40278C6.53085 9.42001 6.53979 9.43574 6.55236 9.44831C6.56493 9.46088 6.58066 9.46983 6.59789 9.4742C6.61499 9.47854 6.63294 9.47822 6.64987 9.47328L7.42601 9.21248L7.4271 9.21212L7.4271 9.21214C7.46969 9.20011 7.50846 9.17732 7.53968 9.14597L7.5397 9.14595L13.1709 3.50415C13.1709 3.50414 13.1709 3.50412 13.1709 3.50411C13.2186 3.45585 13.2454 3.3907 13.2454 3.32282C13.2454 3.25494 13.2187 3.1898 13.1709 3.14154L6.85472 8.46035ZM6.85472 8.46035L12.496 2.82911C12.5443 2.78091 12.6098 2.75385 12.678 2.75385C12.7463 2.75385 12.8117 2.78091 12.8601 2.82911L13.1709 3.14149L6.85472 8.46035Z'
-                      fill='black'
-                      stroke='#4C4850'
-                      stroke-width='0.046875'
+                {isEditingAddress ? (
+                  <div className='flex gap-2'>
+                    <Button
+                      className='border-solid border-emerald-500 border-[1px] flex gap-2 p-1 px-3'
+                      onClick={handleSaveAddressClick}
+                    >
+                      Save
+                    </Button>
+                    <Button
+                      className='border-solid border-red-500 border-[1px] flex gap-2 p-1 px-3'
+                      onClick={handleCancelAddressClick}
+                    >
+                      Cancel
+                    </Button>
+                  </div>
+                ) : (
+                  <Button
+                    className='border-solid border-emerald-500 border-[1px] flex gap-2'
+                    onClick={handleEditAddressClick}
+                  >
+                    <svg width='16' height='16' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg'>
+                      <path
+                        d='M14.3559 1.67988L14.3558 1.67985C14.3123 1.63202 14.2595 1.59351 14.2007 1.56665C14.1419 1.53979 14.0782 1.52514 14.0135 1.52358C13.9489 1.52202 13.8846 1.53358 13.8245 1.55757C13.7645 1.58157 13.7099 1.61749 13.6641 1.66316L13.6641 1.66318L13.2776 2.04783C13.2351 2.09031 13.2112 2.14792 13.2112 2.20798C13.2112 2.26803 13.2351 2.32563 13.2775 2.36812C13.2775 2.36812 13.2775 2.36812 13.2776 2.36813L13.6319 2.72186L13.632 2.72191C13.653 2.74306 13.678 2.75985 13.7056 2.7713C13.7331 2.78275 13.7627 2.78864 13.7925 2.78864C13.8224 2.78864 13.8519 2.78275 13.8795 2.7713C13.907 2.75985 13.9321 2.74306 13.9531 2.72191L13.9532 2.72183L14.33 2.34686L14.3301 2.34683M14.3559 1.67988L14.3732 1.66407C14.555 1.86313 14.5372 2.17313 14.3466 2.36345L14.3301 2.34683M14.3559 1.67988C14.5287 1.86901 14.5124 2.16473 14.3301 2.34683M14.3559 1.67988L14.3301 2.34683M6.85472 8.46035L6.8547 8.46037C6.82335 8.49159 6.80056 8.53036 6.78853 8.57294L6.78822 8.57404L6.78819 8.57403L6.5274 9.3508C6.52245 9.36773 6.52213 9.38568 6.52647 9.40278C6.53085 9.42001 6.53979 9.43574 6.55236 9.44831C6.56493 9.46088 6.58066 9.46983 6.59789 9.4742C6.61499 9.47854 6.63294 9.47822 6.64987 9.47328L7.42601 9.21248L7.4271 9.21212L7.4271 9.21214C7.46969 9.20011 7.50846 9.17732 7.53968 9.14597L7.5397 9.14595L13.1709 3.50415C13.1709 3.50414 13.1709 3.50412 13.1709 3.50411C13.2186 3.45585 13.2454 3.3907 13.2454 3.32282C13.2454 3.25494 13.2187 3.1898 13.1709 3.14154L6.85472 8.46035ZM6.85472 8.46035L12.496 2.82911C12.5443 2.78091 12.6098 2.75385 12.678 2.75385C12.7463 2.75385 12.8117 2.78091 12.8601 2.82911L13.1709 3.14149L6.85472 8.46035Z'
+                        fill='black'
+                        stroke='#4C4850'
+                        stroke-width='0.046875'
+                      />
+                      <path
+                        d='M12.0731 6.05188L8.26406 9.86844C8.11684 10.016 7.9359 10.1255 7.73688 10.1875L6.9275 10.4584C6.73542 10.5127 6.53234 10.5147 6.3392 10.4644C6.14606 10.414 5.96985 10.313 5.82871 10.1719C5.68758 10.0308 5.58662 9.85456 5.53626 9.66142C5.4859 9.46828 5.48794 9.26521 5.54219 9.07312L5.81313 8.26375C5.87492 8.06478 5.98421 7.88385 6.13156 7.73656L9.94812 3.92688C9.98311 3.89193 10.0069 3.8474 10.0166 3.7989C10.0263 3.75041 10.0214 3.70014 10.0025 3.65445C9.98357 3.60875 9.95154 3.56969 9.91044 3.5422C9.86934 3.51471 9.82101 3.50002 9.77156 3.5H3.25C2.78587 3.5 2.34075 3.68437 2.01256 4.01256C1.68437 4.34075 1.5 4.78587 1.5 5.25V12.75C1.5 13.2141 1.68437 13.6592 2.01256 13.9874C2.34075 14.3156 2.78587 14.5 3.25 14.5H10.75C11.2141 14.5 11.6592 14.3156 11.9874 13.9874C12.3156 13.6592 12.5 13.2141 12.5 12.75V6.22844C12.5 6.17899 12.4853 6.13066 12.4578 6.08956C12.4303 6.04846 12.3912 6.01643 12.3456 5.99753C12.2999 5.97864 12.2496 5.97371 12.2011 5.98338C12.1526 5.99306 12.1081 6.01689 12.0731 6.05188Z'
+                        fill='black'
+                      />
+                    </svg>
+                    Change
+                  </Button>
+                )}
+              </div>
+
+              <div className='flex justify-between items-center self-stretch  flex-nowrap '>
+                <div className='flex  flex-col gap-[8px] items-start  flex-nowrap '>
+                  <span className=" font-['Montserrat'] text-base font-normal opacity-75  text-[#112211] ">
+                    Personal ID
+                  </span>
+                  {isEditingPersonalId ? (
+                    <input
+                      type='text'
+                      value={newPersonalId}
+                      onChange={handleInputPersonalIdChange}
+                      className="font-['Montserrat'] w-[500px] text-[20px] font-semibold text-[#112211] border border-gray-300 rounded p-1"
                     />
-                    <path
-                      d='M12.0731 6.05188L8.26406 9.86844C8.11684 10.016 7.9359 10.1255 7.73688 10.1875L6.9275 10.4584C6.73542 10.5127 6.53234 10.5147 6.3392 10.4644C6.14606 10.414 5.96985 10.313 5.82871 10.1719C5.68758 10.0308 5.58662 9.85456 5.53626 9.66142C5.4859 9.46828 5.48794 9.26521 5.54219 9.07312L5.81313 8.26375C5.87492 8.06478 5.98421 7.88385 6.13156 7.73656L9.94812 3.92688C9.98311 3.89193 10.0069 3.8474 10.0166 3.7989C10.0263 3.75041 10.0214 3.70014 10.0025 3.65445C9.98357 3.60875 9.95154 3.56969 9.91044 3.5422C9.86934 3.51471 9.82101 3.50002 9.77156 3.5H3.25C2.78587 3.5 2.34075 3.68437 2.01256 4.01256C1.68437 4.34075 1.5 4.78587 1.5 5.25V12.75C1.5 13.2141 1.68437 13.6592 2.01256 13.9874C2.34075 14.3156 2.78587 14.5 3.25 14.5H10.75C11.2141 14.5 11.6592 14.3156 11.9874 13.9874C12.3156 13.6592 12.5 13.2141 12.5 12.75V6.22844C12.5 6.17899 12.4853 6.13066 12.4578 6.08956C12.4303 6.04846 12.3912 6.01643 12.3456 5.99753C12.2999 5.97864 12.2496 5.97371 12.2011 5.98338C12.1526 5.99306 12.1081 6.01689 12.0731 6.05188Z'
-                      fill='black'
-                    />
-                  </svg>
-                  Change
-                </Button>
+                  ) : (
+                    <span className=" font-['Montserrat'] text-[20px] font-semibold  text-[#112211] ">
+                      {currentUser?.personalId === 'string' || currentUser?.personalId === null
+                        ? 'Not set'
+                        : currentUser?.personalId}
+                    </span>
+                  )}
+                </div>
+                {isEditingPersonalId ? (
+                  <div className='flex gap-2'>
+                    <Button
+                      className='border-solid border-emerald-500 border-[1px] flex gap-2 p-1 px-3'
+                      onClick={handleSavePersonalIdClick}
+                    >
+                      Save
+                    </Button>
+                    <Button
+                      className='border-solid border-red-500 border-[1px] flex gap-2 p-1 px-3'
+                      onClick={handleCancelPersonalIdClick}
+                    >
+                      Cancel
+                    </Button>
+                  </div>
+                ) : (
+                  <Button
+                    className='border-solid border-emerald-500 border-[1px] flex gap-2'
+                    onClick={handleEditPersonalIdClick}
+                  >
+                    <svg width='16' height='16' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg'>
+                      <path
+                        d='M14.3559 1.67988L14.3558 1.67985C14.3123 1.63202 14.2595 1.59351 14.2007 1.56665C14.1419 1.53979 14.0782 1.52514 14.0135 1.52358C13.9489 1.52202 13.8846 1.53358 13.8245 1.55757C13.7645 1.58157 13.7099 1.61749 13.6641 1.66316L13.6641 1.66318L13.2776 2.04783C13.2351 2.09031 13.2112 2.14792 13.2112 2.20798C13.2112 2.26803 13.2351 2.32563 13.2775 2.36812C13.2775 2.36812 13.2775 2.36812 13.2776 2.36813L13.6319 2.72186L13.632 2.72191C13.653 2.74306 13.678 2.75985 13.7056 2.7713C13.7331 2.78275 13.7627 2.78864 13.7925 2.78864C13.8224 2.78864 13.8519 2.78275 13.8795 2.7713C13.907 2.75985 13.9321 2.74306 13.9531 2.72191L13.9532 2.72183L14.33 2.34686L14.3301 2.34683M14.3559 1.67988L14.3732 1.66407C14.555 1.86313 14.5372 2.17313 14.3466 2.36345L14.3301 2.34683M14.3559 1.67988C14.5287 1.86901 14.5124 2.16473 14.3301 2.34683M14.3559 1.67988L14.3301 2.34683M6.85472 8.46035L6.8547 8.46037C6.82335 8.49159 6.80056 8.53036 6.78853 8.57294L6.78822 8.57404L6.78819 8.57403L6.5274 9.3508C6.52245 9.36773 6.52213 9.38568 6.52647 9.40278C6.53085 9.42001 6.53979 9.43574 6.55236 9.44831C6.56493 9.46088 6.58066 9.46983 6.59789 9.4742C6.61499 9.47854 6.63294 9.47822 6.64987 9.47328L7.42601 9.21248L7.4271 9.21212L7.4271 9.21214C7.46969 9.20011 7.50846 9.17732 7.53968 9.14597L7.5397 9.14595L13.1709 3.50415C13.1709 3.50414 13.1709 3.50412 13.1709 3.50411C13.2186 3.45585 13.2454 3.3907 13.2454 3.32282C13.2454 3.25494 13.2187 3.1898 13.1709 3.14154L6.85472 8.46035ZM6.85472 8.46035L12.496 2.82911C12.5443 2.78091 12.6098 2.75385 12.678 2.75385C12.7463 2.75385 12.8117 2.78091 12.8601 2.82911L13.1709 3.14149L6.85472 8.46035Z'
+                        fill='black'
+                        stroke='#4C4850'
+                        stroke-width='0.046875'
+                      />
+                      <path
+                        d='M12.0731 6.05188L8.26406 9.86844C8.11684 10.016 7.9359 10.1255 7.73688 10.1875L6.9275 10.4584C6.73542 10.5127 6.53234 10.5147 6.3392 10.4644C6.14606 10.414 5.96985 10.313 5.82871 10.1719C5.68758 10.0308 5.58662 9.85456 5.53626 9.66142C5.4859 9.46828 5.48794 9.26521 5.54219 9.07312L5.81313 8.26375C5.87492 8.06478 5.98421 7.88385 6.13156 7.73656L9.94812 3.92688C9.98311 3.89193 10.0069 3.8474 10.0166 3.7989C10.0263 3.75041 10.0214 3.70014 10.0025 3.65445C9.98357 3.60875 9.95154 3.56969 9.91044 3.5422C9.86934 3.51471 9.82101 3.50002 9.77156 3.5H3.25C2.78587 3.5 2.34075 3.68437 2.01256 4.01256C1.68437 4.34075 1.5 4.78587 1.5 5.25V12.75C1.5 13.2141 1.68437 13.6592 2.01256 13.9874C2.34075 14.3156 2.78587 14.5 3.25 14.5H10.75C11.2141 14.5 11.6592 14.3156 11.9874 13.9874C12.3156 13.6592 12.5 13.2141 12.5 12.75V6.22844C12.5 6.17899 12.4853 6.13066 12.4578 6.08956C12.4303 6.04846 12.3912 6.01643 12.3456 5.99753C12.2999 5.97864 12.2496 5.97371 12.2011 5.98338C12.1526 5.99306 12.1081 6.01689 12.0731 6.05188Z'
+                        fill='black'
+                      />
+                    </svg>
+                    Change
+                  </Button>
+                )}
               </div>
               <div className='flex justify-between items-center self-stretch flex-nowrap '>
                 <div className='flex  flex-col gap-[8px] items-start  flex-nowrap '>
                   <span className=" font-['Montserrat'] text-[16px] font-normal opacity-75  text-[#112211] ">
                     Date of birth
                   </span>
-                  <span className="font-['Montserrat'] text-[20px] font-semibold  text-[#112211] ">01-01-1992</span>
+                  {isEditing ? (
+                    <DayPicker
+                      mode='single'
+                      initialFocus
+                      selected={selectedDate}
+                      onSelect={(date) => {
+                        setSelectedDate(date)
+                        console.log(selectedDate)
+                      }}
+                      classNames={{
+                        months: 'flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0',
+                        month: 'space-y-4',
+                        caption: 'flex justify-center pt-1 relative items-center',
+                        caption_label: 'text-sm font-medium',
+                        nav: 'space-x-1 flex items-center',
+                        nav_button: cn(
+                          buttonVariants({ variant: 'outline' }),
+                          'h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100'
+                        ),
+                        nav_button_previous: 'absolute left-1',
+                        nav_button_next: 'absolute right-1',
+                        table: 'w-full border-collapse space-y-1',
+                        head_row: 'flex',
+                        head_cell: 'text-muted-foreground rounded-md w-9 font-normal text-[0.8rem]',
+                        row: 'flex w-full mt-2',
+                        cell: 'h-9 w-9 text-center text-sm p-0 relative [&:has([aria-selected].day-range-end)]:rounded-r-md [&:has([aria-selected].day-outside)]:bg-accent/50 [&:has([aria-selected])]:bg-accent first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20',
+
+                        day_range_end: 'day-range-end',
+                        day_selected: 'bg-green-100 text-white hover:bg-green-600 focus:bg-green-600',
+                        day_today: 'bg-accent text-accent-foreground',
+                        day_outside:
+                          'day-outside text-muted-foreground opacity-50 aria-selected:bg-accent/50 aria-selected:text-muted-foreground aria-selected:opacity-30',
+                        day_disabled: 'text-muted-foreground opacity-50',
+                        day_range_middle: 'aria-selected:bg-accent aria-selected:text-accent-foreground',
+                        day_hidden: 'invisible',
+
+                        day: 'hover:bg-green-100 rounded w-9 h-9'
+                      }}
+                    />
+                  ) : (
+                    <span className="font-['Montserrat'] text-[20px] font-semibold text-[#112211]">
+                      {format(new Date(currentUser?.dayOfBirth ?? ''), 'dd/MM/yyyy') ?? 'Not set'}
+                    </span>
+                  )}
                 </div>
-                <Button className='border-solid border-emerald-500 border-[1px] flex gap-2'>
-                  <svg width='16' height='16' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg'>
-                    <path
-                      d='M14.3559 1.67988L14.3558 1.67985C14.3123 1.63202 14.2595 1.59351 14.2007 1.56665C14.1419 1.53979 14.0782 1.52514 14.0135 1.52358C13.9489 1.52202 13.8846 1.53358 13.8245 1.55757C13.7645 1.58157 13.7099 1.61749 13.6641 1.66316L13.6641 1.66318L13.2776 2.04783C13.2351 2.09031 13.2112 2.14792 13.2112 2.20798C13.2112 2.26803 13.2351 2.32563 13.2775 2.36812C13.2775 2.36812 13.2775 2.36812 13.2776 2.36813L13.6319 2.72186L13.632 2.72191C13.653 2.74306 13.678 2.75985 13.7056 2.7713C13.7331 2.78275 13.7627 2.78864 13.7925 2.78864C13.8224 2.78864 13.8519 2.78275 13.8795 2.7713C13.907 2.75985 13.9321 2.74306 13.9531 2.72191L13.9532 2.72183L14.33 2.34686L14.3301 2.34683M14.3559 1.67988L14.3732 1.66407C14.555 1.86313 14.5372 2.17313 14.3466 2.36345L14.3301 2.34683M14.3559 1.67988C14.5287 1.86901 14.5124 2.16473 14.3301 2.34683M14.3559 1.67988L14.3301 2.34683M6.85472 8.46035L6.8547 8.46037C6.82335 8.49159 6.80056 8.53036 6.78853 8.57294L6.78822 8.57404L6.78819 8.57403L6.5274 9.3508C6.52245 9.36773 6.52213 9.38568 6.52647 9.40278C6.53085 9.42001 6.53979 9.43574 6.55236 9.44831C6.56493 9.46088 6.58066 9.46983 6.59789 9.4742C6.61499 9.47854 6.63294 9.47822 6.64987 9.47328L7.42601 9.21248L7.4271 9.21212L7.4271 9.21214C7.46969 9.20011 7.50846 9.17732 7.53968 9.14597L7.5397 9.14595L13.1709 3.50415C13.1709 3.50414 13.1709 3.50412 13.1709 3.50411C13.2186 3.45585 13.2454 3.3907 13.2454 3.32282C13.2454 3.25494 13.2187 3.1898 13.1709 3.14154L6.85472 8.46035ZM6.85472 8.46035L12.496 2.82911C12.5443 2.78091 12.6098 2.75385 12.678 2.75385C12.7463 2.75385 12.8117 2.78091 12.8601 2.82911L13.1709 3.14149L6.85472 8.46035Z'
-                      fill='black'
-                      stroke='#4C4850'
-                      stroke-width='0.046875'
-                    />
-                    <path
-                      d='M12.0731 6.05188L8.26406 9.86844C8.11684 10.016 7.9359 10.1255 7.73688 10.1875L6.9275 10.4584C6.73542 10.5127 6.53234 10.5147 6.3392 10.4644C6.14606 10.414 5.96985 10.313 5.82871 10.1719C5.68758 10.0308 5.58662 9.85456 5.53626 9.66142C5.4859 9.46828 5.48794 9.26521 5.54219 9.07312L5.81313 8.26375C5.87492 8.06478 5.98421 7.88385 6.13156 7.73656L9.94812 3.92688C9.98311 3.89193 10.0069 3.8474 10.0166 3.7989C10.0263 3.75041 10.0214 3.70014 10.0025 3.65445C9.98357 3.60875 9.95154 3.56969 9.91044 3.5422C9.86934 3.51471 9.82101 3.50002 9.77156 3.5H3.25C2.78587 3.5 2.34075 3.68437 2.01256 4.01256C1.68437 4.34075 1.5 4.78587 1.5 5.25V12.75C1.5 13.2141 1.68437 13.6592 2.01256 13.9874C2.34075 14.3156 2.78587 14.5 3.25 14.5H10.75C11.2141 14.5 11.6592 14.3156 11.9874 13.9874C12.3156 13.6592 12.5 13.2141 12.5 12.75V6.22844C12.5 6.17899 12.4853 6.13066 12.4578 6.08956C12.4303 6.04846 12.3912 6.01643 12.3456 5.99753C12.2999 5.97864 12.2496 5.97371 12.2011 5.98338C12.1526 5.99306 12.1081 6.01689 12.0731 6.05188Z'
-                      fill='black'
-                    />
-                  </svg>
-                  Change
-                </Button>
+
+                {isEditing ? (
+                  <div className='flex gap-2'>
+                    <button
+                      className='border-solid border-emerald-500 border-[1px] flex gap-2 p-1 px-3'
+                      onClick={handleSaveClick}
+                    >
+                      Save
+                    </button>
+                    <button
+                      className='border-solid border-red-500 border-[1px] flex gap-2 p-1 px-3'
+                      onClick={handleCancelClick}
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                ) : (
+                  <Button className='border-solid border-emerald-500 border-[1px] flex gap-2' onClick={handleEditClick}>
+                    <svg width='16' height='16' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg'>
+                      <path
+                        d='M14.3559 1.67988L14.3558 1.67985C14.3123 1.63202 14.2595 1.59351 14.2007 1.56665C14.1419 1.53979 14.0782 1.52514 14.0135 1.52358C13.9489 1.52202 13.8846 1.53358 13.8245 1.55757C13.7645 1.58157 13.7099 1.61749 13.6641 1.66316L13.6641 1.66318L13.2776 2.04783C13.2351 2.09031 13.2112 2.14792 13.2112 2.20798C13.2112 2.26803 13.2351 2.32563 13.2775 2.36812C13.2775 2.36812 13.2775 2.36812 13.2776 2.36813L13.6319 2.72186L13.632 2.72191C13.653 2.74306 13.678 2.75985 13.7056 2.7713C13.7331 2.78275 13.7627 2.78864 13.7925 2.78864C13.8224 2.78864 13.8519 2.78275 13.8795 2.7713C13.907 2.75985 13.9321 2.74306 13.9531 2.72191L13.9532 2.72183L14.33 2.34686L14.3301 2.34683M14.3559 1.67988L14.3732 1.66407C14.555 1.86313 14.5372 2.17313 14.3466 2.36345L14.3301 2.34683M14.3559 1.67988C14.5287 1.86901 14.5124 2.16473 14.3301 2.34683M14.3559 1.67988L14.3301 2.34683M6.85472 8.46035L6.8547 8.46037C6.82335 8.49159 6.80056 8.53036 6.78853 8.57294L6.78822 8.57404L6.78819 8.57403L6.5274 9.3508C6.52245 9.36773 6.52213 9.38568 6.52647 9.40278C6.53085 9.42001 6.53979 9.43574 6.55236 9.44831C6.56493 9.46088 6.58066 9.46983 6.59789 9.4742C6.61499 9.47854 6.63294 9.47822 6.64987 9.47328L7.42601 9.21248L7.4271 9.21212L7.4271 9.21214C7.46969 9.20011 7.50846 9.17732 7.53968 9.14597L7.5397 9.14595L13.1709 3.50415C13.1709 3.50414 13.1709 3.50412 13.1709 3.50411C13.2186 3.45585 13.2454 3.3907 13.2454 3.32282C13.2454 3.25494 13.2187 3.1898 13.1709 3.14154L6.85472 8.46035ZM6.85472 8.46035L12.496 2.82911C12.5443 2.78091 12.6098 2.75385 12.678 2.75385C12.7463 2.75385 12.8117 2.78091 12.8601 2.82911L13.1709 3.14149L6.85472 8.46035Z'
+                        fill='black'
+                        stroke='#4C4850'
+                        stroke-width='0.046875'
+                      />
+                      <path
+                        d='M12.0731 6.05188L8.26406 9.86844C8.11684 10.016 7.9359 10.1255 7.73688 10.1875L6.9275 10.4584C6.73542 10.5127 6.53234 10.5147 6.3392 10.4644C6.14606 10.414 5.96985 10.313 5.82871 10.1719C5.68758 10.0308 5.58662 9.85456 5.53626 9.66142C5.4859 9.46828 5.48794 9.26521 5.54219 9.07312L5.81313 8.26375C5.87492 8.06478 5.98421 7.88385 6.13156 7.73656L9.94812 3.92688C9.98311 3.89193 10.0069 3.8474 10.0166 3.7989C10.0263 3.75041 10.0214 3.70014 10.0025 3.65445C9.98357 3.60875 9.95154 3.56969 9.91044 3.5422C9.86934 3.51471 9.82101 3.50002 9.77156 3.5H3.25C2.78587 3.5 2.34075 3.68437 2.01256 4.01256C1.68437 4.34075 1.5 4.78587 1.5 5.25V12.75C1.5 13.2141 1.68437 13.6592 2.01256 13.9874C2.34075 14.3156 2.78587 14.5 3.25 14.5H10.75C11.2141 14.5 11.6592 14.3156 11.9874 13.9874C12.3156 13.6592 12.5 13.2141 12.5 12.75V6.22844C12.5 6.17899 12.4853 6.13066 12.4578 6.08956C12.4303 6.04846 12.3912 6.01643 12.3456 5.99753C12.2999 5.97864 12.2496 5.97371 12.2011 5.98338C12.1526 5.99306 12.1081 6.01689 12.0731 6.05188Z'
+                        fill='black'
+                      />
+                    </svg>
+                    Change
+                  </Button>
+                )}
               </div>
             </div>
           </div>

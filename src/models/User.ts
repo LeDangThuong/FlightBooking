@@ -10,4 +10,6 @@ export interface User{
     role: string;
     stripeCustomerId: string;
     setupIntentId: string;
+    address: string;
+    personalId: string;
 }

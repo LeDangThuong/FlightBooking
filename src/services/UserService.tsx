@@ -118,4 +118,56 @@ export const resetPassword = async (codeOTP: number, email: string, newPassword:
   }
 }
 
+export const userChangeInfor = async (
+  token: string,
+  fullName: string,
+  dayOfBirth: Date,
+  gender: string,
+  address: string,
+  phoneNumber: string,
+  personalId: string
+) => {
+  try {
+    const response = await axios.put(
+      `${API_URL}users/change-info`,
+      {
+        token,
+        fullName,
+        dayOfBirth,
+        gender,
+        address,
+        phoneNumber,
+        personalId
+      },
+      {
+        headers: {
+          Accept: 'application/hal+json'
+        }
+      }
+    )
+
+    if (response.status === 200) {
+      return true
+    }
+  } catch (error) {
+    throw error
+  }
+}
+
+export const uploadNewAvatar = async (token: string, formData: FormData) => {
+  try {
+    const response = await axios.post(`${API_URL}users/upload-new-avatar?token=${token}`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    })
+
+    if (response.status === 200) {
+      return true
+    }
+  } catch (error) {
+    throw error
+  }
+}
+
 export { login, signup, forgotPassword }

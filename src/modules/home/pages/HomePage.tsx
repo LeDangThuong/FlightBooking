@@ -27,7 +27,7 @@ const HomePage = () => {
       </div>
       <div className='mx-32'>
         <SearchBar />
-        <LocationList />
+
         <OptionSection />
         <ReviewList />
       </div>

@@ -20,6 +20,7 @@ import { Elements } from '@stripe/react-stripe-js'
 import CheckoutForm from '@/modules/checkout/components/CheckoutForm'
 import { loadStripe } from '@stripe/stripe-js'
 import { PaymentPage } from '@/modules/checkout/pages/PaymentPage'
+import ReviewDetail from '@/modules/reviews/ReviewDetail'
 
 export default function useRouteElements() {
   const stripePromise = loadStripe(
@@ -38,9 +39,9 @@ export default function useRouteElements() {
     {
       path: '/profile',
       element: (
-        <MainLayout>
+        <LandingPageLayoutLableBlack>
           <ProfilePage />
-        </MainLayout>
+        </LandingPageLayoutLableBlack>
       )
     },
 
@@ -103,6 +104,14 @@ export default function useRouteElements() {
           <Elements stripe={stripePromise}>
             <PaymentPage />
           </Elements>
+        </LandingPageLayoutLableBlack>
+      )
+    },
+    {
+      path: '/review_detail',
+      element: (
+        <LandingPageLayoutLableBlack>
+          <ReviewDetail />
         </LandingPageLayoutLableBlack>
       )
     }

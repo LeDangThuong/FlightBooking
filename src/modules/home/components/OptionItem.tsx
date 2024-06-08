@@ -5,9 +5,10 @@ import { Review } from '@/models/Review'
 
 interface OptionProps {
   review: Review
+  onClickShow: () => void
 }
 
-const OptionItem: React.FC<OptionProps> = ({ review }) => {
+const OptionItem: React.FC<OptionProps> = ({ review, onClickShow }) => {
   return (
     <div className='w-full h-[500px] relative ' style={{ filter: 'drop-shadow(0px 4px 16px rgba(17,34,17,0.05))' }}>
       <img src={optionImg} className='w-full h-[500px] absolute left-0 top-0 rounded-2xl object-cover' />
@@ -18,7 +19,7 @@ const OptionItem: React.FC<OptionProps> = ({ review }) => {
             <p className='text-4xl font-bold text-center text-white'>{review.famousPlace}</p>
             <p className='text-base text-center text-white'>{review.title}</p>
           </div>
-          <Button className='rounded bg-[#8DD3BB]  text-[#112211] hover:opacity-85 gap-1'>
+          <Button className='rounded bg-[#8DD3BB]  text-[#112211] hover:opacity-85 gap-1' onClick={onClickShow}>
             <svg
               width={17}
               height={16}

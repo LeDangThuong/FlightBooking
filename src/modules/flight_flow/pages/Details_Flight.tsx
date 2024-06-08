@@ -29,38 +29,11 @@ export const DetailsFlight = () => {
 
   return (
     <div className='bg-[#FAFBFC] h-fit flex flex-col  text-white  w-full px-32 mb-52 '>
-      <div className='w-full h-[17px] justify-start items-end gap-2 inline-flex mt-24 mb-5'>
-        <div className="text-rose-400 text-sm font-medium font-['Montserrat']">Turkey</div>
-        <svg width='16' height='16' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg'>
-          <g opacity='0.75'>
-            <path
-              d='M6 3.5L10.5 8L6 12.5'
-              stroke='#112211'
-              stroke-width='1.5'
-              stroke-linecap='round'
-              stroke-linejoin='round'
-            />
-          </g>
-        </svg>
-
-        <div className="text-rose-400 text-sm font-medium font-['Montserrat']">Istanbul</div>
-        <svg width='16' height='16' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg'>
-          <g opacity='0.75'>
-            <path
-              d='M6 3.5L10.5 8L6 12.5'
-              stroke='#112211'
-              stroke-width='1.5'
-              stroke-linecap='round'
-              stroke-linejoin='round'
-            />
-          </g>
-        </svg>
-
-        <div className="opacity-75 text-neutral-900 text-sm font-medium font-['Montserrat']">
-          CVK Park Bosphorus Hotel Istanbul
-        </div>
+      <div className=" h-9 mt-3 text-green-300 text-[32px] font-semibold font-['Montserrat']">
+        Fight booking details
+        <br />
       </div>
-
+      div.h-5
       <div className='flex flex-col w-[300px] justify-start items-start flex-grow h-14 rounded-tl rounded-tr'>
         <div className='flex flex-col justify-start items-start self-stretch flex-grow-0 flex-shrink-0 gap-2.5 rounded bg-white border border-[#79747e]'>
           <div className='flex justify-start items-center self-stretch flex-grow-0 flex-shrink-0 pl-4 py-2 rounded-tl rounded-tr'>
@@ -86,26 +59,16 @@ export const DetailsFlight = () => {
           </div>
         </div>
       </div>
-
       <div className='h-2'></div>
-
       {selectFlights.map((flight, index) => (
         <div className='flex flex-col mb-6'>
           <InforAirline flight={flight} />
           <FlightItem typeFlight={index === 0 ? 'DEPARTURE' : 'RETURN'} flight={flight} numberSeats={passenger} />
         </div>
       ))}
-
       <div className='h-2'></div>
-
-      <div>
-        <div className="text-neutral-900 text-2xl font-semibold font-['Montserrat']">Choose seat:</div>
-      </div>
-
       <div className='h-2'></div>
-
       <div className='h-5'></div>
-
       <div className='flex justify-between'>
         <div>
           <span className="text-slate-900 text-3xl font-semibold font-['Montserrat'] leading-9 mr-2">Total: </span>
@@ -125,7 +88,6 @@ export const DetailsFlight = () => {
           </div>
         </div>
       </div>
-
       <div className='h-2'></div>
     </div>
   )
