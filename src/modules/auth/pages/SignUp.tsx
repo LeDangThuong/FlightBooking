@@ -153,7 +153,9 @@ export const SignUp = () => {
 
           <div className='flex justify-center items-center mt-3'>
             <h1 className='text-sm font-normal mr-2'>Already have an account?</h1>
-            <h1 className='text-[14px] font-semibold text-[#FA837F] cursor-pointer '>Login</h1>
+            <h1 className='text-[14px] font-semibold text-[#FA837F] cursor-pointer ' onClick={() => navigate('/')}>
+              Login
+            </h1>
           </div>
 
           <div className='flex mt-5'>

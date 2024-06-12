@@ -1,7 +1,7 @@
 import { Airline } from '@/models/Airline';
 import axios from 'axios'
 
-const API_URL = 'https://flightbooking-be.onrender.com/'
+const API_URL = 'https://flightbookingbe-production.up.railway.app/'
 
 export const getAirlineByPlaneId = async (id: number) : Promise<Airline> => {
     try{    
@@ -16,3 +16,4 @@ export const getAirlineByPlaneId = async (id: number) : Promise<Airline> => {
 
     }
 }
+

@@ -2,7 +2,7 @@ import { Review } from '@/models/Review';
 import axios from 'axios'
 
 
- const API_URL = 'https://flightbooking-be.onrender.com/'
+ const API_URL = 'https://flightbookingbe-production.up.railway.app/'
 // const API_URL = 'http://localhost:7050/'
 
 

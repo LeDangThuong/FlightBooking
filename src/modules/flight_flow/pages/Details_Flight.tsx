@@ -5,6 +5,7 @@ import { FlightItem } from '../components/FlightItem'
 import { setPassenger } from '@/redux/slice/flightSlice'
 import { InforAirline } from '../components/InforAirline'
 import { holdSeatBeforeBooking } from '@/services/BookingService'
+import { ToastContainer, toast } from 'react-toastify'
 
 export const DetailsFlight = () => {
   const navigate = useNavigate()
@@ -19,6 +20,14 @@ export const DetailsFlight = () => {
   const handleFlightItem = async () => {
     // hold seat
 
+    if (typeTicket === 'ONE_WAY' && passenger !== bookingTempDeparture?.selectSeats.length) {
+      toast.error('Please select a sufficient number of seats!')
+      return
+    } else if (typeTicket === 'ROUND_TRIP' && passenger !== bookingTempReturn?.selectSeats.length) {
+      toast.error('Please select a sufficient number of seats!')
+      return
+    }
+
     await holdSeatBeforeBooking(selectFlights[0].id, bookingTempDeparture!.selectSeats)
     if (typeTicket === 'ROUND_TRIP') {
       await holdSeatBeforeBooking(selectFlights[1].id, bookingTempReturn!.selectSeats)
@@ -29,6 +38,7 @@ export const DetailsFlight = () => {
 
   return (
     <div className='bg-[#FAFBFC] h-fit flex flex-col  text-white  w-full px-32 mb-52 '>
+      <ToastContainer />
       <div className=" h-9 mt-3 text-green-300 text-[32px] font-semibold font-['Montserrat']">
         Fight booking details
         <br />

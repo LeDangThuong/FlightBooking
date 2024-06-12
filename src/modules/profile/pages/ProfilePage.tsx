@@ -626,9 +626,9 @@ const ProfilePage = () => {
                 Flights
               </span>
             </div>
+            {/* <TicketItem />
             <TicketItem />
-            <TicketItem />
-            <TicketItem />
+            <TicketItem /> */}
           </div>
         </TabsContent>
         <TabsContent value='payment' className='mb-8'>

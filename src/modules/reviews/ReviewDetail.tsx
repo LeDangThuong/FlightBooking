@@ -19,7 +19,7 @@ const ReviewDetail = () => {
         {review.description}
       </div>
 
-      <img src={review.listImage[0]} alt='' className='h-[500px] w-[700px] rounded-md' />
+      <img src={review.listImage[0]} alt='' className='h-[500px] w-[700px] rounded-md object-cover' />
       <div className="w-full text-neutral-900 text-sm font-normal font-['Montserrat'] leading-tight">
         {review.conclude}
       </div>
@@ -31,7 +31,7 @@ const ReviewDetail = () => {
       {review.list.map((post) => (
         <div className='flex flex-col justify-start items-center gap-5'>
           <div className="w-full h-9 text-black text-[32px] font-semibold font-['Montserrat']">{post.question}</div>
-          <img src={post.image} alt={post.imageAlt} className='h-[500px] w-[700px] rounded-md' />
+          <img src={post.image} alt={post.imageAlt} className='h-[500px] w-[700px] rounded-md object-cover' />
           <div className="w-full text-neutral-900 text-sm font-normal font-['Montserrat'] leading-tight">
             {post.description}
           </div>

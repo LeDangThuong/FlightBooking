@@ -1,11 +1,41 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import backgroundImage from '@/assets/images/landing_background.png'
 import LocationList from '../components/LocationList'
 import ReviewList from '../components/ReviewList'
 import OptionSection from '../components/OptionSection'
 import SearchBar from '../components/SearchBar'
+import photo1 from '../../../assets/images/photo1.png'
+import PopularFlightComponent from '../components/PopularFlightComponent'
+import { Flight } from '@/models/Flight'
+import { getAllFlight } from '@/services/FlightService'
+import { useDispatch } from 'react-redux'
+import { setArrivalAirportState, setDateRange, setDepartureAirportState } from '@/redux/slice/flightSlice'
+import { getAirport } from '@/services/AirportService'
+import { useNavigate } from 'react-router-dom'
+import { DateRange } from 'react-day-picker'
+import { ToastContainer, toast } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
 
 const HomePage = () => {
+  const [flights, setFlights] = useState<Flight[]>()
+
+  const handleFilght = async () => {
+    setFlights(await getAllFlight())
+  }
+
+  useEffect(() => {
+    handleFilght()
+  }, [])
+
+  const dispatch = useDispatch()
+
+  const navigate = useNavigate()
+
+  const handleSearch = () => {
+    toast.error('Please provide full information!')
+    // Các thao tác khác khi nhấn nút tìm kiếm
+  }
+
   return (
     <div className='bg-white min-h-screen flex flex-col text-white mb-80 w-full'>
       <div className='relative h-[600px] mb-20'>
@@ -26,9 +56,46 @@ const HomePage = () => {
         </p>
       </div>
       <div className='mx-32'>
-        <SearchBar />
+        <ToastContainer />
+        <SearchBar onClick={handleSearch} />
 
         <OptionSection />
+
+        <div className='flex flex-col mt-32'>
+          <div className='flex flex-col sm:flex-row justify-between items-start gap-6 w-full'>
+            <div className='flex flex-col justify-start items-start gap-4'>
+              <p className='text-[32px] font-semibold text-left text-black'>Popular flight</p>
+              <p className='opacity-75 text-base text-left text-[#121]'>
+                Popular Flights &amp; Places Hire to our most popular destinations
+              </p>
+            </div>
+          </div>
+
+          <div className='flex my-4 gap-4  w-full'>
+            {flights?.slice(0, 4).map((flight) => (
+              <PopularFlightComponent
+                key={flight.id}
+                flight={flight}
+                onClickShow={async () => {
+                  const departureAirport = await getAirport(flight?.departureAirportId!)
+                  const arrivalAirport = await getAirport(flight?.arrivalAirportId!)
+
+                  dispatch(setDepartureAirportState(departureAirport))
+                  dispatch(setArrivalAirportState(arrivalAirport))
+
+                  dispatch(
+                    setDateRange({
+                      from: flight.departureDate
+                    })
+                  )
+
+                  navigate('/flight_listing')
+                }}
+              />
+            ))}
+          </div>
+        </div>
+
         <ReviewList />
       </div>
     </div>

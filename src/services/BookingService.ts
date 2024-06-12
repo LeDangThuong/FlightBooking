@@ -1,10 +1,11 @@
+import { HistoryBooking } from '@/models/HistoryBooking'
 import { Passenger } from '@/models/Passenger'
 import { User } from '@/models/User'
 import { RootState } from '@/redux/store'
 import axios from 'axios'
 import { useSelector } from 'react-redux'
 
-const API_URL = 'https://flightbooking-be.onrender.com/'
+const API_URL = 'https://flightbookingbe-production.up.railway.app/'
 
 
 export const calculateTotalPriceAfterBooking = async (flightId: number, selectedSeats: string[]) : Promise<number> => {
@@ -92,6 +93,18 @@ export const fillInforPassengerToCreateBooking = async (flightId: number, select
 
     }catch(e){
 
+        console.error('Error fetching users:', e);
+        throw e;
+    }
+}
+
+
+export const getTicketByUserId = async(userId: number)  : Promise<HistoryBooking[]>  => {
+    try {
+        const response = await axios.get<HistoryBooking[]>(`${API_URL}booking/get-ticket-by-user-id?userId=${userId}`);
+
+        return response.data;
+    } catch (e) {
         console.error('Error fetching users:', e);
         throw e;
     }

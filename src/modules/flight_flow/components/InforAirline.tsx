@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { getAirlineByPlaneId } from '@/services/AirlineService'
 import { Airline } from '@/models/Airline'
 import { Plane } from '@/models/Plane'
-import { getPlaneDetailByPlaneId } from '@/services/PlaneService'
+import { getPlaneNumberByPlaneId } from '@/services/PlaneService'
 
 interface InforAirlineProps {
   flight: Flight
@@ -26,7 +26,7 @@ export const InforAirline: React.FC<InforAirlineProps> = ({ flight }) => {
     setLoading(true)
 
     setAirline(await getAirlineByPlaneId(flight.planeId))
-    setPlane(await getPlaneDetailByPlaneId(flight.planeId))
+    setPlane(await getPlaneNumberByPlaneId(flight.planeId))
 
     console.log(plane)
 

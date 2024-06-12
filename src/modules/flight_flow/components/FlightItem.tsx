@@ -13,7 +13,7 @@ import { Airline } from '@/models/Airline'
 import { getAirport } from '@/services/AirportService'
 import { getAirlineByPlaneId } from '@/services/AirlineService'
 import { Plane } from '@/models/Plane'
-import { getPlaneDetailByPlaneId } from '@/services/PlaneService'
+import { getPlaneNumberByPlaneId } from '@/services/PlaneService'
 import { Seat, SeatResponse, groupSeatByClass } from '@/models/Seat'
 import { SeatChoose } from './SeatChoose'
 import { SeatCode } from './SeatCode'
@@ -72,6 +72,7 @@ export const FlightItem: FC<FlightItemProps> = ({ onClick, flight, numberSeats, 
   const [departureAirport, setDepartureAirport] = useState<Airport | null>(null)
   const [arrivalAirport, setArrivalAirport] = useState<Airport | null>(null)
   const [plane, setPlane] = useState<Plane | null>(null)
+  const [airline, setAirline] = useState<Airline | null>(null)
 
   const [seatData, setSeatData] = useState<Record<string, Record<string, Seat[]>> | null>(null)
 
@@ -97,8 +98,8 @@ export const FlightItem: FC<FlightItemProps> = ({ onClick, flight, numberSeats, 
     setLoading(true)
     setDepartureAirport(await getAirport(flight.departureAirportId))
     setArrivalAirport(await getAirport(flight.arrivalAirportId))
-    setPlane(await getPlaneDetailByPlaneId(flight.planeId))
-
+    setPlane(await getPlaneNumberByPlaneId(flight.planeId))
+    setAirline(await getAirlineByPlaneId(flight.planeId))
     setLoading(false)
   }
 
@@ -134,11 +135,9 @@ export const FlightItem: FC<FlightItemProps> = ({ onClick, flight, numberSeats, 
 
       <div className='flex w-full h-25 justify-between'>
         <div className=' px-4 py-2 h-full bg-white rounded-lg border border-green-300 justify-center items-center gap-3 flex '>
-          <img className='h-fit w-[130px] object-fill  ' src={plane?.airline?.logoUrl} />
+          <img className='h-fit w-[130px] object-fill  ' src={airline?.logoUrl} />
           <div className='flex flex-col '>
-            <div className="text-neutral-900 text-2xl font-semibold font-['Montserrat']">
-              {plane?.airline?.airlineName}
-            </div>
+            <div className="text-neutral-900 text-2xl font-semibold font-['Montserrat']">{airline?.airlineName}</div>
             <div className="opacity-60 text-neutral-900 text-sm font-medium font-['Montserrat']">
               {plane?.flightNumber}
             </div>

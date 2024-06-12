@@ -12,8 +12,16 @@ import check from '../../../assets/images/check.png'
 import Modal from '@/components/ui/modal'
 import { useNavigate } from 'react-router-dom'
 
+import { Airport } from '@/models/Airport'
+import { getAirlineByPlaneId } from '@/services/AirlineService'
+import { getAirport } from '@/services/AirportService'
+import { format } from 'date-fns'
+import { Airline } from '@/models/Airline'
 export const PaymentPage = () => {
   const showModelPayment = useSelector((state: RootState) => state.booking.showModelPayment)
+  const selectFlights = useSelector((state: RootState) => state.flight.selectFlights)
+  const bookingTempDeparture = useSelector((state: RootState) => state.flight.bookingTempDeparture)
+  const bookingTempReturn = useSelector((state: RootState) => state.flight.bookingTempReturn)
 
   const dispatch = useDispatch()
 
@@ -23,6 +31,31 @@ export const PaymentPage = () => {
     dispatch(setShowModelPayment(false))
     console.log('goToHomePage')
     navigate('/home')
+  }
+  const [departureAirline, setDepartureAirline] = useState<Airline | null>(null)
+  const [returnAirline, setReturnAirline] = useState<Airline | null>(null)
+  const [departureAirport, setDepartAirport] = useState<Airport | null>(null)
+  const [returnAirport, setReturnAirport] = useState<Airport | null>(null)
+
+  useEffect(() => {
+    fetchAirline()
+    fetchAirport()
+  })
+
+  const fetchAirline = async () => {
+    setDepartureAirline(await getAirlineByPlaneId(selectFlights[0].planeId))
+
+    if (selectFlights.length === 2) {
+      setReturnAirline(await getAirlineByPlaneId(selectFlights[1].planeId))
+    }
+  }
+
+  const fetchAirport = async () => {
+    setDepartAirport(await getAirport(selectFlights[0].departureAirportId))
+
+    if (selectFlights.length === 2) {
+      setReturnAirport(await getAirport(selectFlights[1].departureAirportId))
+    }
   }
 
   return (
@@ -52,21 +85,44 @@ export const PaymentPage = () => {
             <div className='flex gap-3'>
               {/* <img className='w-[120px] h-[120px] rounded-xl object-cover' src={} /> */}
               <div className='flex flex-col grow '>
-                <div className="opacity-75 text-neutral-900 text-base font-medium font-['Montserrat']">Economy </div>
-                <div className="text-neutral-900 text-xl font-semibold font-['Montserrat']">Emirates A380 Airbus</div>
-                <div className='flex items-center gap-2'>
-                  <div className='w-10 h-8 flex-col justify-start items-start gap-2.5 inline-flex'>
-                    <div className='self-stretch h-8 px-4 py-2 rounded border border-green-300 justify-center items-center gap-1 inline-flex'>
-                      <div className="text-neutral-900 text-xs font-medium font-['Montserrat']">4.2</div>
-                    </div>
+                <div className="text-green-300 text-2xl font-semibold font-['Montserrat'] ">Departure flight</div>
+
+                {/* <div className="opacity-75 text-neutral-900 text-base font-medium font-['Montserrat']">Economy </div> */}
+                <div className="text-neutral-900 text-xl font-semibold font-['Montserrat']">
+                  {departureAirline?.airlineName}
+                </div>
+
+                <div className="opacity-75 text-neutral-900 text-base font-medium font-['Montserrat']">
+                  {departureAirport?.airportName} - {departureAirport?.iataCode}
+                </div>
+
+                {/* <div className="opacity-75 text-neutral-900 text-base font-medium font-['Montserrat']">
+                  {format(new Date(selectFlights[0].departureDate), 'dd-MM-yyyy HH:mm')}
+                </div> */}
+              </div>
+            </div>
+
+            {selectFlights.length === 2 && (
+              <div className='flex gap-3'>
+                {/* <img className='w-[120px] h-[120px] rounded-xl object-cover' src={} /> */}
+                <div className='flex flex-col grow '>
+                  <div className="text-green-300 text-2xl font-semibold font-['Montserrat'] ">Return flight</div>
+
+                  {/* <div className="opacity-75 text-neutral-900 text-base font-medium font-['Montserrat']">Economy </div> */}
+                  <div className="text-neutral-900 text-xl font-semibold font-['Montserrat']">
+                    {returnAirline?.airlineName}
                   </div>
-                  <div>
-                    <span className="text-neutral-900 text-xs font-bold font-['Montserrat']">Very Good</span>
-                    <span className="text-neutral-900 text-xs font-medium font-['Montserrat']"> 54 reviews</span>
+
+                  <div className="opacity-75 text-neutral-900 text-base font-medium font-['Montserrat']">
+                    {returnAirport?.airportName} - {departureAirport?.iataCode}
+                  </div>
+
+                  <div className="opacity-75 text-neutral-900 text-base font-medium font-['Montserrat']">
+                    {format(new Date(selectFlights[1].departureDate), 'dd-MM-yyyy HH:mm')}
                   </div>
                 </div>
               </div>
-            </div>
+            )}
 
             <div className='w-[402px] h-[0.50px] opacity-25 bg-neutral-900' />
             <div>
@@ -79,27 +135,42 @@ export const PaymentPage = () => {
             <div className='w-full h-[0.50px] opacity-25 bg-neutral-900' />
             <div className="text-neutral-900 text-base font-bold font-['TradeGothic LT Extended']">Price Details</div>
             <div className='w-full justify-between items-start inline-flex'>
-              <div className="text-neutral-900 text-base font-medium font-['Montserrat']">Base Fare </div>
-              <div className="text-neutral-900 text-base font-semibold font-['Montserrat']">$400</div>
+              <div className="text-neutral-900 text-base font-medium font-['Montserrat']">Departure flight price </div>
+              <div className="text-neutral-900 text-base font-semibold font-['Montserrat']">
+                ${bookingTempDeparture !== undefined ? bookingTempDeparture?.price : 0}
+              </div>
             </div>
+
+            {selectFlights.length === 2 && (
+              <div className='w-full justify-between items-start inline-flex'>
+                <div className="text-neutral-900 text-base font-medium font-['Montserrat']">Return flight price </div>
+                <div className="text-neutral-900 text-base font-semibold font-['Montserrat']">
+                  ${bookingTempReturn !== undefined ? bookingTempReturn?.price : 0}
+                </div>
+              </div>
+            )}
             <div className='w-full justify-between items-start inline-flex'>
               <div className="text-neutral-900 text-base font-medium font-['Montserrat']">Discount </div>
-              <div className="text-neutral-900 text-base font-semibold font-['Montserrat']">$400</div>
+              <div className="text-neutral-900 text-base font-semibold font-['Montserrat']">$0</div>
             </div>
             <div className='w-full justify-between items-start inline-flex'>
               <div className="text-neutral-900 text-base font-medium font-['Montserrat']">Taxes </div>
-              <div className="text-neutral-900 text-base font-semibold font-['Montserrat']">$400</div>
+              <div className="text-neutral-900 text-base font-semibold font-['Montserrat']">$0</div>
             </div>
             <div className='w-full justify-between items-start inline-flex'>
               <div className="text-neutral-900 text-base font-medium font-['Montserrat']">Service Fee </div>
-              <div className="text-neutral-900 text-base font-semibold font-['Montserrat']">$400</div>
+              <div className="text-neutral-900 text-base font-semibold font-['Montserrat']">$0</div>
             </div>
 
             <div className='w-full h-[0.50px] opacity-25 bg-neutral-900' />
 
             <div className='w-full justify-between items-start inline-flex'>
               <div className="text-neutral-900 text-base font-medium font-['Montserrat']">Total </div>
-              <div className="text-neutral-900 text-base font-semibold font-['Montserrat']">$400</div>
+              <div className="text-neutral-900 text-base font-semibold font-['Montserrat']">
+                $
+                {(bookingTempDeparture !== undefined ? bookingTempDeparture?.price : 0) +
+                  (bookingTempReturn !== undefined ? bookingTempReturn?.price : 0)}
+              </div>
             </div>
           </div>
         </div>

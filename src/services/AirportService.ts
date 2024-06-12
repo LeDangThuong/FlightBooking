@@ -1,7 +1,7 @@
 import { Airport } from '@/models/Airport';
 import axios from 'axios'
 
-const API_URL = 'https://flightbooking-be.onrender.com/'
+const API_URL = 'https://flightbookingbe-production.up.railway.app/'
 
 export const getAllAirport = async (): Promise<Airport[]> =>{
     try{

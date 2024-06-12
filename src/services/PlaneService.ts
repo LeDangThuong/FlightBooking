@@ -2,11 +2,11 @@
 import { Plane } from '@/models/Plane';
 import axios from 'axios'
 
-const API_URL = 'https://flightbooking-be.onrender.com/'
+const API_URL = 'https://flightbookingbe-production.up.railway.app/'
 
-export const getPlaneDetailByPlaneId = async (id: number) : Promise<Plane> => {
+export const getPlaneNumberByPlaneId = async (id: number) : Promise<Plane> => {
     try{    
-        const response = await axios.get<Plane>(`${API_URL}airlines/get-plane-detail-by-planeId?planeId=${id}`)
+        const response = await axios.get<Plane>(`${API_URL}airlines/get-plane-number?planeId=${id}`)
 
         return response.data;
 
@@ -17,3 +17,4 @@ export const getPlaneDetailByPlaneId = async (id: number) : Promise<Plane> => {
 
     }
 }
+
