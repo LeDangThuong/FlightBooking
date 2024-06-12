@@ -7,7 +7,7 @@ import { ForgotPassword } from '@/modules/auth/pages/ForgotPassword'
 import { SetPassword } from '@/modules/auth/pages/SetPassword'
 import { SignUp } from '@/modules/auth/pages/SignUp'
 import { VerifyCode } from '@/modules/auth/pages/VerifyCode'
-import { Login } from '@/modules/auth/pages/LogIn'
+import { Login } from '@/modules/auth/pages/login'
 import { BookingDetails } from '@/modules/flight_flow/pages/Booking_Details'
 import { DetailsFlight } from '@/modules/flight_flow/pages/Details_Flight'
 import FlightListing from '@/modules/flight_flow/pages/Flight_Listing'
@@ -16,8 +16,16 @@ import { PassengerInformation } from '@/modules/flight_flow/pages/Passenger_Info
 import HomePage from '@/modules/home/pages/HomePage'
 import ProfilePage from '@/modules/profile/pages/ProfilePage'
 import { useRoutes } from 'react-router-dom'
+import { Elements } from '@stripe/react-stripe-js'
+import CheckoutForm from '@/modules/checkout/components/CheckoutForm'
+import { loadStripe } from '@stripe/stripe-js'
+import { PaymentPage } from '@/modules/checkout/pages/PaymentPage'
+import ReviewDetail from '@/modules/reviews/ReviewDetail'
 
 export default function useRouteElements() {
+  const stripePromise = loadStripe(
+    'pk_test_51OVwerA7WrEjctnX9STvulzywtvSiHbBfwpWtPz1qUisHRlxGoqeYEsezmX3wub802xxdEyo6N65w2zLu77HLP3200k4IHYlWU'
+  )
   const routeElements = useRoutes([
     {
       path: '/home',
@@ -31,9 +39,9 @@ export default function useRouteElements() {
     {
       path: '/profile',
       element: (
-        <MainLayout>
+        <LandingPageLayoutLableBlack>
           <ProfilePage />
-        </MainLayout>
+        </LandingPageLayoutLableBlack>
       )
     },
 
@@ -87,7 +95,24 @@ export default function useRouteElements() {
         <LandingPageLayoutLableBlack>
           <PassengerInformation />
         </LandingPageLayoutLableBlack>
-
+      )
+    },
+    {
+      path: '/payment',
+      element: (
+        <LandingPageLayoutLableBlack>
+          <Elements stripe={stripePromise}>
+            <PaymentPage />
+          </Elements>
+        </LandingPageLayoutLableBlack>
+      )
+    },
+    {
+      path: '/review_detail',
+      element: (
+        <LandingPageLayoutLableBlack>
+          <ReviewDetail />
+        </LandingPageLayoutLableBlack>
       )
     }
   ])

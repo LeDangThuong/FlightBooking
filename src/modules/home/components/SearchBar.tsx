@@ -5,29 +5,41 @@ import {
   searchFlights,
   setTypeTicket,
   setArrivalAirportState,
-  setDepartureAirportState
+  setDepartureAirportState,
+  setPassenger
 } from '@/redux/slice/flightSlice'
 import { RootState } from '@/redux/store'
 import { getAllAirport } from '@/services/AirportService'
 import { searchFlightOneWay, searchFlightRoundTrip } from '@/services/FlightService'
-import React, { useEffect, useState } from 'react'
+import React, { FC, useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
-import toast, { Toaster } from 'react-hot-toast'
+import { toast } from 'react-toastify'
+import { ToastContainer } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
 
-const SearchBar = () => {
+import { getAllReviews } from '@/services/ReviewService'
+import { setReviews } from '@/redux/slice/reviewSlice'
+
+interface SearchBarProps {
+  onClick?: () => void
+}
+
+const SearchBar: FC<SearchBarProps> = ({ onClick }) => {
   const navigate = useNavigate()
-
-  const notify = () => toast('Here is your toast.')
 
   const handleShowFlight = async () => {
     if (departureAirport === undefined || arrivalAirport === undefined) {
-      notify()
+      onClick!()
       return
     }
 
+    setLoading(true)
+
     if (typeTicket === 'ONE_WAY') {
       const flight = await searchFlightOneWay(departureAirport!, arrivalAirport!, dateRange.from!)
+
+      console.log(flight)
       dispatch(searchFlights(flight))
     } else if (typeTicket === 'ROUND_TRIP') {
       const flight = await searchFlightRoundTrip(departureAirport!, arrivalAirport!, dateRange.from!, dateRange.to!)
@@ -38,10 +50,13 @@ const SearchBar = () => {
     dispatch(setArrivalAirportState(arrivalAirport!))
 
     navigate('/flight_listing')
+
+    setLoading(false)
   }
 
   const typeTicket = useSelector((state: RootState) => state.flight.typeTicket)
   const dateRange = useSelector((state: RootState) => state.flight.dateRange)
+  const passenger = useSelector((state: RootState) => state.flight.passenger)
 
   const departureAirportState = useSelector((state: RootState) => state.flight.departureAirport)
   const arrivalAirportState = useSelector((state: RootState) => state.flight.arrivalAirport)
@@ -81,6 +96,7 @@ const SearchBar = () => {
     const fetchData = async () => {
       try {
         const data = await getAllAirport()
+        // dispatch(setReviews(await getAllReviews()))
         setAirports(data)
         setLoading(false)
       } catch (error) {
@@ -104,9 +120,10 @@ const SearchBar = () => {
 
   return (
     <div
-      className='flex flex-col justify-start items-start w-[1232px] absolute left-1/2 transform -translate-x-1/2 top-[480px] gap-8 px-8 pt-4 pb-8 rounded-2xl bg-white'
+      className='flex flex-col justify-start items-start  md:w-[700px] lg:w-[1232px] w-[500px] absolute left-1/2 transform -translate-x-1/2 top-[480px] gap-8 px-8 pt-4 pb-8 rounded-2xl bg-white'
       style={{ boxShadow: '0px 4px 16px 0 rgba(141,211,187,0.15)' }}
     >
+      <ToastContainer />
       <div className='flex flex-col justify-start items-start flex-grow-0 flex-shrink-0 gap-8'>
         <div className='flex justify-start items-center flex-grow-0 flex-shrink-0 relative gap-8'>
           <Button className='flex justify-center items-center flex-grow-0 flex-shrink-0 h-12 px-4 py-2 rounded text-black hover:text-[#8DD3BB] gap-1 active:underline-offset-2'>
@@ -137,23 +154,6 @@ const SearchBar = () => {
           >
             <line x1='0.5' y1='2.18557e-8' x2='0.499998' y2={48} stroke='#D7E2EE' />
           </svg>
-          <Button className='flex justify-center items-center flex-grow-0 flex-shrink-0 h-12 px-4 py-2 rounded text-black hover:text-[#8DD3BB] gap-1 active:underline-offset-2'>
-            <svg
-              width={24}
-              height={24}
-              viewBox='0 0 24 24'
-              fill='none'
-              xmlns='http://www.w3.org/2000/svg'
-              className='flex-grow-0 flex-shrink-0 w-6 h-6 relative'
-              preserveAspectRatio='none'
-            >
-              <path
-                d='M20.25 10.8141C19.7772 10.6065 19.2664 10.4996 18.75 10.5H5.25C4.73368 10.4995 4.22288 10.6063 3.75 10.8136C3.08166 11.1059 2.51294 11.5865 2.11336 12.1968C1.71377 12.8071 1.50064 13.5205 1.5 14.25V19.5C1.5 19.6989 1.57902 19.8897 1.71967 20.0303C1.86032 20.171 2.05109 20.25 2.25 20.25C2.44891 20.25 2.63968 20.171 2.78033 20.0303C2.92098 19.8897 3 19.6989 3 19.5V19.125C3.00122 19.0259 3.04112 18.9312 3.11118 18.8612C3.18124 18.7911 3.27592 18.7512 3.375 18.75H20.625C20.7241 18.7512 20.8188 18.7911 20.8888 18.8612C20.9589 18.9312 20.9988 19.0259 21 19.125V19.5C21 19.6989 21.079 19.8897 21.2197 20.0303C21.3603 20.171 21.5511 20.25 21.75 20.25C21.9489 20.25 22.1397 20.171 22.2803 20.0303C22.421 19.8897 22.5 19.6989 22.5 19.5V14.25C22.4993 13.5206 22.2861 12.8073 21.8865 12.1971C21.4869 11.5869 20.9183 11.1063 20.25 10.8141ZM17.625 3.75H6.375C5.67881 3.75 5.01113 4.02656 4.51884 4.51884C4.02656 5.01113 3.75 5.67881 3.75 6.375V9.75C3.75002 9.77906 3.75679 9.80771 3.76979 9.8337C3.78278 9.85969 3.80163 9.8823 3.82486 9.89976C3.84809 9.91721 3.87505 9.92903 3.90363 9.93428C3.93221 9.93953 3.96162 9.93806 3.98953 9.93C4.39896 9.81025 4.82341 9.74964 5.25 9.75H5.44828C5.49456 9.75029 5.53932 9.73346 5.57393 9.70274C5.60855 9.67202 5.63058 9.62958 5.63578 9.58359C5.67669 9.21712 5.85115 8.87856 6.12586 8.63256C6.40056 8.38656 6.75625 8.25037 7.125 8.25H9.75C10.119 8.25003 10.475 8.38606 10.75 8.63209C11.025 8.87812 11.1997 9.21688 11.2406 9.58359C11.2458 9.62958 11.2679 9.67202 11.3025 9.70274C11.3371 9.73346 11.3818 9.75029 11.4281 9.75H12.5747C12.621 9.75029 12.6657 9.73346 12.7003 9.70274C12.735 9.67202 12.757 9.62958 12.7622 9.58359C12.8031 9.21736 12.9773 8.87899 13.2517 8.63303C13.5261 8.38706 13.8815 8.25072 14.25 8.25H16.875C17.244 8.25003 17.6 8.38606 17.875 8.63209C18.15 8.87812 18.3247 9.21688 18.3656 9.58359C18.3708 9.62958 18.3929 9.67202 18.4275 9.70274C18.4621 9.73346 18.5068 9.75029 18.5531 9.75H18.75C19.1766 9.74979 19.6011 9.81057 20.0105 9.93047C20.0384 9.93854 20.0679 9.94 20.0965 9.93473C20.1251 9.92945 20.1521 9.91759 20.1753 9.90009C20.1986 9.88258 20.2174 9.8599 20.2304 9.83385C20.2433 9.8078 20.2501 9.7791 20.25 9.75V6.375C20.25 5.67881 19.9734 5.01113 19.4812 4.51884C18.9889 4.02656 18.3212 3.75 17.625 3.75Z'
-                fill='currentColor'
-              />
-            </svg>
-            <p>Stays</p>
-          </Button>
         </div>
 
         <div className='flex gap-4'>
@@ -203,8 +203,8 @@ const SearchBar = () => {
             </div>
           </div>
         </div>
-        <div className='flex justify-start items-center flex-grow-0 flex-shrink-0 w-[1184px] gap-6'>
-          <div className='flex flex-col justify-start items-start  h-14 rounded-tl rounded-tr w-[250px]'>
+        <div className='flex flex-col lg:flex-row w-[500px] justify-start  flex-grow-0 flex-shrink-0 md:w-[1184px] gap-6'>
+          <div className='flex flex-col justify-start items-start  h-14 rounded-tl rounded-tr w-[450px] md:w-[650px] lg:w-[250px] px:[20px]'>
             <div className='relative w-full'>
               <div
                 className='flex flex-col justify-start items-start self-stretch flex-grow-0 flex-shrink-0 gap-2.5 rounded bg-white border border-[#79747e]'
@@ -261,7 +261,7 @@ const SearchBar = () => {
               </div>
             </div>
           </div>
-          <div className='flex flex-col justify-start items-start  h-14 rounded-tl rounded-tr w-[250px]'>
+          <div className='flex flex-col justify-start items-start  h-14 rounded-tl rounded-tr w-[450px] md:w-[650px] lg:w-[250px] px:[20px]'>
             <div className='relative w-full'>
               <div
                 className='flex flex-col justify-start items-start self-stretch flex-grow-0 flex-shrink-0 gap-2.5 rounded bg-white border border-[#79747e]'
@@ -317,9 +317,9 @@ const SearchBar = () => {
               </div>
             </div>
           </div>
-          <DatePickerWithRange className='text-black border border-[#79747e] rounded h-14' />
+          <DatePickerWithRange className='text-black border border-[#79747e] rounded h-14  w-[450px] md:w-[650px] lg:w-[250px] px:[20px]' />
 
-          <div className='flex flex-col justify-start items-start flex-grow h-14 rounded-tl rounded-tr'>
+          <div className='flex flex-col justify-start items-start flex-grow h-14 rounded-tl rounded-tr  w-[450px] md:w-[650px] lg:w-[250px] px:[20px]'>
             <div className='flex flex-col justify-start items-start self-stretch flex-grow-0 flex-shrink-0 gap-2.5 rounded bg-white border border-[#79747e]'>
               <div className='flex justify-start items-center self-stretch flex-grow-0 flex-shrink-0 pl-4 py-2 rounded-tl rounded-tr'>
                 <div className='flex flex-col justify-center items-start flex-grow h-10 relative'>
@@ -328,6 +328,12 @@ const SearchBar = () => {
                       type='number'
                       className=' appearance-none
                       rounded w-full py-2 px-2 text-gray-700 leading-tight focus:outline-none'
+                      value={passenger}
+                      onChange={(value) => {
+                        if (Number.parseInt(value.target.value) >= 1) {
+                          dispatch(setPassenger(Number.parseInt(value.target.value)))
+                        }
+                      }}
                     />
                     {/* <p className='flex-grow-0 flex-shrink-0 text-base text-left text-[#1c1b1f]'>1 Passenger</p> */}
                   </div>
@@ -341,7 +347,7 @@ const SearchBar = () => {
         </div>
       </div>
       <div className='flex justify-end items-center self-stretch flex-grow-0 flex-shrink-0 gap-6'>
-        <Button className='flex justify-center items-center flex-grow-0 flex-shrink-0 h-12 px-4 py-2 rounded text-black hover:opacity-85 gap-1'>
+        {/* <Button className='flex justify-center items-center flex-grow-0 flex-shrink-0 h-12 px-4 py-2 rounded text-black hover:opacity-85 gap-1'>
           <svg
             width={16}
             height={16}
@@ -361,27 +367,45 @@ const SearchBar = () => {
             />
           </svg>
           <p>Add Promo Code</p>
-        </Button>
+        </Button> */}
+
         <Button
           onClick={handleShowFlight}
           className='flex justify-center items-center flex-grow-0 flex-shrink-0 h-12 px-4 py-2 rounded  bg-[#8dd3bb] text-black hover:opacity-85 gap-1'
         >
-          <svg
-            width={16}
-            height={16}
-            viewBox='0 0 16 16'
-            fill='none'
-            xmlns='http://www.w3.org/2000/svg'
-            className='flex-grow-0 flex-shrink-0 w-4 h-4 relative'
-            preserveAspectRatio='xMidYMid meet'
-          >
-            <path
-              d='M9.46858 15.0003H9.49983C9.65427 15.0012 9.80542 14.9556 9.9336 14.8694C10.0618 14.7832 10.1611 14.6605 10.2186 14.5171L10.1967 14.5089L10.1967 14.5086C10.141 14.6475 10.0447 14.7664 9.92052 14.8499C9.79624 14.9335 9.64971 14.9777 9.49996 14.9768H9.49983H9.4691M9.46858 15.0003L9.46963 14.9769C9.46945 14.9769 9.46928 14.9768 9.4691 14.9768M9.46858 15.0003V14.9768H9.4691M9.46858 15.0003L9.4691 14.9768M9.4691 14.9768C9.17379 14.9633 8.92874 14.766 8.83168 14.4848L8.83151 14.4844C8.82949 14.4789 8.82777 14.4737 8.82603 14.4679L8.82617 14.4679L8.82513 14.4654L6.99283 10.1735C6.96895 10.0941 6.9662 10.0098 6.98487 9.92901C7.00363 9.8478 7.04336 9.77294 7.1001 9.71188L9.4691 14.9768ZM14.7645 1.23713C14.8636 1.3366 14.9317 1.46264 14.9607 1.60002C14.9896 1.7374 14.9781 1.88022 14.9276 2.01122L14.9276 2.01135L10.1968 14.5084L7.10012 9.71185L13.5164 2.82935C13.5165 2.82925 13.5166 2.82915 13.5167 2.82905C13.5393 2.80642 13.5572 2.77958 13.5694 2.75006C13.5817 2.7204 13.588 2.68862 13.588 2.65652C13.588 2.62443 13.5817 2.59265 13.5694 2.56299C13.5571 2.53334 13.5391 2.5064 13.5164 2.4837C13.4937 2.46101 13.4668 2.443 13.4371 2.43072C13.4075 2.41844 13.3757 2.41212 13.3436 2.41212C13.3115 2.41212 13.2797 2.41844 13.25 2.43072C13.2205 2.44295 13.1937 2.46085 13.1711 2.4834C13.171 2.4835 13.1709 2.4836 13.1708 2.4837L6.28512 8.89967C6.22406 8.95642 6.14918 8.99616 6.06797 9.01492C5.98716 9.03359 5.90288 9.03084 5.82347 9.00696L1.53403 7.17528L1.53408 7.17518L1.53191 7.17449L1.51945 7.17055C1.51939 7.17053 1.51933 7.17051 1.51927 7.17049C1.37747 7.123 1.25378 7.03291 1.16507 6.91253C1.07633 6.79209 1.02693 6.64719 1.02362 6.49762C1.0203 6.34805 1.06324 6.20111 1.14657 6.07686C1.22872 5.95436 1.34617 5.85981 1.48327 5.8057V5.80658L1.49156 5.80344L13.9925 1.07188L13.9925 1.07187C14.1235 1.02208 14.266 1.01119 14.4029 1.04052C14.5399 1.06984 14.6654 1.13812 14.7645 1.23713ZM14.7645 1.23713C14.7645 1.23714 14.7645 1.23715 14.7645 1.23716L14.7811 1.22059L14.7645 1.23713Z'
-              fill='black'
-              stroke='#112211'
-              stroke-width='0.046875'
-            />
-          </svg>
+          {loading ? (
+            <svg
+              className='w-5 h-5 mr-3 -ml-1 text-white animate-spin'
+              xmlns='http://www.w3.org/2000/svg'
+              fill='none'
+              viewBox='0 0 24 24'
+            >
+              <circle className='opacity-25' cx='12' cy='12' r='10' stroke='currentColor' strokeWidth='4'></circle>
+              <path
+                className='opacity-75'
+                fill='currentColor'
+                d='M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z'
+              ></path>
+            </svg>
+          ) : (
+            <svg
+              width={16}
+              height={16}
+              viewBox='0 0 16 16'
+              fill='none'
+              xmlns='http://www.w3.org/2000/svg'
+              className='flex-grow-0 flex-shrink-0 w-4 h-4 relative'
+              preserveAspectRatio='xMidYMid meet'
+            >
+              <path
+                d='M9.46858 15.0003H9.49983C9.65427 15.0012 9.80542 14.9556 9.9336 14.8694C10.0618 14.7832 10.1611 14.6605 10.2186 14.5171L10.1967 14.5089L10.1967 14.5086C10.141 14.6475 10.0447 14.7664 9.92052 14.8499C9.79624 14.9335 9.64971 14.9777 9.49996 14.9768H9.49983H9.4691M9.46858 15.0003L9.46963 14.9769C9.46945 14.9769 9.46928 14.9768 9.4691 14.9768M9.46858 15.0003V14.9768H9.4691M9.46858 15.0003L9.4691 14.9768M9.4691 14.9768C9.17379 14.9633 8.92874 14.766 8.83168 14.4848L8.83151 14.4844C8.82949 14.4789 8.82777 14.4737 8.82603 14.4679L8.82617 14.4679L8.82513 14.4654L6.99283 10.1735C6.96895 10.0941 6.9662 10.0098 6.98487 9.92901C7.00363 9.8478 7.04336 9.77294 7.1001 9.71188L9.4691 14.9768ZM14.7645 1.23713C14.8636 1.3366 14.9317 1.46264 14.9607 1.60002C14.9896 1.7374 14.9781 1.88022 14.9276 2.01122L14.9276 2.01135L10.1968 14.5084L7.10012 9.71185L13.5164 2.82935C13.5165 2.82925 13.5166 2.82915 13.5167 2.82905C13.5393 2.80642 13.5572 2.77958 13.5694 2.75006C13.5817 2.7204 13.588 2.68862 13.588 2.65652C13.588 2.62443 13.5817 2.59265 13.5694 2.56299C13.5571 2.53334 13.5391 2.5064 13.5164 2.4837C13.4937 2.46101 13.4668 2.443 13.4371 2.43072C13.4075 2.41844 13.3757 2.41212 13.3436 2.41212C13.3115 2.41212 13.2797 2.41844 13.25 2.43072C13.2205 2.44295 13.1937 2.46085 13.1711 2.4834C13.171 2.4835 13.1709 2.4836 13.1708 2.4837L6.28512 8.89967C6.22406 8.95642 6.14918 8.99616 6.06797 9.01492C5.98716 9.03359 5.90288 9.03084 5.82347 9.00696L1.53403 7.17528L1.53408 7.17518L1.53191 7.17449L1.51945 7.17055C1.51939 7.17053 1.51933 7.17051 1.51927 7.17049C1.37747 7.123 1.25378 7.03291 1.16507 6.91253C1.07633 6.79209 1.02693 6.64719 1.02362 6.49762C1.0203 6.34805 1.06324 6.20111 1.14657 6.07686C1.22872 5.95436 1.34617 5.85981 1.48327 5.8057V5.80658L1.49156 5.80344L13.9925 1.07188L13.9925 1.07187C14.1235 1.02208 14.266 1.01119 14.4029 1.04052C14.5399 1.06984 14.6654 1.13812 14.7645 1.23713ZM14.7645 1.23713C14.7645 1.23714 14.7645 1.23715 14.7645 1.23716L14.7811 1.22059L14.7645 1.23713Z'
+                fill='black'
+                stroke='#112211'
+                stroke-width='0.046875'
+              />
+            </svg>
+          )}
+
           <p>Show Flights</p>
         </Button>
       </div>

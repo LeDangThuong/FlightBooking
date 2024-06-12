@@ -9,25 +9,36 @@ import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '@/redux/store'
 import { Flight } from '@/models/Flight'
 import { setSelectFlights } from '@/redux/slice/flightSlice'
+import Skeleton from '@mui/material/Skeleton'
+import { CircleLoader } from 'react-spinners'
+import { ToastContainer, toast } from 'react-toastify'
 
 const FlightListing = () => {
   const [selectTab, setSelectTab] = useState('Cheapest')
 
   const dispatch = useDispatch()
   const flights = useSelector((state: RootState) => state.flight.flights)
+  const loadingSearchFilght = useSelector((state: RootState) => state.flight.loadingSearchFilght)
   const selectFlights = useSelector((state: RootState) => state.flight.selectFlights)
   const typeTicket = useSelector((state: RootState) => state.flight.typeTicket)
 
   //const [selectFlights, setSelectFlight] = useState<Flight[]>([])
 
   const handleSelectFlight = (flight: Flight) => {
+    if (selectFlights.includes(flight)) {
+      console.log('This ticket has been selected')
+      toast.error('This ticket has been selected')
+      return
+    }
     if (typeTicket === 'ONE_WAY' && selectFlights.length === 1) {
-      console.log('Chỉ được chọn 1 vé')
+      console.log('Only 1 ticket can be selected')
+      toast.error('Only 1 ticket can be selected')
       return
     }
 
     if (typeTicket === 'ROUND_TRIP' && selectFlights.length === 2) {
       console.log('Chỉ được chọn 2 vé')
+      toast.error('Only 2 ticket can be selected')
       return
     }
 
@@ -40,18 +51,23 @@ const FlightListing = () => {
 
   return (
     <div className='bg-[#FAFBFC] h-full flex flex-col justify-start text-white  w-full gap-6'>
+      <ToastContainer />
       <div className='h-1'></div>
       <div className='mx-32'>
         <SearchBar />
       </div>
-      <div className='flex   mx-32  space-x-6'>
-        <div className='grow-0 '>
-          <Fillter />
+      <div className='flex flex-col h-fit lg:flex-row  mx-32  space-x-6'>
+        <div className='md:grow-0 '>
+          <Fillter
+            onClickError={() => {
+              toast.error('Please select the correct ticket number')
+            }}
+          />
         </div>
-        <div className='grow-0 w-[0.50px] h-[1360px] opacity-25 bg-neutral-900' />
-        <div className='grow h-fit flex flex-col '>
+        <div className='grow-0 w-[0.50px] h-[1360px] opacity-25 bg-neutral-900 hidden lg:flex' />
+        <div className='lg:grow h-fit flex flex-col   '>
           <div
-            className='flex justify-between items-center w-full h-fit  px-8 pt-4 pb-1 rounded-2xl bg-white '
+            className='lg:flex hidden justify-between items-center w-full h-fit  px-8 pt-4 pb-1 rounded-2xl bg-white  '
             style={{ boxShadow: '0px 4px 16px 0 rgba(141,211,187,0.15)' }}
           >
             <div
@@ -158,17 +174,15 @@ const FlightListing = () => {
           </div>
           <div className='my-2'></div>
 
-          {flights.map((flight) => (
-            <FlightTicket2 flight={flight} onClickChooseFlight={() => handleSelectFlight(flight)} />
-          ))}
-
-          {/* <FlightTicket2 />
-          <FlightTicket2 />
-          <FlightTicket2 />
-          <FlightTicket2 /> */}
-          {/* <FlightTicket />
-          <FlightTicket />
-          <FlightTicket /> */}
+          {loadingSearchFilght ? (
+            <div className='flex justify-center items-center w-full h-70'>
+              <CircleLoader color={'#36D7B7'} loading={loadingSearchFilght} size={50} />
+            </div>
+          ) : (
+            flights.map((flight) => (
+              <FlightTicket2 flight={flight} onClickChooseFlight={() => handleSelectFlight(flight)} />
+            ))
+          )}
 
           <div className='w-full h-12 my-3 flex-col justify-start items-start gap-2.5 inline-flex'>
             <div className='self-stretch h-12 px-4 py-2 bg-neutral-900 rounded justify-center items-center gap-1 inline-flex'>

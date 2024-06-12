@@ -1,15 +1,16 @@
+import { HistoryBooking } from '@/models/HistoryBooking'
 import { Passenger } from '@/models/Passenger'
 import { User } from '@/models/User'
 import { RootState } from '@/redux/store'
 import axios from 'axios'
 import { useSelector } from 'react-redux'
 
-const API_URL = 'https://flightbooking-be.onrender.com/'
+const API_URL = 'https://flightbookingbe-production.up.railway.app/'
 
 
-export const calculateTotalPriceBeforeBooking = async (flightId: number, selectedSeats: string[]) : Promise<number> => {
-    try{    
-        const response = await axios.post<number>(`${API_URL}booking/calculate-total-price-before-booking`, { flightId, selectedSeats});
+export const calculateTotalPriceAfterBooking = async (flightId: number, selectedSeats: string[]) : Promise<number> => {
+    try {    
+        const response = await axios.post<number>(`${API_URL}booking/calculate-total-price-after-booking?flightId=${flightId}`, selectedSeats);
 
         return response.data;
 
@@ -18,6 +19,34 @@ export const calculateTotalPriceBeforeBooking = async (flightId: number, selecte
         console.error('Error fetching users:', e);
         throw e;
 
+    }
+}
+
+export const holdSeatBeforeBooking = async (flightId: number, selectedSeats: string[]) => {
+    try {
+        const response = await axios.post(`${API_URL}booking/hold-seat-before-booking?flightId=${flightId}`, selectedSeats);
+        
+        if (response.status === 200 ) {
+            return true
+        }
+
+        return false
+    } catch (error) {
+        throw error
+    }
+}
+
+export const bookSeatBeforeBooking = async (flightId: number, selectedSeats: string[]) => {
+    
+    try {
+        const response = await axios.post(`${API_URL}booking/book-seat-before-booking?flightId=${flightId}`, selectedSeats);
+        if (response.status === 200) {
+            return true
+        }
+
+        return false
+    } catch (error) {
+        throw error
     }
 }
 
@@ -64,6 +93,18 @@ export const fillInforPassengerToCreateBooking = async (flightId: number, select
 
     }catch(e){
 
+        console.error('Error fetching users:', e);
+        throw e;
+    }
+}
+
+
+export const getTicketByUserId = async(userId: number)  : Promise<HistoryBooking[]>  => {
+    try {
+        const response = await axios.get<HistoryBooking[]>(`${API_URL}booking/get-ticket-by-user-id?userId=${userId}`);
+
+        return response.data;
+    } catch (e) {
         console.error('Error fetching users:', e);
         throw e;
     }

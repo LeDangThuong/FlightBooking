@@ -1,7 +1,8 @@
 import axios from 'axios'
 import { User } from '../models/User'
 
-const API_URL = 'https://flightbooking-be.onrender.com/'
+const API_URL = 'https://flightbookingbe-production.up.railway.app/'
+// const API_URL = 'http://localhost:7050/'
 
 const login = async (username: string, password: string) => {
   console.log(username, password)
@@ -63,12 +64,7 @@ const forgotPassword = async (email: string) => {
 
 export const getUserByUsername = async (username: string): Promise<User> => {
   try {
-    const response = await axios.put<User>(`${API_URL}users/${username}`, {
-      fullName: 'string',
-      phoneNumber: 'string',
-      address: 'string',
-      dayOfBirth: '2024-05-30T08:45:26.054Z'
-    })
+    const response = await axios.get<User>(`${API_URL}users/username?username=${username}`)
 
     return response.data
   } catch (e) {
@@ -119,6 +115,58 @@ export const resetPassword = async (codeOTP: number, email: string, newPassword:
     }
   } catch (error) {
     throw new Error('Vui lòng nhập đầy đủ.')
+  }
+}
+
+export const userChangeInfor = async (
+  token: string,
+  fullName: string,
+  dayOfBirth: Date,
+  gender: string,
+  address: string,
+  phoneNumber: string,
+  personalId: string
+) => {
+  try {
+    const response = await axios.put(
+      `${API_URL}users/change-info`,
+      {
+        token,
+        fullName,
+        dayOfBirth,
+        gender,
+        address,
+        phoneNumber,
+        personalId
+      },
+      {
+        headers: {
+          Accept: 'application/hal+json'
+        }
+      }
+    )
+
+    if (response.status === 200) {
+      return true
+    }
+  } catch (error) {
+    throw error
+  }
+}
+
+export const uploadNewAvatar = async (token: string, formData: FormData) => {
+  try {
+    const response = await axios.post(`${API_URL}users/upload-new-avatar?token=${token}`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    })
+
+    if (response.status === 200) {
+      return true
+    }
+  } catch (error) {
+    throw error
   }
 }
 

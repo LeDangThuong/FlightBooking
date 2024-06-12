@@ -8,6 +8,8 @@ import { Airport } from '@/models/Airport'
 import { calculateTimeDifference } from '@/utils/calculateTimeDifference'
 import { Airline } from '@/models/Airline'
 import { getAirlineByPlaneId } from '@/services/AirlineService'
+import { Plane } from '@/models/Plane'
+import { getPlaneNumberByPlaneId } from '@/services/PlaneService'
 
 interface FightTicket2Props {
   flight: Flight
@@ -25,13 +27,14 @@ export const FlightTicket2: React.FC<FightTicket2Props> = ({ onClickChooseFlight
   const [departureAirport, setDepartureAirport] = useState<Airport | null>(null)
   const [arrivalAirport, setArrivalAirport] = useState<Airport | null>(null)
   const [airline, setAirline] = useState<Airline | null>(null)
+  const [plane, setPlane] = useState<Plane | null>()
 
   const setAirport = async () => {
     setLoading(true)
     setDepartureAirport(await getAirport(flight.departureAirportId))
     setArrivalAirport(await getAirport(flight.arrivalAirportId))
     setAirline(await getAirlineByPlaneId(flight.planeId))
-
+    setPlane(await getPlaneNumberByPlaneId(flight.planeId))
     setLoading(false)
   }
 
@@ -72,44 +75,46 @@ export const FlightTicket2: React.FC<FightTicket2Props> = ({ onClickChooseFlight
             </div>
           </div>
 
-          <div className='w-full h-9  py-px justify-center items-center gap-[25px] flex '>
-            <div className='text-center'>
-              <span className="text-black text-sm font-semibold font-['Montserrat']">
-                {departureTime}
-                <br />
-              </span>
-              <span className="text-zinc-500 text-sm font-semibold font-['Montserrat']">
-                {departureAirport?.iataCode}
-              </span>
+          <div className='flex w-full items-center flex-col lg:flex-row'>
+            <div className='w-full h-9  py-px justify-center items-center gap-[25px] flex  '>
+              <div className='text-center'>
+                <span className="text-black text-sm font-semibold font-['Montserrat']">
+                  {departureTime}
+                  <br />
+                </span>
+                <span className="text-zinc-500 text-sm font-semibold font-['Montserrat']">
+                  {departureAirport?.iataCode}
+                </span>
+              </div>
+
+              <svg width='60' height='6' viewBox='0 0 39 6' fill='none' xmlns='http://www.w3.org/2000/svg'>
+                <path
+                  d='M5.66667 3C5.66667 1.52724 4.47276 0.333335 3 0.333335C1.52724 0.333335 0.333336 1.52724 0.333336 3C0.333336 4.47276 1.52724 5.66667 3 5.66667C4.47276 5.66667 5.66667 4.47276 5.66667 3ZM39 2.5L3 2.5L3 3.5L39 3.5L39 2.5Z'
+                  fill='black'
+                />
+              </svg>
+              <img className='w-6 h-6' src={airplane} />
+
+              <svg width='60' height='6' viewBox='0 0 39 6' fill='none' xmlns='http://www.w3.org/2000/svg'>
+                <path
+                  d='M38.6667 3C38.6667 1.52724 37.4728 0.333333 36 0.333333C34.5272 0.333333 33.3333 1.52724 33.3333 3C33.3333 4.47276 34.5272 5.66667 36 5.66667C37.4728 5.66667 38.6667 4.47276 38.6667 3ZM36 2.5L-2.18557e-08 2.5L2.18557e-08 3.5L36 3.5L36 2.5Z'
+                  fill='black'
+                />
+              </svg>
+              <div className='text-center'>
+                <span className="text-black text-sm font-semibold font-['Montserrat']">
+                  {arrivalTime}
+                  <br />
+                </span>
+                <span className="text-zinc-500 text-sm font-semibold font-['Montserrat']">
+                  {arrivalAirport?.iataCode}
+                </span>
+              </div>
             </div>
 
-            <svg width='60' height='6' viewBox='0 0 39 6' fill='none' xmlns='http://www.w3.org/2000/svg'>
-              <path
-                d='M5.66667 3C5.66667 1.52724 4.47276 0.333335 3 0.333335C1.52724 0.333335 0.333336 1.52724 0.333336 3C0.333336 4.47276 1.52724 5.66667 3 5.66667C4.47276 5.66667 5.66667 4.47276 5.66667 3ZM39 2.5L3 2.5L3 3.5L39 3.5L39 2.5Z'
-                fill='black'
-              />
-            </svg>
-            <img className='w-6 h-6' src={airplane} />
-
-            <svg width='60' height='6' viewBox='0 0 39 6' fill='none' xmlns='http://www.w3.org/2000/svg'>
-              <path
-                d='M38.6667 3C38.6667 1.52724 37.4728 0.333333 36 0.333333C34.5272 0.333333 33.3333 1.52724 33.3333 3C33.3333 4.47276 34.5272 5.66667 36 5.66667C37.4728 5.66667 38.6667 4.47276 38.6667 3ZM36 2.5L-2.18557e-08 2.5L2.18557e-08 3.5L36 3.5L36 2.5Z'
-                fill='black'
-              />
-            </svg>
-            <div className='text-center'>
-              <span className="text-black text-sm font-semibold font-['Montserrat']">
-                {arrivalTime}
-                <br />
-              </span>
-              <span className="text-zinc-500 text-sm font-semibold font-['Montserrat']">
-                {arrivalAirport?.iataCode}
-              </span>
-            </div>
-            <div className='opacity-40 w-fit flex'>
-              <div className="text-neutral-900 text-sm font-medium font-['Montserrat'] w-fit">Total time: </div>
-              <div className="text-neutral-900 text-sm font-bold font-['Montserrat'] w-fit">
-                {/* {flight.departureDate.getMilliseconds().toString()}h {}m */}
+            <div className='opacity-40 w-[200px] flex text-end  '>
+              <div className="text-black text-xl font-medium font-['Montserrat'] ">
+                {format(flight.departureDate, 'yyyy-MM-dd')}
               </div>
             </div>
           </div>
@@ -158,20 +163,20 @@ export const FlightTicket2: React.FC<FightTicket2Props> = ({ onClickChooseFlight
           >
             <div className='flex flex-col max-h-full justify-between'>
               <div className='flex flex-col items-end'>
-                <div className="text-center text-black text-sm font-medium font-['Montserrat']">21:50</div>
+                <div className="text-center text-black text-sm font-medium font-['Montserrat']">{departureTime}</div>
                 <div className="text-center text-black text-[10px] font-normal font-['Montserrat']">
-                  Mon, 25 Nov 2024
+                  {format(flight.departureDate, 'EEE, dd MMMM yyyy')}
                 </div>
               </div>
 
-              <div className='flex flex-col items-end'>
+              {/* <div className='flex flex-col items-end'>
                 <div className="text-center text-black text-[10px] font-normal font-['Montserrat']">2h 28m</div>
-              </div>
+              </div> */}
 
               <div className='flex flex-col items-end'>
-                <div className="text-center text-black text-sm font-medium font-['Montserrat']">21:50</div>
+                <div className="text-center text-black text-sm font-medium font-['Montserrat']">{arrivalTime}</div>
                 <div className="text-center text-black text-[10px] font-normal font-['Montserrat']">
-                  Mon, 25 Nov 2024
+                  {format(flight.arrivalDate, 'EEE, dd MMMM yyyy')}
                 </div>
               </div>
             </div>
@@ -184,15 +189,21 @@ export const FlightTicket2: React.FC<FightTicket2Props> = ({ onClickChooseFlight
 
             <div className='flex flex-col gap-8'>
               <div className='flex flex-col items-start'>
-                <div className="text-center text-black text-sm font-medium font-['Montserrat']">Ha Noi City</div>
-                <div className="text-center text-black text-[10px] font-light font-['Montserrat']">Noi Bai Airport</div>
+                <div className="text-center text-black text-sm font-medium font-['Montserrat']">
+                  {departureAirport?.city}
+                </div>
+                <div className="text-center text-black text-[10px] font-light font-['Montserrat']">
+                  {departureAirport?.airportName}
+                </div>
               </div>
 
               <div className='flex'>
                 <div className='flex flex-col'>
-                  <div className="text-neutral-900 text-xs font-medium font-['Montserrat']">Vietnam Airlines</div>
+                  <div className="text-neutral-900 text-xs font-medium font-['Montserrat']">{airline?.airlineName}</div>
                   <div className='flex gap-5 justify-center items-center '>
-                    <div className="text-neutral-900 text-[8px] font-light font-['Montserrat']">VN-775</div>
+                    <div className="text-neutral-900 text-[8px] font-light font-['Montserrat']">
+                      {plane?.flightNumber}
+                    </div>
                     <div className='w-0.5 h-0.5 bg-black rounded-full' />
                     <div className="text-neutral-900 text-[8px] font-light font-['Montserrat']">Economy</div>
                   </div>
@@ -200,15 +211,11 @@ export const FlightTicket2: React.FC<FightTicket2Props> = ({ onClickChooseFlight
               </div>
 
               <div className='flex flex-col items-start'>
-                <div className="text-center text-black text-sm font-medium font-['Montserrat']">Baggage 23Kg</div>
-                <div className="text-center text-black text-[10px] font-light font-['Montserrat']">
-                  Cabin baggage 1x12kg
+                <div className="text-center text-black text-sm font-medium font-['Montserrat']">
+                  {arrivalAirport?.city}
                 </div>
-              </div>
-              <div className='flex flex-col items-start'>
-                <div className="text-center text-black text-sm font-medium font-['Montserrat']">Ho Chi Minh City</div>
                 <div className="text-center text-black text-[10px] font-light font-['Montserrat']">
-                  Tan Son Nhat Airport
+                  {arrivalAirport?.airportName}
                 </div>
               </div>
             </div>
@@ -251,44 +258,20 @@ export const FlightTicket2: React.FC<FightTicket2Props> = ({ onClickChooseFlight
 
             <div className='w-full h-[0px] border border-zinc-500'></div>
 
-            <div className="text-black text-xs font-medium font-['Montserrat']">Baggage Prices (Per Pax)</div>
+            <div className="text-black text-xs font-medium font-['Montserrat']">Ticket class prices (Per Pax)</div>
 
             <div className='flex flex-col gap-1'>
               <div className='flex justify-between'>
-                <div className="text-zinc-500 text-xs font-medium font-['Montserrat']">Cabin baggage 7kg</div>
-                <div className=" text-zinc-500 text-xs font-medium font-['Montserrat']">Free</div>
+                <div className="text-zinc-500 text-xs font-medium font-['Montserrat']">First class </div>
+                <div className=" text-zinc-500 text-xs font-medium font-['Montserrat']">{flight.firstClassPrice}$</div>
               </div>
               <div className='flex justify-between'>
-                <div className="text-zinc-500 text-xs font-medium font-['Montserrat']">+20 kg baggage </div>
-                <div className=" text-zinc-500 text-xs font-medium font-['Montserrat']">20$</div>
+                <div className="text-zinc-500 text-xs font-medium font-['Montserrat']">Business </div>
+                <div className=" text-zinc-500 text-xs font-medium font-['Montserrat']">{flight.businessPrice}$</div>
               </div>
               <div className='flex justify-between'>
-                <div className="text-zinc-500 text-xs font-medium font-['Montserrat']">+30 kg baggage </div>
-                <div className=" text-zinc-500 text-xs font-medium font-['Montserrat']">40$</div>
-              </div>
-              <div className='flex justify-between'>
-                <div className="text-zinc-500 text-xs font-medium font-['Montserrat']">+40 kg baggage </div>
-                <div className=" text-zinc-500 text-xs font-medium font-['Montserrat']">60$</div>
-              </div>
-            </div>
-            <div className='w-full h-[0px] border border-zinc-500'></div>
-            <div className="text-black text-xs font-medium font-['Montserrat']">Price Details</div>
-
-            <div className='flex flex-col gap-1'>
-              <div className='flex justify-between'>
-                <div className="text-zinc-500 text-xs font-medium font-['Montserrat']">Adult Basic Fare </div>
-                <div className=" text-zinc-500 text-xs font-medium font-['Montserrat']">104$</div>
-              </div>
-              <div className='flex justify-between'>
-                <div className="text-zinc-500 text-xs font-medium font-['Montserrat']">Taxt</div>
-                <div className=" text-zinc-500 text-xs font-medium font-['Montserrat']">Included</div>
-              </div>
-
-              <div className='w-full h-[0px] border border-zinc-200'></div>
-
-              <div className='flex justify-between'>
-                <div className="text-zinc-500 text-xs font-medium font-['Montserrat']">Total pay</div>
-                <div className=" text-zinc-500 text-xs font-medium font-['Montserrat']">104$</div>
+                <div className="text-zinc-500 text-xs font-medium font-['Montserrat']">Economic </div>
+                <div className=" text-zinc-500 text-xs font-medium font-['Montserrat']">{flight.economyPrice}$</div>
               </div>
             </div>
           </div>
@@ -310,7 +293,7 @@ export const FlightTicket2: React.FC<FightTicket2Props> = ({ onClickChooseFlight
               className='w-[159px] h-10 flex-col justify-start items-start gap-2.5 inline-flex'
               onClick={onClickChooseFlight}
             >
-              <div className='self-stretch h-12 px-4 py-2 bg-green-300 rounded justify-center items-center gap-1 inline-flex'>
+              <div className='cursor-pointer self-stretch h-12 px-4 py-2 bg-green-300 rounded justify-center items-center gap-1 inline-flex'>
                 <div className="text-neutral-900 text-sm font-semibold font-['Montserrat']">Choose Flight</div>
               </div>
             </div>

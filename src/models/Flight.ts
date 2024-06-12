@@ -1,3 +1,5 @@
+import { SeatResponse } from "./Seat";
+
 export interface Flight{
     id: number;
     flightStatus: string;
@@ -10,4 +12,5 @@ export interface Flight{
     economyPrice: number;
     businessPrice: number;
     firstClassPrice: number;
+    seatStatuses: string;
 }

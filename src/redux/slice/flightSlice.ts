@@ -22,6 +22,7 @@ interface FlightState{
     bookingTempDeparture: BookingTemp | undefined
     bookingTempReturn: BookingTemp | undefined
     passengerInfor: Passenger[]
+    loadingSearchFilght: boolean
 }
 
 const initialState: FlightState = {
@@ -38,7 +39,14 @@ const initialState: FlightState = {
     passenger : 1,
     bookingTempDeparture: undefined,
     bookingTempReturn: undefined,
-    passengerInfor: []
+    passengerInfor: [{
+        id: 0,
+        fullName: '',
+        email: '',
+        personalId: '',
+        seatNumber: ''
+    }],
+    loadingSearchFilght: false
 }
 
 export const flightSlice = createSlice({
@@ -79,21 +87,26 @@ export const flightSlice = createSlice({
                 seatNumber: ''
               }))
         },
-        setBookingTempDeparture:  (state, action: PayloadAction<BookingTemp>) =>{
+        setBookingTempDeparture:  (state, action: PayloadAction<BookingTemp | undefined>) =>{
             state.bookingTempDeparture = action.payload
         },
 
-        setBookingTempReturn:  (state, action: PayloadAction<BookingTemp>) =>{
+        setBookingTempReturn:  (state, action: PayloadAction<BookingTemp | undefined>) =>{
             state.bookingTempReturn = action.payload
         },
         setPassengerInfor:  (state, action: PayloadAction<Passenger[]>) =>{
             state.passengerInfor = action.payload
         },
+        setLoadingSearchFlight:  (state, action: PayloadAction<boolean>) =>{
+            state.loadingSearchFilght = action.payload
+        },
     }
 })
 
 export const {setTypeTicket, searchFlights, setSelectFlights, setDateRange, setDepartureAirportState, 
-    setArrivalAirportState, setPassenger, setBookingTempDeparture, setBookingTempReturn, setPassengerInfor} = flightSlice.actions;
+    setArrivalAirportState, setPassenger, setBookingTempDeparture, setBookingTempReturn, setPassengerInfor
+    , setLoadingSearchFlight
+} = flightSlice.actions;
 
 export const selectTypeTicket = (state: RootState) => state.flight.typeTicket;
 

@@ -1,21 +1,25 @@
 import React from 'react'
 import { Button } from '@/components/ui/button'
 import optionImg from '@/assets/images/landing_background.png'
+import { Review } from '@/models/Review'
 
-const OptionItem = () => {
+interface OptionProps {
+  review: Review
+  onClickShow: () => void
+}
+
+const OptionItem: React.FC<OptionProps> = ({ review, onClickShow }) => {
   return (
-    <div className='w-full h-[559px] relative' style={{ filter: 'drop-shadow(0px 4px 16px rgba(17,34,17,0.05))' }}>
-      <img src={optionImg} className='w-full h-[559px] absolute left-0 top-0 rounded-2xl object-cover' />
+    <div className='w-full h-[500px] relative ' style={{ filter: 'drop-shadow(0px 4px 16px rgba(17,34,17,0.05))' }}>
+      <img src={optionImg} className='w-full h-[500px] absolute left-0 top-0 rounded-2xl object-cover' />
       <div className='absolute inset-0 rounded-2xl bg-gradient-to-b from-transparent to-black'></div>
       <div className='absolute inset-x-0 bottom-0 transform -translate-y-1/2'>
         <div className='flex flex-col justify-start items-center gap-4 h-full px-6'>
           <div className='flex flex-col justify-start items-center gap-2'>
-            <p className='text-4xl font-bold text-center text-white'>Flights</p>
-            <p className='text-base text-center text-white'>
-              Search Flights &amp; Places Hire to our most popular destinations
-            </p>
+            <p className='text-4xl font-bold text-center text-white'>{review.famousPlace}</p>
+            <p className='text-base text-center text-white'>{review.title}</p>
           </div>
-          <Button className='rounded bg-[#8DD3BB]  text-[#112211] hover:opacity-85 gap-1'>
+          <Button className='rounded bg-[#8DD3BB]  text-[#112211] hover:opacity-85 gap-1' onClick={onClickShow}>
             <svg
               width={17}
               height={16}
@@ -32,7 +36,7 @@ const OptionItem = () => {
                 stroke-width='0.046875'
               />
             </svg>
-            <p>Show Flights</p>
+            <p>Show</p>
           </Button>
         </div>
       </div>

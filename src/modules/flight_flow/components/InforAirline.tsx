@@ -1,5 +1,10 @@
 import { Flight } from '@/models/Flight'
 import photo5 from '../../../assets/images/photo5.png'
+import { useEffect, useState } from 'react'
+import { getAirlineByPlaneId } from '@/services/AirlineService'
+import { Airline } from '@/models/Airline'
+import { Plane } from '@/models/Plane'
+import { getPlaneNumberByPlaneId } from '@/services/PlaneService'
 
 interface InforAirlineProps {
   flight: Flight
@@ -7,39 +12,41 @@ interface InforAirlineProps {
 }
 
 export const InforAirline: React.FC<InforAirlineProps> = ({ flight }) => {
+  const [airline, setAirline] = useState<Airline | null>(null)
+  const [plane, setPlane] = useState<Plane | null>(null)
+
+  const [loading, setLoading] = useState<boolean>(false)
+  const [selectImage, setSelectImage] = useState<number>(0)
+
+  const handleSelectImage = (index: number) => {
+    setSelectImage(index)
+  }
+
+  const fetchAirline = async () => {
+    setLoading(true)
+
+    setAirline(await getAirlineByPlaneId(flight.planeId))
+    setPlane(await getPlaneNumberByPlaneId(flight.planeId))
+
+    console.log(plane)
+
+    setLoading(false)
+  }
+
+  useEffect(() => {
+    fetchAirline()
+  }, [])
   return (
     <div className='flex flex-col'>
       <div className='flex justify-between  '>
         <div className='flex flex-col gap-2'>
           <div className="text-neutral-900 text-2xl font-bold font-['TradeGothic LT Extended']">
-            Emirates A380 Airbus
+            {airline?.airlineName}
           </div>
 
-          <div className='w-[374px] h-[18px] justify-center items-center gap-1 inline-flex'>
-            <svg width='18' height='18' viewBox='0 0 18 18' fill='none' xmlns='http://www.w3.org/2000/svg'>
-              <path
-                d='M9 7.875C9.62132 7.875 10.125 7.37132 10.125 6.75C10.125 6.12868 9.62132 5.625 9 5.625C8.37868 5.625 7.875 6.12868 7.875 6.75C7.875 7.37132 8.37868 7.875 9 7.875Z'
-                fill='#112211'
-              />
-              <path
-                d='M9 1.125C5.89852 1.125 3.375 3.53848 3.375 6.50391C3.375 7.91613 4.01871 9.79418 5.2882 12.086C6.30773 13.9261 7.48723 15.59 8.1007 16.418C8.20437 16.5594 8.33991 16.6745 8.49633 16.7538C8.65276 16.8331 8.82567 16.8744 9.00105 16.8744C9.17644 16.8744 9.34935 16.8331 9.50578 16.7538C9.6622 16.6745 9.79774 16.5594 9.90141 16.418C10.5138 15.59 11.6944 13.9261 12.7139 12.086C13.9813 9.79488 14.625 7.91684 14.625 6.50391C14.625 3.53848 12.1015 1.125 9 1.125ZM9 9C8.55499 9 8.11998 8.86804 7.74997 8.62081C7.37996 8.37357 7.09157 8.02217 6.92127 7.61104C6.75097 7.1999 6.70642 6.7475 6.79323 6.31105C6.88005 5.87459 7.09434 5.47368 7.40901 5.15901C7.72368 4.84434 8.12459 4.63005 8.56105 4.54323C8.9975 4.45642 9.4499 4.50097 9.86104 4.67127C10.2722 4.84157 10.6236 5.12996 10.8708 5.49997C11.118 5.86998 11.25 6.30499 11.25 6.75C11.2493 7.34654 11.0121 7.91846 10.5903 8.34027C10.1685 8.76209 9.59654 8.99935 9 9Z'
-                fill='#112211'
-              />
-            </svg>
-
+          <div className='w-[374px] h-[18px] justify-start items-center gap-1 inline-flex'>
             <div className="opacity-75 text-neutral-900 text-sm font-medium font-['Montserrat']">
-              Gümüssuyu Mah. Inönü Cad. No:8, Istanbul 34437
-            </div>
-          </div>
-          <div className='flex items-center gap-2'>
-            <div className='w-10 h-8 flex-col justify-start items-start gap-2.5 inline-flex'>
-              <div className='self-stretch h-8 px-4 py-2 rounded border border-green-300 justify-center items-center gap-1 inline-flex'>
-                <div className="text-neutral-900 text-xs font-medium font-['Montserrat']">4.2</div>
-              </div>
-            </div>
-            <div>
-              <span className="text-neutral-900 text-xs font-bold font-['Montserrat']">Very Good</span>
-              <span className="text-neutral-900 text-xs font-medium font-['Montserrat']"> 54 reviews</span>
+              {plane?.flightNumber}
             </div>
           </div>
         </div>
@@ -72,26 +79,26 @@ export const InforAirline: React.FC<InforAirlineProps> = ({ flight }) => {
                 </svg>
               </div>
             </div>
-
-            <div className='w-[150px] h-12 flex-col justify-start items-start gap-2.5 inline-flex'>
-              <div className='self-stretch h-12 px-4 py-2 bg-green-300 rounded justify-center items-center gap-1 inline-flex'>
-                <div className="text-neutral-900 text-sm font-semibold font-['Montserrat']">Book now</div>
-              </div>
-            </div>
           </div>
         </div>
       </div>
 
-      <img className='w-[1232px] my-5 h-[395px] rounded-xl' src={photo5} />
+      <img className='w-[1232px] my-5 h-[395px] rounded-xl object-cover ' src={airline?.picture[selectImage]} />
 
-      <div className='flex gap-5 my-5'>
-        <img className='w-[120px] h-[120px]  rounded-xl object-cover' src={photo5} />
-        <img className='w-[120px] h-[120px]  rounded-xl object-cover' src={photo5} />
-        <img className='w-[120px] h-[120px]  rounded-xl object-cover' src={photo5} />
-        <img className='w-[120px] h-[120px]  rounded-xl object-cover' src={photo5} />
-        <img className='w-[120px] h-[120px]  rounded-xl object-cover' src={photo5} />
-        <img className='w-[120px] h-[120px]  rounded-xl object-cover' src={photo5} />
-        <img className='w-[120px] h-[120px]  rounded-xl object-cover' src={photo5} />
+      <div className='flex gap-5 my-5 overflow-x-auto whitespace-nowrap'>
+        {airline &&
+          airline.picture.map((item, index) => (
+            <img
+              key={index}
+              className={
+                selectImage === index
+                  ? 'w-[120px] h-[120px]  rounded-xl object-cover border-4 border-green-300'
+                  : 'w-[120px] h-[120px]  rounded-xl object-cover'
+              }
+              src={item}
+              onClick={() => handleSelectImage(index)}
+            />
+          ))}
       </div>
 
       <div className='flex flex-col p-4 bg-green-300 bg-opacity-60 rounded-lg gap-3  my-4'>

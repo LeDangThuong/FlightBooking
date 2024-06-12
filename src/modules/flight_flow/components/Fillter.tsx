@@ -12,14 +12,17 @@ import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '@/redux/store'
 import { setSelectFlights } from '@/redux/slice/flightSlice'
 
-interface FillterProps {}
+interface FillterProps {
+  onClickError: () => void
+}
 
-export const Fillter: React.FC<FillterProps> = () => {
+export const Fillter: React.FC<FillterProps> = ({ onClickError }) => {
   const [sliderValue, setSliderValue] = useState<number[]>([50, 100])
   const [sliderValueTime, setSliderValueTime] = useState<number[]>([50, 100])
 
   const dispatch = useDispatch()
   const selectFlights = useSelector((state: RootState) => state.flight.selectFlights)
+  const typeTicket = useSelector((state: RootState) => state.flight.typeTicket)
 
   const maxPriceValue = 1200
   const hours = 864
@@ -31,6 +34,13 @@ export const Fillter: React.FC<FillterProps> = () => {
   }
 
   const handViewDetail = () => {
+    if (typeTicket === 'ONE_WAY' && selectFlights.length !== 1) {
+      onClickError()
+      return
+    } else if (typeTicket === 'ROUND_TRIP' && selectFlights.length !== 2) {
+      onClickError()
+      return
+    }
     navigate('/detail_flight')
   }
 
@@ -90,8 +100,8 @@ export const Fillter: React.FC<FillterProps> = () => {
     setTimeValue([sliderValueTime[0] * hours, sliderValueTime[1] * hours])
   }
   return (
-    <div className='flex flex-col gap-6'>
-      <div className='w-full h-[87px] flex-col justify-start items-start flex'>
+    <div className='lg:flex hidden flex-col gap-3 w-full '>
+      <div className='w-full  flex-col justify-start items-start flex'>
         <div
           className='flex flex-col  justify-between items-start w-full h-fit  px-8 pt-4 pb-2 rounded-2xl bg-white '
           style={{ boxShadow: '0px 4px 16px 0 rgba(141,211,187,0.15)' }}
@@ -118,7 +128,7 @@ export const Fillter: React.FC<FillterProps> = () => {
           </div>
           <div className='h-2'></div>
 
-          <div className='flex w-full justify-center' onClick={handViewDetail}>
+          <div className='flex w-full justify-center cursor-pointer' onClick={handViewDetail}>
             <div className='w-[159px] h-8 px-4 py-2 bg-green-300 rounded-[19px] justify-center items-center gap-1 inline-flex'>
               <div className="text-white text-sm font-semibold font-['Montserrat']">Booking now</div>
             </div>
@@ -127,8 +137,8 @@ export const Fillter: React.FC<FillterProps> = () => {
           <div className='h-2'></div>
         </div>
 
-        <div className="text-neutral-900 text-xl font-semibold font-['Montserrat']">Filters</div>
-
+        {/* <div className="text-neutral-900 text-xl font-semibold font-['Montserrat']">Filters</div> */}
+        {/* 
         <div className='self-stretch justify-between items-start inline-flex mt-2'>
           <div className="text-neutral-900 text-base font-semibold font-['Montserrat']">Price</div>
         </div>
@@ -140,9 +150,9 @@ export const Fillter: React.FC<FillterProps> = () => {
               <div className=" text-neutral-900 text-xs font-medium font-['Montserrat'] ">${priceValue[1]}</div>
             </div>
           </div>
-        </div>
+        </div> */}
 
-        <div className='self-stretch justify-between items-start inline-flex mt-2'>
+        {/* <div className='self-stretch justify-between items-start inline-flex mt-2'>
           <div className="text-neutral-900 text-base font-semibold font-['Montserrat']">Departure time</div>
         </div>
         <div className='flex-col w-full justify-start items-start flex mb-8'>
@@ -157,9 +167,9 @@ export const Fillter: React.FC<FillterProps> = () => {
               </div>
             </div>
           </div>
-        </div>
+        </div> */}
 
-        <div className='w-full h-[87px] flex-col justify-start items-start  inline-flex'>
+        {/* <div className='w-full h-[87px] flex-col justify-start items-start  inline-flex'>
           <div className='self-stretch justify-between items-start inline-flex mt-2'>
             <div className="text-neutral-900 text-base font-semibold font-['Montserrat']">Rating</div>
           </div>
@@ -199,7 +209,7 @@ export const Fillter: React.FC<FillterProps> = () => {
               </div>
             </div>
           </div>
-        </div>
+        </div> */}
         <div className='w-full h-[0.50px] opacity-25 bg-neutral-900 my-6' />
         <div className='w-full h-fit flex-col justify-start items-start  inline-flex'>
           <div className='self-stretch justify-between items-start inline-flex mt-2  mb-1'>

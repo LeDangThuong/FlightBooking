@@ -7,13 +7,25 @@ import { Airport } from '@/models/Airport'
 import { useEffect, useState } from 'react'
 import { getAllAirport } from '@/services/AirportService'
 import { searchFlightOneWay, searchFlightRoundTrip } from '@/services/FlightService'
-import { searchFlights, setTypeTicket } from '@/redux/slice/flightSlice'
+import { searchFlights, setLoadingSearchFlight, setPassenger, setTypeTicket } from '@/redux/slice/flightSlice'
 import { RootState } from '@/redux/store'
+import { ToastContainer, toast } from 'react-toastify'
 
 const SearchBar = () => {
   const navigate = useNavigate()
 
+  const loadingSearchFilght = useSelector((state: RootState) => state.flight.loadingSearchFilght)
+
   const handleShowFlight = async () => {
+    if (departureAirport === undefined || arrivalAirport === undefined) {
+      toast.error('Please provide full information!')
+      // Các thao tác khác khi nhấn nút tìm kiếm
+
+      return
+    }
+
+    dispatch(setLoadingSearchFlight(true))
+
     if (typeTicket === 'ONE_WAY') {
       const flight = await searchFlightOneWay(departureAirport!, arrivalAirport!, dateRange.from!)
       dispatch(searchFlights(flight))
@@ -22,11 +34,14 @@ const SearchBar = () => {
       dispatch(searchFlights(flight))
     }
 
+    dispatch(setLoadingSearchFlight(false))
+
     console.log(typeTicket)
   }
 
   const dateRange = useSelector((state: RootState) => state.flight.dateRange)
   const typeTicket = useSelector((state: RootState) => state.flight.typeTicket)
+  const passenger = useSelector((state: RootState) => state.flight.passenger)
 
   const [airports, setAirports] = useState<Airport[]>([])
 
@@ -83,13 +98,14 @@ const SearchBar = () => {
 
   return (
     <div
-      className='flex flex-col justify-start items-start w-[1232px]   top-[120px] gap-8 px-8 pt-4 pb-8 rounded-2xl bg-white'
+      className='flex flex-col justify-start items-start  w-full   top-[120px] gap-8 px-8 pt-4 pb-8 rounded-2xl bg-white'
       style={{ boxShadow: '0px 4px 16px 0 rgba(141,211,187,0.15)' }}
     >
-      <div className='flex flex-col justify-start items-start flex-grow-0 flex-shrink-0 gap-12 mt-5'>
+      <ToastContainer />
+      <div className='flex flex-col  w-full justify-start items-start flex-grow-0 flex-shrink-0 gap-12 mt-5'>
         <div className='flex gap-4'>
           <div
-            className='w-fit h-12 flex-col justify-start items-start gap-2.5 inline-flex'
+            className='w-fit h-12 flex-col justify-start items-start gap-2.5 inline-flex cursor-pointer'
             onClick={() => dispatch(setTypeTicket('ONE_WAY'))}
           >
             <div
@@ -112,7 +128,7 @@ const SearchBar = () => {
           </div>
 
           <div
-            className='w-fit h-12 flex-col justify-start items-start gap-2.5 inline-flex'
+            className='w-fit h-12 flex-col justify-start items-start gap-2.5 inline-flex cursor-pointer'
             onClick={() => dispatch(setTypeTicket('ROUND_TRIP'))}
           >
             <div
@@ -134,8 +150,8 @@ const SearchBar = () => {
             </div>
           </div>
         </div>
-        <div className='flex justify-start items-center flex-grow-0 flex-shrink-0 w-[1184px] gap-6'>
-          <div className='flex flex-col justify-start items-start  h-14 rounded-tl rounded-tr w-[250px]'>
+        <div className='flex flex-col lg:flex-row w-full justify-start  flex-grow-0 flex-shrink-0  gap-6'>
+          <div className='flex flex-col justify-start items-start  h-14 rounded-tl rounded-tr w-full px:[20px] '>
             <div className='relative w-full'>
               <div
                 className='flex flex-col justify-start items-start self-stretch flex-grow-0 flex-shrink-0 gap-2.5 rounded bg-white border border-[#79747e]'
@@ -192,7 +208,7 @@ const SearchBar = () => {
               </div>
             </div>
           </div>{' '}
-          <div className='flex flex-col justify-start items-start  h-14 rounded-tl rounded-tr w-[250px]'>
+          <div className='flex flex-col justify-start items-start  h-14 rounded-tl rounded-tr w-full px:[20px]'>
             <div className='relative w-full'>
               <div
                 className='flex flex-col justify-start items-start self-stretch flex-grow-0 flex-shrink-0 gap-2.5 rounded bg-white border border-[#79747e]'
@@ -248,26 +264,56 @@ const SearchBar = () => {
               </div>
             </div>
           </div>
-          <DatePickerWithRange className='text-black border border-[#79747e] rounded h-14' />
-          <div className='flex flex-col justify-start items-start flex-grow h-14 rounded-tl rounded-tr'>
+          <DatePickerWithRange className='text-black border border-[#79747e] rounded h-14 w-full px:[20px]' />
+          <div className='flex flex-col justify-start items-start flex-grow h-14 rounded-tl rounded-tr w-full px:[20px]'>
             <div className='flex flex-col justify-start items-start self-stretch flex-grow-0 flex-shrink-0 gap-2.5 rounded bg-white border border-[#79747e]'>
               <div className='flex justify-start items-center self-stretch flex-grow-0 flex-shrink-0 pl-4 py-2 rounded-tl rounded-tr'>
                 <div className='flex flex-col justify-center items-start flex-grow h-10 relative'>
-                  <div className='flex justify-start items-center flex-grow-0 flex-shrink-0 relative'>
-                    <p className='flex-grow-0 flex-shrink-0 text-base text-left text-[#1c1b1f]'>1 Passenger, Economy</p>
+                  <div className='flex justify-start items-center flex-grow-0 flex-shrink-0 relative w-full'>
+                    <input
+                      type='number'
+                      className=' appearance-none
+                      rounded w-full py-2 px-2 text-gray-700 leading-tight focus:outline-none'
+                      value={passenger}
+                      onChange={(value) => {
+                        if (Number.parseInt(value.target.value) >= 1) {
+                          dispatch(setPassenger(Number.parseInt(value.target.value)))
+                        }
+                      }}
+                    />
+                    {/* <p className='flex-grow-0 flex-shrink-0 text-base text-left text-[#1c1b1f]'>1 Passenger</p> */}
                   </div>
                   <div className='flex justify-start items-center flex-grow-0 flex-shrink-0 absolute left-[-4px] top-[-16px] px-1 bg-white'>
-                    <p className='flex-grow-0 flex-shrink-0 text-sm text-left text-[#1c1b1f]'>Passenger - Class</p>
+                    <p className='flex-grow-0 flex-shrink-0 text-sm text-left text-[#1c1b1f]'>Passenger </p>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-          <div className='w-14 h-14 flex-col justify-start items-start gap-2.5 inline-flex' onClick={handleShowFlight}>
-            <div className='self-stretch grow shrink basis-0 px-4 py-2 bg-green-300 rounded justify-center items-center gap-1 inline-flex'>
-              <div className='w-6 h-6 pl-[2.25px] pr-[2.29px] pt-[2.25px] pb-[2.29px] justify-center items-center flex'>
-                <img src={search} alt='Search icon' />
-              </div>
+          <div
+            className='w-14 h-14 flex-col justify-start items-start gap-2.5 inline-flex cursor-pointer'
+            onClick={handleShowFlight}
+          >
+            <div className=' grow  px-4 py-2 flex items-center justify-center bg-green-300 rounded   '>
+              {loadingSearchFilght ? (
+                <svg
+                  className='w-5 h-5  text-white animate-spin'
+                  xmlns='http://www.w3.org/2000/svg'
+                  fill='none'
+                  viewBox='0 0 24 24'
+                >
+                  <circle className='opacity-25' cx='12' cy='12' r='10' stroke='currentColor' strokeWidth='4'></circle>
+                  <path
+                    className='opacity-75'
+                    fill='currentColor'
+                    d='M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z'
+                  ></path>
+                </svg>
+              ) : (
+                <div className='w-6 h-6 pl-[2.25px] pr-[2.29px] pt-[2.25px] pb-[2.29px] justify-center items-center flex'>
+                  <img src={search} alt='Search icon' />
+                </div>
+              )}
             </div>
           </div>
         </div>
