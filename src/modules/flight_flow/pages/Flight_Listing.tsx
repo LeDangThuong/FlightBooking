@@ -8,7 +8,7 @@ import { FlightTicket2 } from '../components/FlightTicket2'
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '@/redux/store'
 import { Flight } from '@/models/Flight'
-import { setSelectFlights } from '@/redux/slice/flightSlice'
+import { setSelectDepartFlight, setSelectReturnFlight } from '@/redux/slice/flightSlice'
 import Skeleton from '@mui/material/Skeleton'
 import { CircleLoader } from 'react-spinners'
 import { ToastContainer, toast } from 'react-toastify'
@@ -17,36 +17,57 @@ const FlightListing = () => {
   const [selectTab, setSelectTab] = useState('Cheapest')
 
   const dispatch = useDispatch()
-  const flights = useSelector((state: RootState) => state.flight.flights)
+
   const loadingSearchFilght = useSelector((state: RootState) => state.flight.loadingSearchFilght)
-  const selectFlights = useSelector((state: RootState) => state.flight.selectFlights)
+
   const typeTicket = useSelector((state: RootState) => state.flight.typeTicket)
+
+  const departFlights = useSelector((state: RootState) => state.flight.departFlights)
+  const returnFlights = useSelector((state: RootState) => state.flight.returnFlights)
+  const selectDepartFlight = useSelector((state: RootState) => state.flight.selectDepartFlight)
+  const selectReturnFlight = useSelector((state: RootState) => state.flight.selectReturnFlight)
 
   //const [selectFlights, setSelectFlight] = useState<Flight[]>([])
 
-  const handleSelectFlight = (flight: Flight) => {
-    if (selectFlights.includes(flight)) {
-      console.log('This ticket has been selected')
-      toast.error('This ticket has been selected')
+  // const handleSelectFlight = (flight: Flight) => {
+  //   if (selectFlights.includes(flight)) {
+  //     console.log('This ticket has been selected')
+  //     toast.error('This ticket has been selected')
+  //     return
+  //   }
+  //   if (typeTicket === 'ONE_WAY' && selectFlights.length === 1) {
+  //     console.log('Only 1 ticket can be selected')
+  //     toast.error('Only 1 ticket can be selected')
+  //     return
+  //   }
+
+  //   if (typeTicket === 'ROUND_TRIP' && selectFlights.length === 2) {
+  //     console.log('Chỉ được chọn 2 vé')
+  //     toast.error('Only 2 ticket can be selected')
+  //     return
+  //   }
+
+  //   if (!selectFlights.includes(flight)) {
+  //     dispatch(setSelectFlights([...selectFlights, flight]))
+  //   }
+
+  //   console.log(selectFlights)
+  // }
+
+  const handleSelectDepartFlight = (flight: Flight) => {
+    if (selectDepartFlight === undefined) {
+      dispatch(setSelectDepartFlight(flight))
       return
     }
-    if (typeTicket === 'ONE_WAY' && selectFlights.length === 1) {
-      console.log('Only 1 ticket can be selected')
-      toast.error('Only 1 ticket can be selected')
+    toast.error('Departure flight has been selected')
+  }
+
+  const handleSelectReturnFlight = (flight: Flight) => {
+    if (selectReturnFlight === undefined) {
+      dispatch(setSelectReturnFlight(flight))
       return
     }
-
-    if (typeTicket === 'ROUND_TRIP' && selectFlights.length === 2) {
-      console.log('Chỉ được chọn 2 vé')
-      toast.error('Only 2 ticket can be selected')
-      return
-    }
-
-    if (!selectFlights.includes(flight)) {
-      dispatch(setSelectFlights([...selectFlights, flight]))
-    }
-
-    console.log(selectFlights)
+    toast.error('Return flight has been selected')
   }
 
   return (
@@ -151,9 +172,11 @@ const FlightListing = () => {
           <div className='w-full h-[18px] mt-4 items-start flex justify-between'>
             <div>
               <span className="text-neutral-900 text-sm font-semibold font-['Montserrat']">
-                Showing {flights.length} of{' '}
+                Showing {departFlights.length + returnFlights.length} of{' '}
               </span>
-              <span className="text-rose-400 text-sm font-semibold font-['Montserrat']">{flights.length} places</span>
+              <span className="text-rose-400 text-sm font-semibold font-['Montserrat']">
+                {departFlights.length + returnFlights.length} places
+              </span>
             </div>
             <div className='justify-start items-start gap-1 flex'>
               <div className='flex gap-1'>
@@ -179,16 +202,44 @@ const FlightListing = () => {
               <CircleLoader color={'#36D7B7'} loading={loadingSearchFilght} size={50} />
             </div>
           ) : (
-            flights.map((flight) => (
-              <FlightTicket2 flight={flight} onClickChooseFlight={() => handleSelectFlight(flight)} />
-            ))
+            <div className='flex flex-col'>
+              <div className="text-neutral-900 text-sm font-medium font-['Montserrat']">Departure flights</div>
+              {departFlights.length !== 0 ? (
+                departFlights.map((flight) => (
+                  <FlightTicket2 flight={flight} onClickChooseFlight={() => handleSelectDepartFlight(flight)} />
+                ))
+              ) : (
+                <div className='flex justify-center items-center w-full h-20'>
+                  <div className="text-neutral-500 text-lg font-medium font-['Montserrat']">Non-existent</div>
+                </div>
+              )}
+
+              {typeTicket === 'ROUND_TRIP' ? (
+                <div className='flex flex-col'>
+                  <div className="text-neutral-900 text-sm font-medium font-['Montserrat']">Return flights</div>
+                  {returnFlights.length !== 0 ? (
+                    returnFlights.map((flight) => (
+                      <FlightTicket2 flight={flight} onClickChooseFlight={() => handleSelectReturnFlight(flight)} />
+                    ))
+                  ) : (
+                    <div className='flex justify-center items-center w-full h-20'>
+                      <div className="text-neutral-500 text-lg font-medium font-['Montserrat']">Non-existent</div>
+                    </div>
+                  )}
+                </div>
+              ) : null}
+            </div>
+
+            // flights.map((flight) => (
+            //   <FlightTicket2 flight={flight} onClickChooseFlight={() => handleSelectFlight(flight)} />
+            // ))
           )}
 
-          <div className='w-full h-12 my-3 flex-col justify-start items-start gap-2.5 inline-flex'>
+          {/* <div className='w-full h-12 my-3 flex-col justify-start items-start gap-2.5 inline-flex'>
             <div className='self-stretch h-12 px-4 py-2 bg-neutral-900 rounded justify-center items-center gap-1 inline-flex'>
               <div className="text-white text-sm font-semibold font-['Montserrat']">Show more results</div>
             </div>
-          </div>
+          </div> */}
         </div>
       </div>
     </div>

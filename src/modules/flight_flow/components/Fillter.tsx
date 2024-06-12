@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { DoubleRangeSlider } from './RangeSlider'
 import flightup from '../../../assets/svgs/flightup.svg'
 import arrow from '../../../assets/svgs/arrow.svg'
@@ -10,7 +10,9 @@ import { useNavigate } from 'react-router-dom'
 import { Flight } from '@/models/Flight'
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '@/redux/store'
-import { setSelectFlights } from '@/redux/slice/flightSlice'
+import { setSelectDepartFlight, setSelectReturnFlight } from '@/redux/slice/flightSlice'
+import { Airline } from '@/models/Airline'
+import { getAllAirline } from '@/services/AirlineService'
 
 interface FillterProps {
   onClickError: () => void
@@ -21,23 +23,32 @@ export const Fillter: React.FC<FillterProps> = ({ onClickError }) => {
   const [sliderValueTime, setSliderValueTime] = useState<number[]>([50, 100])
 
   const dispatch = useDispatch()
-  const selectFlights = useSelector((state: RootState) => state.flight.selectFlights)
   const typeTicket = useSelector((state: RootState) => state.flight.typeTicket)
+  const selectDepartFlight = useSelector((state: RootState) => state.flight.selectDepartFlight)
+  const selectReturnFlight = useSelector((state: RootState) => state.flight.selectReturnFlight)
 
   const maxPriceValue = 1200
   const hours = 864
 
   const navigate = useNavigate()
 
-  const handleCloseFlight = (flight: Flight) => {
-    dispatch(setSelectFlights(selectFlights.filter((i) => i != flight)))
+  // const handleCloseFlight = (flight: Flight) => {
+  //   dispatch(setSelectFlights(selectFlights.filter((i) => i != flight)))
+  // }
+
+  const handleCloseDepartFlight = () => {
+    dispatch(setSelectDepartFlight(undefined))
+  }
+
+  const handleCloseReturnFlight = () => {
+    dispatch(setSelectReturnFlight(undefined))
   }
 
   const handViewDetail = () => {
-    if (typeTicket === 'ONE_WAY' && selectFlights.length !== 1) {
+    if (typeTicket === 'ONE_WAY' && selectDepartFlight === undefined) {
       onClickError()
       return
-    } else if (typeTicket === 'ROUND_TRIP' && selectFlights.length !== 2) {
+    } else if (typeTicket === 'ROUND_TRIP' && (selectDepartFlight === undefined || selectReturnFlight === undefined)) {
       onClickError()
       return
     }
@@ -99,6 +110,17 @@ export const Fillter: React.FC<FillterProps> = ({ onClickError }) => {
     }
     setTimeValue([sliderValueTime[0] * hours, sliderValueTime[1] * hours])
   }
+
+  const [airlines, setAirlines] = useState<Airline[]>([])
+
+  const hanldeGetAirlines = async () => {
+    setAirlines(await getAllAirline())
+  }
+
+  useEffect(() => {
+    hanldeGetAirlines()
+  })
+
   return (
     <div className='lg:flex hidden flex-col gap-3 w-full '>
       <div className='w-full  flex-col justify-start items-start flex'>
@@ -111,9 +133,18 @@ export const Fillter: React.FC<FillterProps> = ({ onClickError }) => {
             <div className="text-black text-sm font-medium font-['Montserrat'] mx-4">Your Flight</div>
           </div>
 
-          {selectFlights.map((flight, index) => (
+          {/* {selectFlights.map((flight, index) => (
             <SelectFlight flight={flight} index={index} onClickClose={() => handleCloseFlight(flight)} />
-          ))}
+          ))} */}
+
+          {selectDepartFlight && (
+            <SelectFlight flight={selectDepartFlight} index={0} onClickClose={() => handleCloseDepartFlight()} />
+          )}
+
+          {selectReturnFlight && (
+            <SelectFlight flight={selectReturnFlight} index={1} onClickClose={() => handleCloseReturnFlight()} />
+          )}
+
           {/* <SelectFlight />
           <SelectFlight /> */}
           <div className='h-2'></div>
@@ -122,7 +153,7 @@ export const Fillter: React.FC<FillterProps> = ({ onClickError }) => {
           <div className="w-[268px] text-black text-sm font-semibold font-['Montserrat']">Subtotal</div>
           <div className='flex justify-center items-center'>
             <div className="text-right text-rose-400 text-2xl font-bold font-['Montserrat']">
-              ${selectFlights.reduce((accumulator, currentValue) => accumulator + currentValue.economyPrice, 0)}
+              ${(selectDepartFlight?.economyPrice ?? 0) + (selectReturnFlight?.economyPrice ?? 0)}
             </div>
             <div className="text-right text-black text-sm font-normal font-['Montserrat']">/Passenger</div>
           </div>
@@ -217,7 +248,14 @@ export const Fillter: React.FC<FillterProps> = ({ onClickError }) => {
           </div>
 
           <div className='w-full h-fit'>
-            <div className='w-full h-6 justify-start items-center gap-2 flex '>
+            {airlines.map((airline) => (
+              <div className='w-full h-6 justify-start items-center gap-2 flex '>
+                <input type='checkbox' className='self-center h-full' />
+                <div className="text-neutral-900 text-sm font-medium font-['Montserrat']">{airline.airlineName}</div>
+              </div>
+            ))}
+
+            {/* <div className='w-full h-6 justify-start items-center gap-2 flex '>
               <input type='checkbox' className='self-center h-full' />
               <div className="text-neutral-900 text-sm font-medium font-['Montserrat']">Emirated</div>
             </div>
@@ -233,6 +271,40 @@ export const Fillter: React.FC<FillterProps> = ({ onClickError }) => {
             <div className='w-full h-6 justify-start items-center gap-2 flex '>
               <input type='checkbox' className='self-center h-full' />
               <div className="text-neutral-900 text-sm font-medium font-['Montserrat']">Etihad</div>
+            </div> */}
+          </div>
+        </div>
+
+        <div className='w-full h-fit flex-col justify-start items-start  inline-flex'>
+          <div className='self-stretch justify-between items-start inline-flex mt-2  mb-1'>
+            <div className="text-neutral-900 text-base font-semibold font-['Montserrat']">Departure Time</div>
+          </div>
+
+          <div className='w-full h-fit'>
+            <div className='w-full h-6 justify-start items-center gap-2 flex '>
+              <input type='checkbox' className='self-center h-full' />
+              <div className="text-neutral-900 text-sm font-medium font-['Montserrat']">00:00 - 04:00 </div>
+            </div>
+            <div className='w-full h-6 justify-start items-center gap-2 flex '>
+              <input type='checkbox' className='self-center h-full' />
+              <div className="text-neutral-900 text-sm font-medium font-['Montserrat']">04:00 - 08:00 </div>
+            </div>
+            <div className='w-full h-6 justify-start items-center gap-2 flex '>
+              <input type='checkbox' className='self-center h-full' />
+              <div className="text-neutral-900 text-sm font-medium font-['Montserrat']">08:00 - 12:00</div>
+            </div>
+
+            <div className='w-full h-6 justify-start items-center gap-2 flex '>
+              <input type='checkbox' className='self-center h-full' />
+              <div className="text-neutral-900 text-sm font-medium font-['Montserrat']">12:00 - 16:00 </div>
+            </div>
+            <div className='w-full h-6 justify-start items-center gap-2 flex '>
+              <input type='checkbox' className='self-center h-full' />
+              <div className="text-neutral-900 text-sm font-medium font-['Montserrat']">16:00 - 20:00 </div>
+            </div>
+            <div className='w-full h-6 justify-start items-center gap-2 flex '>
+              <input type='checkbox' className='self-center h-full' />
+              <div className="text-neutral-900 text-sm font-medium font-['Montserrat']">20:00 - 24:00 </div>
             </div>
           </div>
         </div>
