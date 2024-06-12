@@ -25,7 +25,7 @@
 import React from 'react'
 import { loadStripe } from '@stripe/stripe-js'
 import { Elements } from '@stripe/react-stripe-js'
-import CheckoutForm from './modules/checkout/components/CheckoutForm'
+import ClientChatBox from './modules/chat/CustomerChat'
 
 // Make sure to call loadStripe outside of a component’s render to avoid
 // recreating the Stripe object on every render.
@@ -36,7 +36,7 @@ const stripePromise = loadStripe(
 const App: React.FC = () => {
   return (
     <Elements stripe={stripePromise}>
-      <CheckoutForm />
+      <ClientChatBox />
     </Elements>
   )
 }
