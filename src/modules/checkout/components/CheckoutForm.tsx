@@ -14,7 +14,10 @@ const CheckoutForm = () => {
   const [token, setToken] = useState<string | null>('eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0aHVvbmdsZSIsImlhdCI6MTcxNzY5NTUyNiwiZXhwIjoxNzE3NzA5OTI2fQ.yiWzzOU-HcWPRZVjDNQUar_I1Lru2OiRhFrn8rutM_c');
 
   const baseUrl = 'http://localhost:7050/payment';
-  const email = 'ledangthuong2003@gmail.com';
+  const email = 'thachsang2202@gmail.com';
+
+
+
   const bookingData =
   {
     bookingRequestDTO: {
@@ -29,17 +32,17 @@ const CheckoutForm = () => {
           fullName: "Le Dang Thuong",
           email: "ledangthuong2003@gmail.com",
           personalId: "123",
-          seatNumber: "A1"
+          seatNumber: "A3"
         },
         {
           fullName: "Le Dang Thuong",
           email: "ledangthuong2003@gmail.com",
           personalId: "123",
-          seatNumber: "A2"
+          seatNumber: "A4"
         }
       ]
     },
-    seatNumber: ["A1", "A2"]
+    seatNumber: ["A3", "A4"]
   };
 
   useEffect(() => {

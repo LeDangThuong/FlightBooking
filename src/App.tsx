@@ -22,23 +22,38 @@
 
 // export default App
 
-import React from 'react'
-import { loadStripe } from '@stripe/stripe-js'
-import { Elements } from '@stripe/react-stripe-js'
-import CheckoutForm from './modules/checkout/components/CheckoutForm'
+// import React from 'react'
+// import { loadStripe } from '@stripe/stripe-js'
+// import { Elements } from '@stripe/react-stripe-js'
+// import CheckoutForm from './modules/checkout/components/CheckoutForm'
 
-// Make sure to call loadStripe outside of a component’s render to avoid
-// recreating the Stripe object on every render.
-const stripePromise = loadStripe(
-  'pk_test_51OVwerA7WrEjctnX9STvulzywtvSiHbBfwpWtPz1qUisHRlxGoqeYEsezmX3wub802xxdEyo6N65w2zLu77HLP3200k4IHYlWU'
-)
+// // Make sure to call loadStripe outside of a component’s render to avoid
+// // recreating the Stripe object on every render.
+// const stripePromise = loadStripe(
+//   'pk_test_51OVwerA7WrEjctnX9STvulzywtvSiHbBfwpWtPz1qUisHRlxGoqeYEsezmX3wub802xxdEyo6N65w2zLu77HLP3200k4IHYlWU'
+// )
+
+// const App: React.FC = () => {
+//   return (
+//     <Elements stripe={stripePromise}>
+//       <CheckoutForm />
+//     </Elements>
+//   )
+// }
+
+// export default App
+
+import React from 'react';
+import ChatBox from './modules/chat/ChatBox';
 
 const App: React.FC = () => {
   return (
-    <Elements stripe={stripePromise}>
-      <CheckoutForm />
-    </Elements>
-  )
-}
+    <div>
+      <h1>Chat Application</h1>
+      <ChatBox />
+    </div>
+  );
+};
 
-export default App
+export default App;
+
