@@ -7,7 +7,7 @@ interface bookingState{
     bookingDepartureData: any | null;
     bookingReturnData: any | null;
     showModelPayment: boolean;
-    historyBookings: HistoryBooking[];
+    historyBookings: HistoryBooking[] | null;
     voucher: Voucher | null;
 }
 
@@ -15,7 +15,7 @@ const initState : bookingState ={
     bookingDepartureData: null,
     bookingReturnData: null,
     showModelPayment: false,
-    historyBookings: [],
+    historyBookings: null,
     voucher: null
 }
 
@@ -32,7 +32,7 @@ export const bookingSlice = createSlice({
         setShowModelPayment: (state, action:  PayloadAction<boolean>) => {
             state.showModelPayment = action.payload
         },
-        setHistoryBookings: (state, action:  PayloadAction<HistoryBooking[]>) => {
+        setHistoryBookings: (state, action:  PayloadAction<HistoryBooking[] | null>) => {
             state.historyBookings = action.payload
         },
         setVoucher: (state, action:  PayloadAction<Voucher | null>) => {

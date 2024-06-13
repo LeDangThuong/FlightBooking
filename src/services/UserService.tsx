@@ -19,7 +19,7 @@ const login = async (username: string, password: string) => {
     localStorage.setItem('role', role)
     return tokenAccess
   } catch (error) {
-    throw new Error('Đăng nhập thất bại. Vui lòng thử lại.')
+    return null
   }
 }
 
@@ -37,7 +37,7 @@ const signup = async (username: string, password: string, email: string, fullNam
       return true
     }
   } catch (error) {
-    throw new Error('Đăng ký thất bại. Vui lòng thử lại.')
+    return false
   }
 
   return false
@@ -58,7 +58,7 @@ const forgotPassword = async (email: string) => {
       return true
     }
   } catch (error) {
-    throw new Error('Vui lòng thử lại.')
+    return false
   }
 }
 

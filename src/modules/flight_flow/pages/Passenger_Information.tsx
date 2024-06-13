@@ -46,7 +46,11 @@ export const PassengerInformation = () => {
   const handleGetVoucher = async () => {
     setLoadingVoucher(true)
 
-    dispatch(setVoucher(await getVoucherByCode(voucherStr)))
+    const fetchVoucher = await getVoucherByCode(voucherStr)
+
+    if (voucher !== null) {
+      dispatch(setVoucher(fetchVoucher))
+    }
 
     setLoadingVoucher(false)
   }
@@ -131,7 +135,6 @@ export const PassengerInformation = () => {
     navigate('/payment')
   }
   useEffect(() => {
-    console.log(passengerInfor)
     fetchAirline()
     fetchAirport()
   })

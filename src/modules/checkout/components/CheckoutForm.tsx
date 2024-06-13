@@ -10,10 +10,10 @@ import {
 } from '@/services/PaymentService'
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '@/redux/store'
-import { calculateTotalPriceAfterBooking } from '@/services/BookingService'
+import { calculateTotalPriceAfterBooking, getTicketByUserId } from '@/services/BookingService'
 import check from '../../../assets/images/check.png'
 import { useNavigate } from 'react-router-dom'
-import { setShowModelPayment } from '@/redux/slice/bookingSlice'
+import { setHistoryBookings, setShowModelPayment } from '@/redux/slice/bookingSlice'
 import {
   setBookingTempDeparture,
   setBookingTempReturn,
@@ -84,7 +84,7 @@ const CheckoutForm = () => {
   const token = localStorage.getItem('tokenAccess')
   const currentUser = useSelector((state: RootState) => state.user.currentUser)
 
-  const handleSetInitData = () => {
+  const handleSetInitData = async () => {
     dispatch(setShowModelPayment(true))
     dispatch(setSelectDepartFlight(undefined))
     dispatch(setSelectReturnFlight(undefined))
@@ -92,6 +92,9 @@ const CheckoutForm = () => {
     dispatch(setBookingTempDeparture(undefined))
     dispatch(setBookingTempReturn(undefined))
     dispatch(setPassengerInfor([]))
+
+    const historyBookings = await getTicketByUserId(currentUser?.id!)
+    dispatch(setHistoryBookings(historyBookings))
   }
 
   useEffect(() => {
@@ -145,10 +148,6 @@ const CheckoutForm = () => {
           throw new Error('Customer ID not found')
         }
 
-        // const setupIntentResponse = await axios.post(`${baseUrl}/create-setup-intent`, null, {
-        //   params: { customerId }
-        // });
-
         const setupIntentResponse = await createSetupIntent(customerId)
         const clientSecret = setupIntentResponse.data.clientSecret
 
@@ -164,18 +163,9 @@ const CheckoutForm = () => {
 
         const paymentMethodId = confirmResult.setupIntent.payment_method
 
-        // await axios.post(`${baseUrl}/attach-payment-method`, null, {
-        //   params: { customerId, paymentMethodId }
-        // });
-
         await attachPaymentMethod(customerId, paymentMethodId as string)
 
         setMessage('Card added successfully!')
-
-        // const response = await axios.get(`${baseUrl}/payment-methods`, {
-        //   params: { email },
-        //   headers: { Authorization: `Bearer ${token}` }
-        // });
 
         const response = await createPaymentMethod(currentUser?.email!, token!)
 

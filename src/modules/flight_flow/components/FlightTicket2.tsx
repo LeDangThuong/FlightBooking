@@ -10,13 +10,15 @@ import { Airline } from '@/models/Airline'
 import { getAirlineByPlaneId } from '@/services/AirlineService'
 import { Plane } from '@/models/Plane'
 import { getPlaneNumberByPlaneId } from '@/services/PlaneService'
+import { Location } from 'react-router-dom'
 
 interface FightTicket2Props {
   flight: Flight
   onClickChooseFlight?: () => void
+  location: Location
 }
 
-export const FlightTicket2: React.FC<FightTicket2Props> = ({ onClickChooseFlight, flight }) => {
+export const FlightTicket2: React.FC<FightTicket2Props> = ({ onClickChooseFlight, flight, location }) => {
   const [selectTab, setSelectTab] = useState<null | number>(null)
 
   const departureTime = format(flight.departureDate, 'HH:mm')
@@ -42,7 +44,7 @@ export const FlightTicket2: React.FC<FightTicket2Props> = ({ onClickChooseFlight
 
   useEffect(() => {
     setAirport()
-  }, [])
+  }, [location])
 
   //const departureAirport = await getAirport(flight.departureAirportId);
 

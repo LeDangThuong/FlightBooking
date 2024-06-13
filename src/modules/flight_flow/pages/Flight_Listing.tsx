@@ -12,9 +12,12 @@ import { setSelectDepartFlight, setSelectReturnFlight } from '@/redux/slice/flig
 import Skeleton from '@mui/material/Skeleton'
 import { CircleLoader } from 'react-spinners'
 import { ToastContainer, toast } from 'react-toastify'
+import { useLocation } from 'react-router-dom'
 
 const FlightListing = () => {
   const [selectTab, setSelectTab] = useState('Cheapest')
+
+  const location = useLocation()
 
   const dispatch = useDispatch()
 
@@ -60,9 +63,9 @@ const FlightListing = () => {
             }}
           />
         </div>
-        <div className='grow-0 w-[0.50px] h-[1360px] opacity-25 bg-neutral-900 hidden lg:flex' />
+        <div className='grow-0 w-[0.50px] h-[1360px]  bg-neutral-900 hidden lg:flex' />
         <div className='lg:grow h-fit flex flex-col   '>
-          <div
+          {/* <div
             className='lg:flex hidden justify-between items-center w-full h-fit  px-8 pt-4 pb-1 rounded-2xl bg-white  '
             style={{ boxShadow: '0px 4px 16px 0 rgba(141,211,187,0.15)' }}
           >
@@ -142,7 +145,7 @@ const FlightListing = () => {
                 <div className="text-neutral-900 text-sm font-medium font-['Montserrat']">Other sort</div>
               </div>
             </div>
-          </div>
+          </div> */}
 
           <div className='w-full h-[18px] mt-4 items-start flex justify-between'>
             <div>
@@ -181,7 +184,11 @@ const FlightListing = () => {
               <div className="text-neutral-900 text-sm font-medium font-['Montserrat']">Departure flights</div>
               {departFlights.length !== 0 ? (
                 departFlights.map((flight) => (
-                  <FlightTicket2 flight={flight} onClickChooseFlight={() => handleSelectDepartFlight(flight)} />
+                  <FlightTicket2
+                    location={location}
+                    flight={flight}
+                    onClickChooseFlight={() => handleSelectDepartFlight(flight)}
+                  />
                 ))
               ) : (
                 <div className='flex justify-center items-center w-full h-20'>
@@ -194,7 +201,11 @@ const FlightListing = () => {
                   <div className="text-neutral-900 text-sm font-medium font-['Montserrat']">Return flights</div>
                   {returnFlights.length !== 0 ? (
                     returnFlights.map((flight) => (
-                      <FlightTicket2 flight={flight} onClickChooseFlight={() => handleSelectReturnFlight(flight)} />
+                      <FlightTicket2
+                        location={location}
+                        flight={flight}
+                        onClickChooseFlight={() => handleSelectReturnFlight(flight)}
+                      />
                     ))
                   ) : (
                     <div className='flex justify-center items-center w-full h-20'>
