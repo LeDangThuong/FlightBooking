@@ -1,4 +1,3 @@
-import { timeStamp } from 'console';
 import React, { useState, useEffect, useRef, KeyboardEvent } from 'react';
 import styled from 'styled-components';
 
@@ -8,6 +7,28 @@ interface Message {
     receiverId: number | null;
     createdAt: string;
 }
+
+const ChatContainer = styled.div<{ isVisible: boolean }>`
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  width: 300px;
+  height: ${props => (props.isVisible ? '400px' : '50px')};
+  background-color: #f9f9f9;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  overflow: hidden;
+  transition: height 0.3s ease;
+`;
+
+const ChatHeader = styled.div`
+  background-color: #28B446;
+  padding: 10px;
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  cursor: pointer;
+`;
 
 const ChatBody = styled.div`
   padding: 10px;
@@ -39,6 +60,14 @@ const ChatButton = styled.button`
   border-radius: 5px;
 `;
 
+const CloseButton = styled.button`
+  background: none;
+  border: none;
+  color: white;
+  font-size: 20px;
+  cursor: pointer;
+`;
+
 const ChatMessage = styled.div<{ isCustomer: boolean }>`
   align-self: ${props => (props.isCustomer ? 'flex-end' : 'flex-start')};
   color: black;
@@ -48,6 +77,11 @@ const ChatMessage = styled.div<{ isCustomer: boolean }>`
   border-radius: 12px;
   background-color: rgba(0, 0, 0, 0.05);
   max-width: 70%;
+`;
+
+const HeaderTitle = styled.div`
+  display: flex;
+  align-items: center;
 `;
 
 const MessageTimestamp = styled.div`
@@ -63,9 +97,11 @@ const CustomerChat: React.FC = () => {
     const [customerId, setCustomerId] = useState<number | null>(null);
     const [receiverId, setReceiverId] = useState<number | null>(null);
     const [supportAgentName, setSupportAgentName] = useState<string>('');
+    const [isVisible, setIsVisible] = useState<boolean>(false);
     const socketRef = useRef<WebSocket | null>(null);
+    const chatBodyRef = useRef<HTMLDivElement>(null);
 
-    const token = localStorage.getItem('token'); // Token của customer
+    const token = localStorage.getItem('tokenAccess');
 
     useEffect(() => {
         const fetchCustomerId = async () => {
@@ -99,7 +135,6 @@ const CustomerChat: React.FC = () => {
 
                 if (newMessage.receiverId === customerId && newMessage.senderId !== customerId) {
                     setReceiverId(newMessage.senderId);
-                    // Fetch the admin's name
                     try {
                         const response = await fetch(`https://flightbookingbe-production.up.railway.app/message/admin/${newMessage.senderId}`);
                         if (response.ok) {
@@ -136,8 +171,8 @@ const CustomerChat: React.FC = () => {
             const messageContent: Message = {
                 content: message,
                 senderId: customerId,
-                receiverId: receiverId,
-                createdAt: new Date().toISOString(),
+                receiverId: null, // Initial message has no receiver
+                createdAt: new Date().toISOString()
             };
 
             socketRef.current.send(JSON.stringify(messageContent));
@@ -152,27 +187,38 @@ const CustomerChat: React.FC = () => {
     };
 
     return (
-        <div>
-            <ChatBody>
-                {messages.map((msg, index) => (
-                    <ChatMessage key={index} isCustomer={msg.senderId === customerId}>
-                        <div>{msg.content}</div>
-                        <MessageTimestamp>{msg.createdAt}</MessageTimestamp>
-                    </ChatMessage>
-                ))}
-                {!isSupportActive && <div>Chờ nhân viên phản hồi</div>}
-                {isSupportActive && <div>Nhân viên {supportAgentName} đang trong cuộc trò chuyện với bạn</div>}
-            </ChatBody>
-            <ChatInputContainer>
-                <ChatInput
-                    type="text"
-                    value={message}
-                    onChange={(e) => setMessage(e.target.value)}
-                    onKeyPress={handleKeyPress}
-                />
-                <ChatButton onClick={sendMessage}>Gửi</ChatButton>
-            </ChatInputContainer>
-        </div>
+        <ChatContainer isVisible={isVisible}>
+            <ChatHeader onClick={() => setIsVisible(!isVisible)}>
+                <HeaderTitle>
+                    <div>Golobe - Chat with us</div>
+                </HeaderTitle>
+                <CloseButton onClick={() => setIsVisible(!isVisible)}>×</CloseButton>
+            </ChatHeader>
+            {isVisible && (
+                <>
+                    <ChatBody ref={chatBodyRef}>
+                        {messages.map((msg, index) => (
+                            <div key={index} style={{ textAlign: msg.senderId === customerId ? 'right' : 'left' }}>
+                                <ChatMessage key={index} isCustomer={msg.senderId === customerId}>
+                                    <span>{msg.content}</span>
+                                    <MessageTimestamp>{new Date(msg.createdAt).toLocaleString()}</MessageTimestamp>
+                                </ChatMessage>
+                            </div>
+                        ))}
+                        {!isSupportActive && messages.length > 0 && <div>Waiting for a support agent...</div>}
+                    </ChatBody>
+                    <ChatInputContainer>
+                        <ChatInput
+                            value={message}
+                            onChange={(e) => setMessage(e.target.value)}
+                            onKeyPress={handleKeyPress}
+                            placeholder="Enter your message..."
+                        />
+                        <ChatButton onClick={sendMessage}>Send</ChatButton>
+                    </ChatInputContainer>
+                </>
+            )}
+        </ChatContainer>
     );
 };
 
