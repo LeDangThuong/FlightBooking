@@ -157,7 +157,7 @@ const FlightListing = () => {
               </span>
             </div>
             <div className='justify-start items-start gap-1 flex'>
-              <div className='flex gap-1'>
+              {/* <div className='flex gap-1'>
                 <span className="text-neutral-900 text-sm font-normal font-['Montserrat']">Sort by</span>
                 <span className="text-neutral-900 text-sm font-semibold font-['Montserrat']"> Recommended</span>
                 <svg width='18' height='18' viewBox='0 0 18 18' fill='none' xmlns='http://www.w3.org/2000/svg'>
@@ -169,7 +169,7 @@ const FlightListing = () => {
                     stroke-linejoin='round'
                   />
                 </svg>
-              </div>
+              </div> */}
               <div className='w-[18px] h-[18px] px-[3.94px] pt-[6.75px] pb-[6.19px] justify-center items-center flex' />
             </div>
           </div>
