@@ -26,6 +26,12 @@ interface FlightState{
     selectDepartFlight: Flight | undefined
     selectReturnFlight: Flight | undefined
 
+    checkTime0000_0400: boolean,
+    checkTime0400_0800: boolean,
+    checkTime0800_1200: boolean,
+    checkTime1200_1600: boolean 
+    checkTime1600_2000: boolean 
+    checkTime2000_2400: boolean 
 }
 
 const initialState: FlightState = {
@@ -52,7 +58,13 @@ const initialState: FlightState = {
     departFlights: [],
     returnFlights: [],
     selectDepartFlight: undefined,
-    selectReturnFlight: undefined
+    selectReturnFlight: undefined,
+    checkTime0000_0400: false,
+    checkTime0400_0800: false,
+    checkTime0800_1200: false,
+    checkTime1200_1600: false,
+    checkTime1600_2000: false,
+    checkTime2000_2400: false
 }
 
 export const flightSlice = createSlice({
@@ -112,12 +124,31 @@ export const flightSlice = createSlice({
         setSelectReturnFlight:  (state, action: PayloadAction<Flight | undefined>) =>{
             state.selectReturnFlight = action.payload
         },
+        setCheckTime0000_0400:  (state, action: PayloadAction<boolean>) =>{
+            state.checkTime0000_0400 = action.payload
+        },
+        setCheckTime0400_0800:  (state, action: PayloadAction<boolean>) =>{
+            state.checkTime0400_0800 = action.payload
+        },
+        setCheckTime0800_1200:  (state, action: PayloadAction<boolean>) =>{
+            state.checkTime0800_1200 = action.payload
+        },
+        setCheckTime1200_1600:  (state, action: PayloadAction<boolean>) =>{
+            state.checkTime1200_1600 = action.payload
+        },
+        setCheckTime1600_2000:  (state, action: PayloadAction<boolean>) =>{
+            state.checkTime1600_2000 = action.payload
+        },
+        setCheckTime2000_2400:  (state, action: PayloadAction<boolean>) =>{
+            state.checkTime2000_2400 = action.payload
+        },
     }
 })
 
 export const {setTypeTicket, setDateRange, setDepartureAirportState, 
     setArrivalAirportState, setPassenger, setBookingTempDeparture, setBookingTempReturn, setPassengerInfor
-    , setLoadingSearchFlight, setDepartFlights, setReturnFlights, setSelectDepartFlight, setSelectReturnFlight
+    , setLoadingSearchFlight, setDepartFlights, setReturnFlights, setSelectDepartFlight, setSelectReturnFlight,
+    setCheckTime0000_0400, setCheckTime0400_0800, setCheckTime0800_1200, setCheckTime1200_1600, setCheckTime1600_2000, setCheckTime2000_2400
 } = flightSlice.actions;
 
 export const selectTypeTicket = (state: RootState) => state.flight.typeTicket;

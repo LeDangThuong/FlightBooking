@@ -10,9 +10,22 @@ import { useNavigate } from 'react-router-dom'
 import { Flight } from '@/models/Flight'
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '@/redux/store'
-import { setSelectDepartFlight, setSelectReturnFlight } from '@/redux/slice/flightSlice'
+import {
+  setCheckTime0000_0400,
+  setCheckTime0400_0800,
+  setCheckTime0800_1200,
+  setCheckTime1200_1600,
+  setCheckTime1600_2000,
+  setCheckTime2000_2400,
+  setDepartFlights,
+  setLoadingSearchFlight,
+  setReturnFlights,
+  setSelectDepartFlight,
+  setSelectReturnFlight
+} from '@/redux/slice/flightSlice'
 import { Airline } from '@/models/Airline'
 import { getAllAirline } from '@/services/AirlineService'
+import { filterFlights, filterFlightsWithoutFilter } from '@/services/FlightService'
 
 interface FillterProps {
   onClickError: () => void
@@ -26,15 +39,181 @@ export const Fillter: React.FC<FillterProps> = ({ onClickError }) => {
   const typeTicket = useSelector((state: RootState) => state.flight.typeTicket)
   const selectDepartFlight = useSelector((state: RootState) => state.flight.selectDepartFlight)
   const selectReturnFlight = useSelector((state: RootState) => state.flight.selectReturnFlight)
+  const departFlights = useSelector((state: RootState) => state.flight.departFlights)
+  const returnFlights = useSelector((state: RootState) => state.flight.returnFlights)
+  const loadingSearchFilght = useSelector((state: RootState) => state.flight.loadingSearchFilght)
+
+  const checkTime0000_0400 = useSelector((state: RootState) => state.flight.checkTime0000_0400)
+  const checkTime0400_0800 = useSelector((state: RootState) => state.flight.checkTime0400_0800)
+  const checkTime0800_1200 = useSelector((state: RootState) => state.flight.checkTime0800_1200)
+  const checkTime1200_1600 = useSelector((state: RootState) => state.flight.checkTime1200_1600)
+  const checkTime1600_2000 = useSelector((state: RootState) => state.flight.checkTime1600_2000)
+  const checkTime2000_2400 = useSelector((state: RootState) => state.flight.checkTime2000_2400)
+
+  const departureAirport = useSelector((state: RootState) => state.flight.departureAirport)
+
+  const arrivalAirport = useSelector((state: RootState) => state.flight.arrivalAirport)
+
+  const dateRange = useSelector((state: RootState) => state.flight.dateRange)
 
   const maxPriceValue = 1200
   const hours = 864
 
   const navigate = useNavigate()
 
+  useEffect(() => {
+    handleCheckTime(checkTime0000_0400, 0, 0, 4, 0)
+  }, [checkTime0000_0400])
+
+  useEffect(() => {
+    handleCheckTime(checkTime0400_0800, 4, 0, 8, 0)
+  }, [checkTime0400_0800])
+
+  useEffect(() => {
+    handleCheckTime(checkTime0800_1200, 8, 0, 12, 0)
+  }, [checkTime0800_1200])
+
+  useEffect(() => {
+    handleCheckTime(checkTime1200_1600, 12, 0, 16, 0)
+  }, [checkTime1200_1600])
+
+  useEffect(() => {
+    handleCheckTime(checkTime1600_2000, 16, 0, 20, 0)
+  }, [checkTime1600_2000])
+
+  useEffect(() => {
+    handleCheckTime(checkTime2000_2400, 20, 0, 24, 0)
+  }, [checkTime2000_2400])
+
   // const handleCloseFlight = (flight: Flight) => {
   //   dispatch(setSelectFlights(selectFlights.filter((i) => i != flight)))
   // }
+
+  const handleCheckTime = async (
+    checked: boolean,
+    startHour: number,
+    startMinute: number,
+    endHour: number,
+    endMinute: number
+  ) => {
+    dispatch(setLoadingSearchFlight(true))
+
+    console.log(checkTime0000_0400)
+    console.log(checkTime0400_0800)
+    console.log(checkTime0800_1200)
+    console.log(checkTime1200_1600)
+    console.log(checkTime1600_2000)
+    console.log(checkTime2000_2400)
+
+    if (
+      !checkTime0000_0400 &&
+      !checkTime0400_0800 &&
+      !checkTime0800_1200 &&
+      !checkTime1200_1600 &&
+      !checkTime1600_2000 &&
+      !checkTime2000_2400
+    ) {
+      dispatch(setLoadingSearchFlight(true))
+
+      if (typeTicket === 'ONE_WAY') {
+        const departFlight = await filterFlightsWithoutFilter(
+          'ONE_WAY',
+          departureAirport!,
+          arrivalAirport!,
+          dateRange.from!,
+          'economy',
+          'asc'
+        )
+
+        dispatch(setDepartFlights(departFlight))
+        //const flight = await searchFlightOneWay(departureAirport!, arrivalAirport!, dateRange.from!)
+        //dispatch(searchFlights(flight))
+      } else if (typeTicket === 'ROUND_TRIP') {
+        const departFlight = await filterFlightsWithoutFilter(
+          'ONE_WAY',
+          departureAirport!,
+          arrivalAirport!,
+          dateRange.from!,
+          'economy',
+          'asc'
+        )
+        const returnFlight = await filterFlightsWithoutFilter(
+          'ONE_WAY',
+          arrivalAirport!,
+          departureAirport!,
+          dateRange.to!,
+          'economy',
+          'asc'
+        )
+        dispatch(setDepartFlights(departFlight))
+        dispatch(setReturnFlights(returnFlight))
+
+        //const flight = await searchFlightRoundTrip(departureAirport!, arrivalAirport!, dateRange.from!, dateRange.to!)
+        // dispatch(searchFlights(flight))
+      }
+
+      dispatch(setLoadingSearchFlight(false))
+      return
+    }
+
+    if (typeTicket === 'ONE_WAY') {
+      const departFlightsCheck = await filterFlights(
+        'ONE_WAY',
+        departureAirport!,
+        arrivalAirport!,
+        dateRange.from!,
+        'economy',
+        'asc',
+        startHour,
+        startMinute,
+        endHour,
+        endMinute
+      )
+
+      if (checked) {
+        dispatch(setDepartFlights(departFlightsCheck))
+      } else {
+        const flights = departFlights.filter((item) => !departFlightsCheck.includes(item))
+        dispatch(setDepartFlights(flights))
+      }
+    } else {
+      const departFlightsCheck = await filterFlights(
+        'ONE_WAY',
+        departureAirport!,
+        arrivalAirport!,
+        dateRange.from!,
+        'economy',
+        'asc',
+        startHour,
+        startMinute,
+        endHour,
+        endMinute
+      )
+      const returnFlightsCheck = await filterFlights(
+        'ONE_WAY',
+        arrivalAirport!,
+        departureAirport!,
+        dateRange.to!,
+        'economy',
+        'asc',
+        startHour,
+        startMinute,
+        endHour,
+        endMinute
+      )
+      if (checked) {
+        dispatch(setDepartFlights(departFlightsCheck))
+        dispatch(setReturnFlights(returnFlightsCheck))
+      } else {
+        const flightsDepartCheck = departFlights.filter((item) => !departFlightsCheck.includes(item))
+        const flightsReturnCheck = returnFlights.filter((item) => !returnFlightsCheck.includes(item))
+
+        dispatch(setDepartFlights(flightsDepartCheck))
+        dispatch(setReturnFlights(flightsReturnCheck))
+      }
+    }
+    dispatch(setLoadingSearchFlight(false))
+  }
 
   const handleCloseDepartFlight = () => {
     dispatch(setSelectDepartFlight(undefined))
@@ -183,7 +362,7 @@ export const Fillter: React.FC<FillterProps> = ({ onClickError }) => {
           </div>
         </div> */}
 
-        {/* <div className='self-stretch justify-between items-start inline-flex mt-2'>
+        <div className='self-stretch justify-between items-start inline-flex mt-2'>
           <div className="text-neutral-900 text-base font-semibold font-['Montserrat']">Departure time</div>
         </div>
         <div className='flex-col w-full justify-start items-start flex mb-8'>
@@ -198,7 +377,7 @@ export const Fillter: React.FC<FillterProps> = ({ onClickError }) => {
               </div>
             </div>
           </div>
-        </div> */}
+        </div>
 
         {/* <div className='w-full h-[87px] flex-col justify-start items-start  inline-flex'>
           <div className='self-stretch justify-between items-start inline-flex mt-2'>
@@ -282,28 +461,70 @@ export const Fillter: React.FC<FillterProps> = ({ onClickError }) => {
 
           <div className='w-full h-fit'>
             <div className='w-full h-6 justify-start items-center gap-2 flex '>
-              <input type='checkbox' className='self-center h-full' />
+              <input
+                type='checkbox'
+                className='self-center h-full'
+                checked={checkTime0000_0400}
+                onChange={async (e) => {
+                  dispatch(setCheckTime0000_0400(e.target.checked))
+                }}
+              />
               <div className="text-neutral-900 text-sm font-medium font-['Montserrat']">00:00 - 04:00 </div>
             </div>
             <div className='w-full h-6 justify-start items-center gap-2 flex '>
-              <input type='checkbox' className='self-center h-full' />
+              <input
+                type='checkbox'
+                className='self-center h-full'
+                checked={checkTime0400_0800}
+                onChange={async (e) => {
+                  dispatch(setCheckTime0400_0800(e.target.checked))
+                }}
+              />
               <div className="text-neutral-900 text-sm font-medium font-['Montserrat']">04:00 - 08:00 </div>
             </div>
             <div className='w-full h-6 justify-start items-center gap-2 flex '>
-              <input type='checkbox' className='self-center h-full' />
+              <input
+                type='checkbox'
+                className='self-center h-full'
+                checked={checkTime0800_1200}
+                onChange={async (e) => {
+                  dispatch(setCheckTime0800_1200(e.target.checked))
+                }}
+              />
               <div className="text-neutral-900 text-sm font-medium font-['Montserrat']">08:00 - 12:00</div>
             </div>
 
             <div className='w-full h-6 justify-start items-center gap-2 flex '>
-              <input type='checkbox' className='self-center h-full' />
+              <input
+                type='checkbox'
+                className='self-center h-full'
+                checked={checkTime1200_1600}
+                onChange={async (e) => {
+                  dispatch(setCheckTime1200_1600(e.target.checked))
+                }}
+              />
               <div className="text-neutral-900 text-sm font-medium font-['Montserrat']">12:00 - 16:00 </div>
             </div>
             <div className='w-full h-6 justify-start items-center gap-2 flex '>
-              <input type='checkbox' className='self-center h-full' />
+              <input
+                type='checkbox'
+                className='self-center h-full'
+                checked={checkTime1600_2000}
+                onChange={async (e) => {
+                  dispatch(setCheckTime1600_2000(e.target.checked))
+                }}
+              />
               <div className="text-neutral-900 text-sm font-medium font-['Montserrat']">16:00 - 20:00 </div>
             </div>
             <div className='w-full h-6 justify-start items-center gap-2 flex '>
-              <input type='checkbox' className='self-center h-full' />
+              <input
+                type='checkbox'
+                className='self-center h-full'
+                checked={checkTime2000_2400}
+                onChange={async (e) => {
+                  dispatch(setCheckTime2000_2400(e.target.checked))
+                }}
+              />
               <div className="text-neutral-900 text-sm font-medium font-['Montserrat']">20:00 - 24:00 </div>
             </div>
           </div>

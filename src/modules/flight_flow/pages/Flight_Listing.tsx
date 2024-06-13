@@ -29,31 +29,6 @@ const FlightListing = () => {
 
   //const [selectFlights, setSelectFlight] = useState<Flight[]>([])
 
-  // const handleSelectFlight = (flight: Flight) => {
-  //   if (selectFlights.includes(flight)) {
-  //     console.log('This ticket has been selected')
-  //     toast.error('This ticket has been selected')
-  //     return
-  //   }
-  //   if (typeTicket === 'ONE_WAY' && selectFlights.length === 1) {
-  //     console.log('Only 1 ticket can be selected')
-  //     toast.error('Only 1 ticket can be selected')
-  //     return
-  //   }
-
-  //   if (typeTicket === 'ROUND_TRIP' && selectFlights.length === 2) {
-  //     console.log('Chỉ được chọn 2 vé')
-  //     toast.error('Only 2 ticket can be selected')
-  //     return
-  //   }
-
-  //   if (!selectFlights.includes(flight)) {
-  //     dispatch(setSelectFlights([...selectFlights, flight]))
-  //   }
-
-  //   console.log(selectFlights)
-  // }
-
   const handleSelectDepartFlight = (flight: Flight) => {
     if (selectDepartFlight === undefined) {
       dispatch(setSelectDepartFlight(flight))

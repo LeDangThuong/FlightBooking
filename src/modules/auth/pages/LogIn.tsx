@@ -76,12 +76,12 @@ export const Login = () => {
         const role = localStorage.getItem('role')
 
         const user = await getUserByUsername(username)
-        //const historyBooking = await getTicketByUserId(user.id)
+        const historyBooking = await getTicketByUserId(user.id)
 
         console.log(user)
 
         dispatch(setCurrentUser(user))
-        // dispatch(setHistoryBookings(historyBooking))
+        dispatch(setHistoryBookings(historyBooking))
 
         if (!isLoggedIn) {
           navigate('/home')
