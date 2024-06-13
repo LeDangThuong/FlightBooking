@@ -7,6 +7,7 @@ import { ButtonIcon } from '@/modules/auth/components/ButtonIcon'
 import { signup } from '@/services/UserService'
 import { useNavigate } from 'react-router-dom'
 import { CircleLoader } from 'react-spinners'
+import { ToastContainer, toast } from 'react-toastify'
 
 export const SignUp = () => {
   const slides = [
@@ -83,14 +84,19 @@ export const SignUp = () => {
       email.trim().length == 0 ||
       fullName.trim().length == 0 ||
       dayOfBirth.trim().length == 0
-    )
+    ) {
+      toast.error('Please provide full information!')
       return
+    }
+
     setIsLoading(true)
     try {
       const isSuccess = await signup(username, password, email, fullName, new Date(dayOfBirth))
       setIsLoading(false)
       if (isSuccess) {
         navigate('/')
+      } else {
+        toast.error('Create account failed!')
       }
     } catch (error) {}
     setIsLoading(false)
@@ -111,6 +117,7 @@ export const SignUp = () => {
   }
   return (
     <div className='flex'>
+      <ToastContainer />
       {isLoading && (
         <div className='overlay'>
           <CircleLoader color={'#36D7B7'} loading={isLoading} size={150} />

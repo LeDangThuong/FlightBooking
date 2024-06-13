@@ -99,13 +99,18 @@ export const fillInforPassengerToCreateBooking = async (flightId: number, select
 }
 
 
-export const getTicketByUserId = async(userId: number)  : Promise<HistoryBooking[]>  => {
+export const getTicketByUserId = async(userId: number)  : Promise<HistoryBooking[] | null>  => {
     try {
         const response = await axios.get<HistoryBooking[]>(`${API_URL}booking/get-ticket-by-user-id?userId=${userId}`);
 
-        return response.data;
+        if (response.status === 200) {  
+            return response.data
+        }
+       
+    
+        return null
     } catch (e) {
         console.error('Error fetching users:', e);
-        throw e;
+        return null
     }
 }

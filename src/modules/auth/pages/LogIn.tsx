@@ -12,6 +12,7 @@ import { useDispatch } from 'react-redux'
 import { setCurrentUser } from '@/redux/slice/userSlice'
 import { getTicketByUserId } from '@/services/BookingService'
 import { setHistoryBookings } from '@/redux/slice/bookingSlice'
+import { ToastContainer, toast } from 'react-toastify'
 
 export const Login = () => {
   const navigate = useNavigate()
@@ -86,6 +87,8 @@ export const Login = () => {
         if (!isLoggedIn) {
           navigate('/home')
         }
+      } else {
+        toast.error('Login failed!')
       }
     } catch (error) {
       console.log('Đăng nhập thất bại', error)
@@ -103,6 +106,7 @@ export const Login = () => {
 
   return (
     <div className='flex'>
+      <ToastContainer />
       {isLoading && (
         <div className='overlay'>
           <CircleLoader color={'#36D7B7'} loading={isLoading} size={150} />

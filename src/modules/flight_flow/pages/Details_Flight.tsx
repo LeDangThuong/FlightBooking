@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '@/redux/store'
 import { FlightItem } from '../components/FlightItem'
@@ -10,6 +10,7 @@ import { useState } from 'react'
 
 export const DetailsFlight = () => {
   const navigate = useNavigate()
+  const location = useLocation()
 
   const dispatch = useDispatch()
   // const selectFlights = useSelector((state: RootState) => state.flight.selectFlights)
@@ -95,14 +96,19 @@ export const DetailsFlight = () => {
       ))} */}
       {selectDepartFlight ? (
         <div className='flex flex-col mb-6'>
-          <InforAirline flight={selectDepartFlight} />
-          <FlightItem typeFlight={'DEPARTURE'} flight={selectDepartFlight} numberSeats={passenger} />
+          <InforAirline location={location} flight={selectDepartFlight} />
+          <FlightItem
+            location={location}
+            typeFlight={'DEPARTURE'}
+            flight={selectDepartFlight}
+            numberSeats={passenger}
+          />
         </div>
       ) : null}
       {selectReturnFlight ? (
         <div className='flex flex-col mb-6'>
-          <InforAirline flight={selectReturnFlight} />
-          <FlightItem typeFlight={'RETURN'} flight={selectReturnFlight} numberSeats={passenger} />
+          <InforAirline location={location} flight={selectReturnFlight} />
+          <FlightItem location={location} typeFlight={'RETURN'} flight={selectReturnFlight} numberSeats={passenger} />
         </div>
       ) : null}
       <div className='h-2'></div>

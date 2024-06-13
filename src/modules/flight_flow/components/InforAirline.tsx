@@ -1,17 +1,19 @@
 import { Flight } from '@/models/Flight'
-import photo5 from '../../../assets/images/photo5.png'
+
 import { useEffect, useState } from 'react'
 import { getAirlineByPlaneId } from '@/services/AirlineService'
 import { Airline } from '@/models/Airline'
 import { Plane } from '@/models/Plane'
 import { getPlaneNumberByPlaneId } from '@/services/PlaneService'
+import { Location } from 'react-router-dom'
 
 interface InforAirlineProps {
   flight: Flight
+  location: Location
   // onChange: (event: Event, value: number | number[], activeThumb: number) => void
 }
 
-export const InforAirline: React.FC<InforAirlineProps> = ({ flight }) => {
+export const InforAirline: React.FC<InforAirlineProps> = ({ flight, location }) => {
   const [airline, setAirline] = useState<Airline | null>(null)
   const [plane, setPlane] = useState<Plane | null>(null)
 
@@ -35,7 +37,7 @@ export const InforAirline: React.FC<InforAirlineProps> = ({ flight }) => {
 
   useEffect(() => {
     fetchAirline()
-  }, [])
+  }, [location])
   return (
     <div className='flex flex-col'>
       <div className='flex justify-between  '>

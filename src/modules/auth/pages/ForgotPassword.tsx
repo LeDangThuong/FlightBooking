@@ -8,6 +8,7 @@ import { ButtonIcon } from '@/modules/auth/components/ButtonIcon'
 import { forgotPassword } from '@/services/UserService'
 import { CircleLoader } from 'react-spinners'
 import { useNavigate } from 'react-router-dom'
+import { ToastContainer, toast } from 'react-toastify'
 
 export const ForgotPassword = () => {
   const slides = [
@@ -46,6 +47,8 @@ export const ForgotPassword = () => {
         localStorage.setItem('email', email)
 
         navigate('/verify-code')
+      } else {
+        toast.error('Forgot password failed!')
       }
     } catch (error) {}
   }
@@ -70,6 +73,7 @@ export const ForgotPassword = () => {
 
   return (
     <div className='flex'>
+      <ToastContainer />
       {isLoading && (
         <div className='overlay'>
           <CircleLoader color={'#36D7B7'} loading={isLoading} size={150} />

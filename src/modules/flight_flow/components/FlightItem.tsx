@@ -24,15 +24,17 @@ import { BookingTemp } from '@/models/BookingTemp'
 import { useDispatch } from 'react-redux'
 import { setBookingTempDeparture, setBookingTempReturn } from '@/redux/slice/flightSlice'
 import { getSeatStatus } from '@/services/FlightService'
+import { Location } from 'react-router-dom'
 
 interface FlightItemProps {
   flight: Flight
   typeFlight: string
   onClick?: React.MouseEventHandler<HTMLDivElement>
   numberSeats: number
+  location: Location
 }
 
-export const FlightItem: FC<FlightItemProps> = ({ onClick, flight, numberSeats, typeFlight }) => {
+export const FlightItem: FC<FlightItemProps> = ({ onClick, flight, numberSeats, typeFlight, location }) => {
   const departureTime = format(flight.departureDate, 'HH:mm')
   const arrivalTime = format(flight.arrivalDate, 'HH:mm')
 
@@ -108,7 +110,7 @@ export const FlightItem: FC<FlightItemProps> = ({ onClick, flight, numberSeats, 
   useEffect(() => {
     setAirport()
     getSeats()
-  }, [])
+  }, [location])
 
   useEffect(() => {
     const booking = { price: priceTicket, selectSeats: selectSeat } as BookingTemp
@@ -120,7 +122,7 @@ export const FlightItem: FC<FlightItemProps> = ({ onClick, flight, numberSeats, 
     } else if (typeFlight === 'RETURN') {
       dispatch(setBookingTempReturn(booking))
     }
-  }, [selectSeat, priceTicket, typeFlight, dispatch])
+  }, [selectSeat, priceTicket, typeFlight, dispatch, location])
 
   return (
     <div

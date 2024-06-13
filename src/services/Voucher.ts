@@ -12,6 +12,6 @@ export const getVoucherByCode = async (code: string) : Promise<Voucher | null> =
         return null
     } catch (error) {
         console.error(error)
-        throw error
+        return null
     }
 }
