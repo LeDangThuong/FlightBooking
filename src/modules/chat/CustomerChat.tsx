@@ -65,12 +65,12 @@ const CustomerChat: React.FC = () => {
     const [supportAgentName, setSupportAgentName] = useState<string>('');
     const socketRef = useRef<WebSocket | null>(null);
 
-    const token = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0aHVvbmdsZSIsImlhdCI6MTcxODE5NTc3OCwiZXhwIjoxNzE4MjEwMTc4fQ.MR5Awnh9VXYBOO0_9o0OOAuvdC_pjq1o9m04kYdRDP4"; // Token của customer
+    const token = localStorage.getItem('token'); // Token của customer
 
     useEffect(() => {
         const fetchCustomerId = async () => {
             try {
-                const response = await fetch(`http://localhost:7050/users/token?token=${token}`);
+                const response = await fetch(`https://flightbookingbe-production.up.railway.app/users/token?token=${token}`);
                 if (response.ok) {
                     const data = await response.json();
                     setCustomerId(data.id);
@@ -87,7 +87,7 @@ const CustomerChat: React.FC = () => {
 
     useEffect(() => {
         const connectWebSocket = () => {
-            socketRef.current = new WebSocket('ws://localhost:7050/ws');
+            socketRef.current = new WebSocket('wss://flightbookingbe-production.up.railway.app/ws');
 
             socketRef.current.onopen = () => {
                 console.log('WebSocket connection established');
@@ -101,7 +101,7 @@ const CustomerChat: React.FC = () => {
                     setReceiverId(newMessage.senderId);
                     // Fetch the admin's name
                     try {
-                        const response = await fetch(`http://localhost:7050/message/admin/${newMessage.senderId}`);
+                        const response = await fetch(`https://flightbookingbe-production.up.railway.app/message/admin/${newMessage.senderId}`);
                         if (response.ok) {
                             const admin = await response.json();
                             setSupportAgentName(admin.name);
