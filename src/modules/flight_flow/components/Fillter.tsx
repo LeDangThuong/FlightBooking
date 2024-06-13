@@ -362,7 +362,7 @@ export const Fillter: React.FC<FillterProps> = ({ onClickError }) => {
           </div>
         </div> */}
 
-        <div className='self-stretch justify-between items-start inline-flex mt-2'>
+        {/* <div className='self-stretch justify-between items-start inline-flex mt-2'>
           <div className="text-neutral-900 text-base font-semibold font-['Montserrat']">Departure time</div>
         </div>
         <div className='flex-col w-full justify-start items-start flex mb-8'>
@@ -377,7 +377,7 @@ export const Fillter: React.FC<FillterProps> = ({ onClickError }) => {
               </div>
             </div>
           </div>
-        </div>
+        </div> */}
 
         {/* <div className='w-full h-[87px] flex-col justify-start items-start  inline-flex'>
           <div className='self-stretch justify-between items-start inline-flex mt-2'>
