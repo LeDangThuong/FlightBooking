@@ -92,3 +92,67 @@ export const getAllFlight = async (): Promise<Flight[]> => {
         throw e;
     }
 }
+
+// export const getFilterFlightsByTimeFrameWithoutFilter = async (typeTicket: string, departureAirport: Airport, arrivalAirport: Airport, departureDate: Date,  returnDate: Date | null) : Promise<Flight[]> => {
+//     try {
+//         const formatDepartureDate = format(departureDate, "yyyy-MM-dd HH:mm:ss")
+//         const formatReturnDate = format(departureDate, "yyyy-MM-dd HH:mm:ss")
+
+//         if (returnDate !== null) {
+
+    
+//             const response = await axios.get<Flight[]>(`${API_URL}flight/filter-flights-by-time-frame?ROUND_TRIP or ONE_WAY=${typeTicket}&departureAirportId=${departureAirport.id}&arrivalAirportId=${arrivalAirport.id}&departureDate=${formatDepartureDate}&returnDate=${formatReturnDate}`);
+//             return response.data;
+//         } else {
+//             const response = await axios.get<Flight[]>(`${API_URL}flight/filter-flights-by-time-frame?ROUND_TRIP or ONE_WAY=${typeTicket}&departureAirportId=${departureAirport.id}&arrivalAirportId=${arrivalAirport.id}&departureDate=${formatDepartureDate}`);
+//             return response.data;
+//         }
+//     } catch (e) {
+//         console.error('Error fetching users:', e);
+//         throw e;
+//     }
+// }
+
+// export const getFilterFlightsByTimeFrame = async (typeTicket: string, departureAirport: Airport, arrivalAirport: Airport, departureDate: Date,  returnDate: Date | null, startHour: number, startMinute: number, endHour: number, endMinute: number) : Promise<Flight[]> => {
+//     try {
+//         const formatDepartureDate = format(departureDate, "yyyy-MM-dd HH:mm:ss")
+//         const formatReturnDate = format(departureDate, "yyyy-MM-dd HH:mm:ss")
+
+//         if (returnDate !== null) {
+//             const response = await axios.get<Flight[]>(`${API_URL}flight/filter-flights-by-time-frame?ROUND_TRIP or ONE_WAY=${typeTicket}&departureAirportId=${departureAirport.id}&arrivalAirportId=${arrivalAirport.id}&departureDate=${formatDepartureDate}&returnDate=${formatReturnDate}&startHour=${startHour}&startMinute=${startMinute}&endHour=${endHour}&endMinute=${endMinute}`);
+//             return response.data;
+//         } else {
+//             const response = await axios.get<Flight[]>(`${API_URL}flight/filter-flights-by-time-frame?ROUND_TRIP or ONE_WAY=${typeTicket}&departureAirportId=${departureAirport.id}&arrivalAirportId=${arrivalAirport.id}&departureDate=${formatDepartureDate}&startHour=${startHour}&startMinute=${startMinute}&endHour=${endHour}&endMinute=${endMinute}`);
+//             return response.data;
+//         }
+//     } catch (e) {
+//         console.error('Error fetching users:', e);
+//         throw e;
+//     }
+// }
+
+
+export const filterFlightsWithoutFilter = async (flightType: string, departureAirport: Airport, arrivalAirport: Airport, departureDate: Date, classType: string, order: string): Promise<Flight[]> => {
+    try {
+        const formatDepartureDate = format(departureDate, "yyyy-MM-dd HH:mm:ss")
+        const response = await axios.get<Flight[]>(`${API_URL}flight/filter-flights?flightType=${flightType}&departureAirportId=${departureAirport.id}&arrivalAirportId=${arrivalAirport.id}&departureDate=${formatDepartureDate}&classType=${classType}&order=${order}`);
+        
+        console.log('flight', response.data)
+        return response.data;
+    }catch (e) {
+        console.error('Error fetching users:', e);
+        throw e;
+    }
+}
+
+export const filterFlights = async (flightType: string, departureAirport: Airport, arrivalAirport: Airport, departureDate: Date, classType: string, order: string, startHour: number, startMinute: number, endHour: number, endMinute: number): Promise<Flight[]> => {
+    try {
+        const formatDepartureDate = format(departureDate, "yyyy-MM-dd HH:mm:ss")
+        const response = await axios.get<Flight[]>(`${API_URL}flight/filter-flights?flightType=${flightType}&departureAirportId=${departureAirport.id}&arrivalAirportId=${arrivalAirport.id}&departureDate=${formatDepartureDate}&classType=${classType}&order=${order}&startHour=${startHour}&startMinute=${startMinute}&endHour=${endHour}&endMinute=${endMinute}`);
+        return response.data;
+    }catch (e) {
+        console.error('Error fetching users:', e);
+        throw e;
+    }
+    
+}

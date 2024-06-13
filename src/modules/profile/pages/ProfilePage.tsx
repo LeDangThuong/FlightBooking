@@ -33,9 +33,11 @@ import { getUserByUsername, uploadNewAvatar, userChangeInfor } from '@/services/
 import { setCurrentUser } from '@/redux/slice/userSlice'
 import { DayPicker } from 'react-day-picker'
 import { cn } from '@/lib/utils'
+import { setHistoryBookings } from '@/redux/slice/bookingSlice'
 
 const ProfilePage = () => {
   const currentUser = useSelector((state: RootState) => state.user.currentUser)
+  const historyBookings = useSelector((state: RootState) => state.booking.historyBookings)
   const [isEditingName, setIsEditingName] = useState(false)
   const [newName, setNewName] = useState(currentUser?.fullName || '')
 
@@ -626,6 +628,10 @@ const ProfilePage = () => {
                 Flights
               </span>
             </div>
+
+            {historyBookings.map((item, index) => (
+              <TicketItem key={index} historyBooking={item} />
+            ))}
             {/* <TicketItem />
             <TicketItem />
             <TicketItem /> */}

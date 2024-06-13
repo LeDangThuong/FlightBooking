@@ -2,15 +2,16 @@ import { Button } from '@/components/ui/button'
 import { DatePickerWithRange } from '@/components/ui/dateRangePicker'
 import { Airport } from '@/models/Airport'
 import {
-  searchFlights,
   setTypeTicket,
   setArrivalAirportState,
   setDepartureAirportState,
-  setPassenger
+  setPassenger,
+  setDepartFlights,
+  setReturnFlights
 } from '@/redux/slice/flightSlice'
 import { RootState } from '@/redux/store'
 import { getAllAirport } from '@/services/AirportService'
-import { searchFlightOneWay, searchFlightRoundTrip } from '@/services/FlightService'
+import { filterFlightsWithoutFilter, searchFlightOneWay, searchFlightRoundTrip } from '@/services/FlightService'
 import React, { FC, useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
@@ -37,13 +38,35 @@ const SearchBar: FC<SearchBarProps> = ({ onClick }) => {
     setLoading(true)
 
     if (typeTicket === 'ONE_WAY') {
-      const flight = await searchFlightOneWay(departureAirport!, arrivalAirport!, dateRange.from!)
+      const departFlight = await filterFlightsWithoutFilter(
+        'ONE_WAY',
+        departureAirport!,
+        arrivalAirport!,
+        dateRange.from!,
+        'economy',
+        'asc'
+      )
 
-      console.log(flight)
-      dispatch(searchFlights(flight))
+      dispatch(setDepartFlights(departFlight))
     } else if (typeTicket === 'ROUND_TRIP') {
-      const flight = await searchFlightRoundTrip(departureAirport!, arrivalAirport!, dateRange.from!, dateRange.to!)
-      dispatch(searchFlights(flight))
+      const departFlight = await filterFlightsWithoutFilter(
+        'ONE_WAY',
+        departureAirport!,
+        arrivalAirport!,
+        dateRange.from!,
+        'economy',
+        'asc'
+      )
+      const returnFlight = await filterFlightsWithoutFilter(
+        'ONE_WAY',
+        arrivalAirport!,
+        departureAirport!,
+        dateRange.to!,
+        'economy',
+        'asc'
+      )
+      dispatch(setDepartFlights(departFlight))
+      dispatch(setReturnFlights(returnFlight))
     }
 
     dispatch(setDepartureAirportState(departureAirport!))

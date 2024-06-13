@@ -6,8 +6,14 @@ import { useDispatch, useSelector } from 'react-redux'
 import { Airport } from '@/models/Airport'
 import { useEffect, useState } from 'react'
 import { getAllAirport } from '@/services/AirportService'
-import { searchFlightOneWay, searchFlightRoundTrip } from '@/services/FlightService'
-import { searchFlights, setLoadingSearchFlight, setPassenger, setTypeTicket } from '@/redux/slice/flightSlice'
+import { filterFlightsWithoutFilter, searchFlightOneWay, searchFlightRoundTrip } from '@/services/FlightService'
+import {
+  setDepartFlights,
+  setLoadingSearchFlight,
+  setPassenger,
+  setReturnFlights,
+  setTypeTicket
+} from '@/redux/slice/flightSlice'
 import { RootState } from '@/redux/store'
 import { ToastContainer, toast } from 'react-toastify'
 
@@ -27,11 +33,40 @@ const SearchBar = () => {
     dispatch(setLoadingSearchFlight(true))
 
     if (typeTicket === 'ONE_WAY') {
-      const flight = await searchFlightOneWay(departureAirport!, arrivalAirport!, dateRange.from!)
-      dispatch(searchFlights(flight))
+      const departFlight = await filterFlightsWithoutFilter(
+        'ONE_WAY',
+        departureAirport!,
+        arrivalAirport!,
+        dateRange.from!,
+        'economy',
+        'asc'
+      )
+
+      dispatch(setDepartFlights(departFlight))
+      //const flight = await searchFlightOneWay(departureAirport!, arrivalAirport!, dateRange.from!)
+      //dispatch(searchFlights(flight))
     } else if (typeTicket === 'ROUND_TRIP') {
-      const flight = await searchFlightRoundTrip(departureAirport!, arrivalAirport!, dateRange.from!, dateRange.to!)
-      dispatch(searchFlights(flight))
+      const departFlight = await filterFlightsWithoutFilter(
+        'ONE_WAY',
+        departureAirport!,
+        arrivalAirport!,
+        dateRange.from!,
+        'economy',
+        'asc'
+      )
+      const returnFlight = await filterFlightsWithoutFilter(
+        'ONE_WAY',
+        arrivalAirport!,
+        departureAirport!,
+        dateRange.to!,
+        'economy',
+        'asc'
+      )
+      dispatch(setDepartFlights(departFlight))
+      dispatch(setReturnFlights(returnFlight))
+
+      //const flight = await searchFlightRoundTrip(departureAirport!, arrivalAirport!, dateRange.from!, dateRange.to!)
+      // dispatch(searchFlights(flight))
     }
 
     dispatch(setLoadingSearchFlight(false))

@@ -17,3 +17,16 @@ export const getAirlineByPlaneId = async (id: number) : Promise<Airline> => {
     }
 }
 
+export const getAllAirline = async (): Promise<Airline[]> => {
+    try {
+        const response = await axios.get<Airline[]>(`${API_URL}airlines`)
+
+        return response.data
+    } catch (e) {  
+
+        console.error('Error fetching users:', e);
+        throw e;
+
+    }
+}
+

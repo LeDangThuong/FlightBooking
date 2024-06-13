@@ -78,10 +78,10 @@ export const attachPaymentMethod = async (customerId: string, paymentMethodId: s
     }
 }
 
-export const createPayment = async (token: string, amount: number, flightId: number, bookingData: any) => {
+export const createPayment = async (token: string, amount: number, flightId: number, bookingData: any, idVoucher: number) => {
     try {
         const paymentResponse = await axios.post(`${API_URL}/payment/create-payment`, bookingData, {
-            params: { token, amount, flightId }
+            params: { token, amount, flightId, idVoucher }
             ,
             // Đoạn này set token với amount của người dùng nhé, flight ID thì là cái flight đặt
         });

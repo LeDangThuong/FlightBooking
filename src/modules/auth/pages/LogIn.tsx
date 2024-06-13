@@ -10,6 +10,8 @@ import { useNavigate } from 'react-router-dom'
 import { CircleLoader } from 'react-spinners'
 import { useDispatch } from 'react-redux'
 import { setCurrentUser } from '@/redux/slice/userSlice'
+import { getTicketByUserId } from '@/services/BookingService'
+import { setHistoryBookings } from '@/redux/slice/bookingSlice'
 
 export const Login = () => {
   const navigate = useNavigate()
@@ -74,10 +76,12 @@ export const Login = () => {
         const role = localStorage.getItem('role')
 
         const user = await getUserByUsername(username)
+        const historyBooking = await getTicketByUserId(user.id)
 
         console.log(user)
 
         dispatch(setCurrentUser(user))
+        dispatch(setHistoryBookings(historyBooking))
 
         if (!isLoggedIn) {
           navigate('/home')

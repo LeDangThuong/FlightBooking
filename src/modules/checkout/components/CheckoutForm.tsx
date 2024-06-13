@@ -19,7 +19,8 @@ import {
   setBookingTempReturn,
   setPassenger,
   setPassengerInfor,
-  setSelectFlights
+  setSelectDepartFlight,
+  setSelectReturnFlight
 } from '@/redux/slice/flightSlice'
 
 const CheckoutForm = () => {
@@ -31,6 +32,9 @@ const CheckoutForm = () => {
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string | null>(null)
   const [showNewCardForm, setShowNewCardForm] = useState(false)
   const [customerId, setCustomerId] = useState<string | null>(null)
+  const voucher = useSelector((state: RootState) => state.booking.voucher)
+  const selectDepartFlight = useSelector((state: RootState) => state.flight.selectDepartFlight)
+  const selectReturnFlight = useSelector((state: RootState) => state.flight.selectReturnFlight)
 
   const bookingDepartureData = useSelector((state: RootState) => state.booking.bookingDepartureData)
   const bookingReturnData = useSelector((state: RootState) => state.booking.bookingReturnData)
@@ -39,7 +43,7 @@ const CheckoutForm = () => {
   const bookingTempReturn = useSelector((state: RootState) => state.flight.bookingTempReturn)
 
   const typeTicket = useSelector((state: RootState) => state.flight.typeTicket)
-  const selectFlights = useSelector((state: RootState) => state.flight.selectFlights)
+  //const selectFlights = useSelector((state: RootState) => state.flight.selectFlights)
 
   const [priceDeparture, setPriceDeparture] = useState(0)
 
@@ -53,10 +57,27 @@ const CheckoutForm = () => {
 
   const handlePriceDeparture = async () => {
     if (typeTicket === 'ONE_WAY') {
-      setPriceDeparture(await calculateTotalPriceAfterBooking(selectFlights[0].id, bookingTempDeparture?.selectSeats!))
+      {
+        selectDepartFlight &&
+          setPriceDeparture(
+            await calculateTotalPriceAfterBooking(selectDepartFlight.id, bookingTempDeparture?.selectSeats!)
+          )
+      }
+      // setPriceDeparture(await calculateTotalPriceAfterBooking(selectFlights[0].id, bookingTempDeparture?.selectSeats!))
     } else {
-      setPriceDeparture(await calculateTotalPriceAfterBooking(selectFlights[0].id, bookingTempDeparture?.selectSeats!))
-      setPriceReturn(await calculateTotalPriceAfterBooking(selectFlights[1].id, bookingTempReturn?.selectSeats!))
+      {
+        selectDepartFlight &&
+          setPriceDeparture(
+            await calculateTotalPriceAfterBooking(selectDepartFlight.id, bookingTempDeparture?.selectSeats!)
+          )
+      }
+      // setPriceDeparture(await calculateTotalPriceAfterBooking(selectFlights[0].id, bookingTempDeparture?.selectSeats!))
+
+      {
+        selectReturnFlight &&
+          setPriceReturn(await calculateTotalPriceAfterBooking(selectReturnFlight.id, bookingTempReturn?.selectSeats!))
+      }
+      //setPriceReturn(await calculateTotalPriceAfterBooking(selectFlights[1].id, bookingTempReturn?.selectSeats!))
     }
   }
 
@@ -65,7 +86,8 @@ const CheckoutForm = () => {
 
   const handleSetInitData = () => {
     dispatch(setShowModelPayment(true))
-    dispatch(setSelectFlights([]))
+    dispatch(setSelectDepartFlight(undefined))
+    dispatch(setSelectReturnFlight(undefined))
     dispatch(setPassenger(1))
     dispatch(setBookingTempDeparture(undefined))
     dispatch(setBookingTempReturn(undefined))
@@ -98,6 +120,7 @@ const CheckoutForm = () => {
     }
 
     fetchCustomerAndPaymentMethods()
+    console.log(bookingReturnData)
   }, [token])
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -183,18 +206,26 @@ const CheckoutForm = () => {
         //   // Đoạn này set token với amount của người dùng nhé, flight ID thì là cái flight đặt
         // });
 
-        const paymentResponse = await createPayment(token!, priceDeparture, selectFlights[0].id, bookingDepartureData)
+        if (selectDepartFlight) {
+          const paymentResponse = await createPayment(
+            token!,
+            priceDeparture,
+            selectDepartFlight.id,
+            bookingDepartureData,
+            voucher?.id ?? 0
+          )
 
-        console.log('Thanh toán thành công')
-        const paymentIntentClientSecret = paymentResponse.data.clientSecret
-        const paymentConfirmResult = await stripe.confirmCardPayment(paymentIntentClientSecret)
+          console.log('Thanh toán thành công')
+          const paymentIntentClientSecret = paymentResponse.data.clientSecret
+          const paymentConfirmResult = await stripe.confirmCardPayment(paymentIntentClientSecret)
 
-        if (paymentConfirmResult.error) {
-          throw new Error(paymentConfirmResult.error.message)
+          if (paymentConfirmResult.error) {
+            throw new Error(paymentConfirmResult.error.message)
+          }
         }
 
-        if (typeTicket === 'ROUND_TRIP') {
-          await createPayment(token!, priceReturn, selectFlights[1].id, bookingReturnData)
+        if (typeTicket === 'ROUND_TRIP' && selectReturnFlight) {
+          await createPayment(token!, priceReturn, selectReturnFlight.id, bookingReturnData, voucher?.id ?? 0)
         }
 
         setMessage('Payment successful!')

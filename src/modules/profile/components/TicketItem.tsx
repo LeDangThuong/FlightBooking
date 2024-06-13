@@ -1,5 +1,6 @@
 import { Button } from '@/components/ui/button'
 import { HistoryBooking } from '@/models/HistoryBooking'
+import { format } from 'date-fns'
 import React from 'react'
 
 interface TicketItemProp {
@@ -13,19 +14,29 @@ const TicketItem: React.FC<TicketItemProp> = ({ historyBooking }) => {
         <img src={historyBooking.airlineLogo} alt='' />
       </div>
       <div className='flex gap-[24px] items-center grow shrink-0 basis-0 flex-nowrap '>
-        <div className='flex w-[276px] gap-[16px] items-center shrink-0 flex-nowrap relative z-[64]'>
+        <div className='flex w-[276px] gap-[16px] items-center justify-evenly shrink-0 flex-nowrap relative z-[64]'>
           <div className='flex  flex-col gap-[8px] items-start  flex-nowrap '>
             <span className=" font-['Montserrat'] text-[16px] font-normal opacity-75  text-[#112211] ">
-              {historyBooking.departAirport}
+              {historyBooking.iataCodeDepart}
             </span>
-            <span className="  font-['Montserrat'] text-[20px] font-semibold  text-[#112211] ">12:00 pm</span>
+            <span className="  font-['Montserrat'] text-[20px] font-semibold  text-[#112211] ">
+              {format(historyBooking.departDate, 'HH:mm')}
+            </span>
           </div>
-          <span className=" font-['Montserrat'] text-[20px] font-semibold  text-[#112211] ">—</span>
+          <svg width='24' height='24' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'>
+            <path
+              d='M8.74733 21.75H7.49952C7.37414 21.75 7.25077 21.7185 7.14069 21.6585C7.03062 21.5984 6.93735 21.5118 6.86941 21.4064C6.80147 21.301 6.76104 21.1803 6.7518 21.0552C6.74257 20.9302 6.76483 20.8048 6.81655 20.6906L9.83811 14.0227L5.30108 13.9219L3.64639 15.9267C3.33092 16.3233 3.07921 16.5 2.43702 16.5H1.59702C1.46402 16.5043 1.33195 16.4764 1.212 16.4188C1.09205 16.3612 0.987757 16.2755 0.907956 16.1691C0.796393 16.0186 0.686706 15.7636 0.793581 15.3998L1.72264 12.0717C1.72967 12.0469 1.73811 12.022 1.74749 11.9977C1.74795 11.9953 1.74795 11.9929 1.74749 11.9906C1.73781 11.9663 1.72951 11.9414 1.72264 11.9161L0.792643 8.56687C0.691862 8.21016 0.802018 7.96078 0.912643 7.81406C0.986929 7.71549 1.08331 7.63573 1.19403 7.58118C1.30475 7.52664 1.42672 7.49883 1.55014 7.5H2.43702C2.91655 7.5 3.38202 7.71516 3.65577 8.0625L5.27624 10.0336L9.83811 9.96609L6.81749 3.30984C6.7657 3.19568 6.74335 3.07036 6.75249 2.94533C6.76163 2.8203 6.80196 2.69956 6.8698 2.59414C6.93764 2.48872 7.03082 2.40198 7.14083 2.34186C7.25083 2.28175 7.37416 2.25016 7.49952 2.25H8.76092C8.9369 2.25354 9.10983 2.29667 9.26685 2.3762C9.42388 2.45572 9.56097 2.5696 9.66796 2.70937L15.5297 9.83438L18.2376 9.76312C18.4359 9.75234 18.9853 9.74859 19.1123 9.74859C21.7026 9.75 23.2495 10.5909 23.2495 12C23.2495 12.4434 23.0723 13.2656 21.8869 13.7887C21.187 14.0981 20.2533 14.2547 19.1114 14.2547C18.9858 14.2547 18.4378 14.2509 18.2367 14.2402L15.5292 14.168L9.65296 21.293C9.54588 21.4321 9.40891 21.5454 9.25216 21.6246C9.0954 21.7037 8.92288 21.7465 8.74733 21.75Z'
+              fill='#112211'
+            />
+          </svg>
+
           <div className='flex flex-col gap-[8px] items-start  flex-nowrap '>
             <span className=" font-['Montserrat'] text-[16px] font-normal opacity-75  text-[#112211] ">
-              {historyBooking.departAirport}
+              {historyBooking.iataCodeArrival}
             </span>
-            <span className=" font-['Montserrat'] text-[20px] font-semibold  text-[#112211] ">6:00 pm</span>
+            <span className=" font-['Montserrat'] text-[20px] font-semibold  text-[#112211] ">
+              {format(historyBooking.arrivalDate, 'HH:mm')}
+            </span>
           </div>
         </div>
         <div className='h-10 w-0.5 bg-[#D7E2EE]'></div>
@@ -42,41 +53,13 @@ const TicketItem: React.FC<TicketItemProp> = ({ historyBooking }) => {
               </div>
               <div className='flex  flex-col justify-center items-start shrink-0 flex-nowrap '>
                 <span className=" font-['Montserrat'] text-[12px] font-semibold opacity-60  text-[#112211] ">Date</span>
-                <span className=" font-['Montserrat'] text-[16px] font-medium  text-[#112211] ">12-11-22</span>
-              </div>
-            </div>
-            <div className='flex  gap-[8px] items-center shrink-0 flex-nowrap '>
-              <div className='w-[32px] h-[32px] bg-[#eaf5f1] rounded-[4px] flex justify-center items-center '>
-                <svg width='22' height='22' viewBox='0 0 22 22' fill='none' xmlns='http://www.w3.org/2000/svg'>
-                  <path
-                    d='M11 2.75C6.44386 2.75 2.75 6.44386 2.75 11C2.75 15.5561 6.44386 19.25 11 19.25C15.5561 19.25 19.25 15.5561 19.25 11C19.25 6.44386 15.5561 2.75 11 2.75ZM14.8077 12.2692H11C10.8317 12.2692 10.6703 12.2024 10.5513 12.0834C10.4322 11.9643 10.3654 11.8029 10.3654 11.6346V5.92308C10.3654 5.75477 10.4322 5.59335 10.5513 5.47434C10.6703 5.35532 10.8317 5.28846 11 5.28846C11.1683 5.28846 11.3297 5.35532 11.4487 5.47434C11.5678 5.59335 11.6346 5.75477 11.6346 5.92308V11H14.8077C14.976 11 15.1374 11.0669 15.2564 11.1859C15.3754 11.3049 15.4423 11.4663 15.4423 11.6346C15.4423 11.8029 15.3754 11.9643 15.2564 12.0834C15.1374 12.2024 14.976 12.2692 14.8077 12.2692Z'
-                    fill='#8DD3BB'
-                  />
-                </svg>
-              </div>
-              <div className='flex  flex-col justify-center items-start shrink-0 flex-nowrap '>
-                <span className=" font-['Montserrat'] text-[12px] font-semibold opacity-60  text-[#112211] ">
-                  Flight time
+                <span className=" font-['Montserrat'] text-[16px] font-medium  text-[#112211] ">
+                  {format(historyBooking.departDate, 'yyyy-MM-dd')}
                 </span>
-                <span className=" font-['Montserrat'] text-[16px] font-medium  text-[#112211] ">Newark(EWR)</span>
               </div>
             </div>
           </div>
           <div className='flex  flex-col gap-[8px] items-start  flex-nowrap '>
-            <div className='flex  gap-[8px] items-center shrink-0 flex-nowrap '>
-              <div className='w-[32px] h-[32px] shrink-0 bg-[#eaf5f1] rounded-[4px] flex justify-center items-center'>
-                <svg width='22' height='22' viewBox='0 0 22 22' fill='none' xmlns='http://www.w3.org/2000/svg'>
-                  <path
-                    d='M15.5222 2.75C15.8302 2.75 16.1255 2.87233 16.3433 3.09008C16.561 3.30783 16.6833 3.60317 16.6833 3.91111V19.0056H18.425C18.579 19.0056 18.7266 19.0667 18.8355 19.1756C18.9444 19.2845 19.0056 19.4321 19.0056 19.5861C19.0056 19.7401 18.9444 19.8878 18.8355 19.9966C18.7266 20.1055 18.579 20.1667 18.425 20.1667H3.33056C3.17658 20.1667 3.02892 20.1055 2.92004 19.9966C2.81117 19.8878 2.75 19.7401 2.75 19.5861C2.75 19.4321 2.81117 19.2845 2.92004 19.1756C3.02892 19.0667 3.17658 19.0056 3.33056 19.0056H5.07222V3.91111C5.07222 3.60317 5.19455 3.30783 5.4123 3.09008C5.63005 2.87233 5.92539 2.75 6.23333 2.75H15.5222ZM13.2 13.2C13.5079 13.2 13.8033 13.0777 14.021 12.8599C14.2388 12.6422 14.3611 12.3468 14.3611 12.0389C14.3611 11.7309 14.2388 11.4356 14.021 11.2179C13.8033 11.0001 13.5079 10.8778 13.2 10.8778C12.8921 10.8778 12.5967 11.0001 12.379 11.2179C12.1612 11.4356 12.0389 11.7309 12.0389 12.0389C12.0389 12.3468 12.1612 12.6422 12.379 12.8599C12.5967 13.0777 12.8921 13.2 13.2 13.2Z'
-                    fill='#8DD3BB'
-                  />
-                </svg>
-              </div>
-              <div className='flex  flex-col justify-center items-start shrink-0 flex-nowrap '>
-                <span className=" font-['Montserrat'] text-[12px] font-semibold opacity-60  text-[#112211] ">Gate</span>
-                <span className=" font-['Montserrat'] text-[16px] font-medium  text-[#112211] ">A12</span>
-              </div>
-            </div>
             <div className='flex  gap-[8px] items-center shrink-0 flex-nowrap '>
               <div className='w-[32px] h-[32px] shrink-0 bg-[#eaf5f1] rounded-[4px] flex justify-center items-center'>
                 <svg width='22' height='22' viewBox='0 0 22 22' fill='none' xmlns='http://www.w3.org/2000/svg'>
@@ -88,9 +71,11 @@ const TicketItem: React.FC<TicketItemProp> = ({ historyBooking }) => {
               </div>
               <div className='flex  flex-col justify-center items-start shrink-0 flex-nowrap '>
                 <span className=" font-['Montserrat'] text-[12px] font-semibold opacity-60  text-[#112211] ">
-                  Seat no.
+                  Seat No.
                 </span>
-                <span className=" font-['Montserrat'] text-[16px] font-medium  text-[#112211] ">128</span>
+                <span className=" font-['Montserrat'] text-[16px] font-medium  text-[#112211] ">
+                  {historyBooking.seatNumber.join(', ')}
+                </span>
               </div>
             </div>
           </div>

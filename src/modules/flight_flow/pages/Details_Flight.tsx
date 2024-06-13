@@ -6,16 +6,21 @@ import { setPassenger } from '@/redux/slice/flightSlice'
 import { InforAirline } from '../components/InforAirline'
 import { holdSeatBeforeBooking } from '@/services/BookingService'
 import { ToastContainer, toast } from 'react-toastify'
+import { useState } from 'react'
 
 export const DetailsFlight = () => {
   const navigate = useNavigate()
 
   const dispatch = useDispatch()
-  const selectFlights = useSelector((state: RootState) => state.flight.selectFlights)
+  // const selectFlights = useSelector((state: RootState) => state.flight.selectFlights)
   const passenger = useSelector((state: RootState) => state.flight.passenger)
   const bookingTempDeparture = useSelector((state: RootState) => state.flight.bookingTempDeparture)
   const bookingTempReturn = useSelector((state: RootState) => state.flight.bookingTempReturn)
   const typeTicket = useSelector((state: RootState) => state.flight.typeTicket)
+  const selectDepartFlight = useSelector((state: RootState) => state.flight.selectDepartFlight)
+  const selectReturnFlight = useSelector((state: RootState) => state.flight.selectReturnFlight)
+
+  const [loadingContinueBooking, setLoadingContinueBooking] = useState<boolean>(false)
 
   const handleFlightItem = async () => {
     // hold seat
@@ -23,15 +28,27 @@ export const DetailsFlight = () => {
     if (typeTicket === 'ONE_WAY' && passenger !== bookingTempDeparture?.selectSeats.length) {
       toast.error('Please select a sufficient number of seats!')
       return
-    } else if (typeTicket === 'ROUND_TRIP' && passenger !== bookingTempReturn?.selectSeats.length) {
+    } else if (
+      typeTicket === 'ROUND_TRIP' &&
+      (passenger !== bookingTempDeparture?.selectSeats.length || passenger !== bookingTempReturn?.selectSeats.length)
+    ) {
       toast.error('Please select a sufficient number of seats!')
       return
     }
 
-    await holdSeatBeforeBooking(selectFlights[0].id, bookingTempDeparture!.selectSeats)
-    if (typeTicket === 'ROUND_TRIP') {
-      await holdSeatBeforeBooking(selectFlights[1].id, bookingTempReturn!.selectSeats)
+    setLoadingContinueBooking(true)
+
+    if (selectDepartFlight) {
+      await holdSeatBeforeBooking(selectDepartFlight.id, bookingTempDeparture!.selectSeats)
     }
+
+    if (typeTicket === 'ROUND_TRIP') {
+      if (selectReturnFlight) {
+        await holdSeatBeforeBooking(selectReturnFlight.id, bookingTempReturn!.selectSeats)
+      }
+    }
+
+    setLoadingContinueBooking(false)
 
     navigate('/passenger_information')
   }
@@ -70,12 +87,24 @@ export const DetailsFlight = () => {
         </div>
       </div>
       <div className='h-2'></div>
-      {selectFlights.map((flight, index) => (
+      {/* {selectFlights.map((flight, index) => (
         <div className='flex flex-col mb-6'>
           <InforAirline flight={flight} />
           <FlightItem typeFlight={index === 0 ? 'DEPARTURE' : 'RETURN'} flight={flight} numberSeats={passenger} />
         </div>
-      ))}
+      ))} */}
+      {selectDepartFlight ? (
+        <div className='flex flex-col mb-6'>
+          <InforAirline flight={selectDepartFlight} />
+          <FlightItem typeFlight={'DEPARTURE'} flight={selectDepartFlight} numberSeats={passenger} />
+        </div>
+      ) : null}
+      {selectReturnFlight ? (
+        <div className='flex flex-col mb-6'>
+          <InforAirline flight={selectReturnFlight} />
+          <FlightItem typeFlight={'RETURN'} flight={selectReturnFlight} numberSeats={passenger} />
+        </div>
+      ) : null}
       <div className='h-2'></div>
       <div className='h-2'></div>
       <div className='h-5'></div>
@@ -94,7 +123,23 @@ export const DetailsFlight = () => {
             className='self-stretch h-12 px-4 py-2 bg-green-300 rounded justify-center items-center gap-1 inline-flex'
             onClick={handleFlightItem}
           >
-            <div className="text-neutral-900 text-sm font-semibold font-['Montserrat']">Continue booking</div>
+            {loadingContinueBooking ? (
+              <svg
+                className='w-30 h-5  text-white animate-spin'
+                xmlns='http://www.w3.org/2000/svg'
+                fill='none'
+                viewBox='0 0 24 24'
+              >
+                <circle className='opacity-25' cx='12' cy='12' r='10' stroke='currentColor' strokeWidth='4'></circle>
+                <path
+                  className='opacity-75'
+                  fill='currentColor'
+                  d='M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z'
+                ></path>
+              </svg>
+            ) : (
+              <div className="w-30 text-neutral-900 text-sm font-semibold font-['Montserrat']">Continue booking</div>
+            )}
           </div>
         </div>
       </div>

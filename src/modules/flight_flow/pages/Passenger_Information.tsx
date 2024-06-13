@@ -6,21 +6,26 @@ import { useEffect, useState } from 'react'
 import { setPassengerInfor } from '@/redux/slice/flightSlice'
 import { fillInforPassengerToCreateBooking } from '@/services/BookingService'
 import { getUserByUsername } from '@/services/UserService'
-import { setBookingDepartureData } from '@/redux/slice/bookingSlice'
+import { setBookingDepartureData, setBookingReturnData, setVoucher } from '@/redux/slice/bookingSlice'
 import { useNavigate } from 'react-router-dom'
 import { Airline } from '@/models/Airline'
 import { getAirlineByPlaneId } from '@/services/AirlineService'
 import { Airport } from '@/models/Airport'
 import { getAirport } from '@/services/AirportService'
 import { format } from 'date-fns'
+import { Voucher } from '@/models/Voucher'
+import { getVoucherByCode } from '@/services/Voucher'
 
 export const PassengerInformation = () => {
   const passenger = useSelector((state: RootState) => state.flight.passenger)
   const passengerInfor = useSelector((state: RootState) => state.flight.passengerInfor)
-  const selectFlights = useSelector((state: RootState) => state.flight.selectFlights)
+  //const selectFlights = useSelector((state: RootState) => state.flight.selectFlights)
   const bookingTempDeparture = useSelector((state: RootState) => state.flight.bookingTempDeparture)
   const bookingTempReturn = useSelector((state: RootState) => state.flight.bookingTempReturn)
   const currentUser = useSelector((state: RootState) => state.user.currentUser)
+  const voucher = useSelector((state: RootState) => state.booking.voucher)
+  const selectDepartFlight = useSelector((state: RootState) => state.flight.selectDepartFlight)
+  const selectReturnFlight = useSelector((state: RootState) => state.flight.selectReturnFlight)
 
   const [departureAirline, setDepartureAirline] = useState<Airline | null>(null)
   const [returnAirline, setReturnAirline] = useState<Airline | null>(null)
@@ -36,7 +41,17 @@ export const PassengerInformation = () => {
     dispatch(setPassengerInfor(newPassengers))
   }
 
-  const [voucher, setVoucher] = useState<string>('')
+  const [loadingVoucher, setLoadingVoucher] = useState<boolean>(false)
+
+  const handleGetVoucher = async () => {
+    setLoadingVoucher(true)
+
+    dispatch(setVoucher(await getVoucherByCode(voucherStr)))
+
+    setLoadingVoucher(false)
+  }
+
+  const [voucherStr, setVoucherStr] = useState<string>('')
 
   const navigate = useNavigate()
 
@@ -50,65 +65,65 @@ export const PassengerInformation = () => {
     //setIsLoading(true)
 
     try {
-      selectFlights.forEach(async (flight, index) => {
-        if (index === 0) {
-          const bookingData = {
-            bookingRequestDTO: {
-              flightId: flight.id,
-              bookerFullName: passengerInfor[0].fullName,
-              bookerEmail: passengerInfor[0].email,
-              bookerPersonalId: passengerInfor[0].personalId,
-              userId: currentUser?.id,
-              bookingDate: new Date(),
-              passengers: passengerInfor.map((passenger, index) => ({
-                fullName: passenger.fullName,
-                email: passenger.email,
-                personalId: passenger.personalId,
-                seatNumber: bookingTempDeparture!.selectSeats[index]
-              }))
-            },
-            seatNumber: bookingTempDeparture!.selectSeats
-          }
-
-          dispatch(setBookingDepartureData(bookingData))
-          // const success = await fillInforPassengerToCreateBooking(
-          //   flight.id,
-          //   bookingTempDeparture!.selectSeats,
-          //   currentUser!,
-          //   passengerInfor
-          // )
-
-          // console.log(success)
-        } else {
-          const bookingData = {
-            bookingRequestDTO: {
-              flightId: flight.id,
-              bookerFullName: passengerInfor[0].fullName,
-              bookerEmail: passengerInfor[0].email,
-              bookerPersonalId: passengerInfor[0].personalId,
-              userId: currentUser?.id,
-              bookingDate: new Date(),
-              passengers: passengerInfor.map((passenger, index) => ({
-                fullName: passenger.fullName,
-                email: passenger.email,
-                personalId: passenger.personalId,
-                seatNumber: bookingTempReturn!.selectSeats[index]
-              }))
-            },
-            seatNumber: bookingTempReturn!.selectSeats
-          }
-
-          dispatch(setBookingDepartureData(bookingData))
-          // const success = await fillInforPassengerToCreateBooking(
-          //   flight.id,
-          //   bookingTempReturn!.selectSeats,
-          //   currentUser!,
-          //   passengerInfor
-          // )
-
-          // console.log(success)
+      if (selectDepartFlight) {
+        const bookingData = {
+          bookingRequestDTO: {
+            flightId: selectDepartFlight.id,
+            bookerFullName: passengerInfor[0].fullName,
+            bookerEmail: passengerInfor[0].email,
+            bookerPersonalId: passengerInfor[0].personalId,
+            userId: currentUser?.id,
+            bookingDate: new Date(),
+            passengers: passengerInfor.map((passenger, index) => ({
+              fullName: passenger.fullName,
+              email: passenger.email,
+              personalId: passenger.personalId,
+              seatNumber: bookingTempDeparture!.selectSeats[index]
+            }))
+          },
+          seatNumber: bookingTempDeparture!.selectSeats
         }
-      })
+
+        dispatch(setBookingDepartureData(bookingData))
+
+        // const success = await fillInforPassengerToCreateBooking(
+        //   flight.id,
+        //   bookingTempDeparture!.selectSeats,
+        //   currentUser!,
+        //   passengerInfor
+        // )
+
+        // console.log(success)
+      }
+      if (selectReturnFlight) {
+        const bookingData = {
+          bookingRequestDTO: {
+            flightId: selectReturnFlight.id,
+            bookerFullName: passengerInfor[0].fullName,
+            bookerEmail: passengerInfor[0].email,
+            bookerPersonalId: passengerInfor[0].personalId,
+            userId: currentUser?.id,
+            bookingDate: new Date(),
+            passengers: passengerInfor.map((passenger, index) => ({
+              fullName: passenger.fullName,
+              email: passenger.email,
+              personalId: passenger.personalId,
+              seatNumber: bookingTempReturn!.selectSeats[index]
+            }))
+          },
+          seatNumber: bookingTempReturn!.selectSeats
+        }
+
+        dispatch(setBookingReturnData(bookingData))
+        // const success = await fillInforPassengerToCreateBooking(
+        //   flight.id,
+        //   bookingTempReturn!.selectSeats,
+        //   currentUser!,
+        //   passengerInfor
+        // )
+
+        // console.log(success)
+      }
     } catch (error) {
       console.log(error)
     }
@@ -122,19 +137,30 @@ export const PassengerInformation = () => {
   })
 
   const fetchAirline = async () => {
-    setDepartureAirline(await getAirlineByPlaneId(selectFlights[0].planeId))
-
-    if (selectFlights.length === 2) {
-      setReturnAirline(await getAirlineByPlaneId(selectFlights[1].planeId))
+    {
+      selectDepartFlight ? setDepartureAirline(await getAirlineByPlaneId(selectDepartFlight.planeId)) : null
     }
+
+    {
+      selectReturnFlight ? setReturnAirline(await getAirlineByPlaneId(selectReturnFlight.planeId)) : null
+    }
+
+    // if (selectFlights.length === 2) {
+    //   setReturnAirline(await getAirlineByPlaneId(selectFlights[1].planeId))
+    // }
   }
 
   const fetchAirport = async () => {
-    setDepartAirport(await getAirport(selectFlights[0].departureAirportId))
-
-    if (selectFlights.length === 2) {
-      setReturnAirport(await getAirport(selectFlights[1].departureAirportId))
+    {
+      selectDepartFlight ? setDepartAirport(await getAirport(selectDepartFlight.departureAirportId)) : null
     }
+    {
+      selectReturnFlight ? setReturnAirport(await getAirport(selectReturnFlight.departureAirportId)) : null
+    }
+
+    // if (selectFlights.length === 2) {
+    //   setReturnAirport(await getAirport(selectFlights[1].departureAirportId))
+    // }
   }
 
   return (
@@ -183,16 +209,48 @@ export const PassengerInformation = () => {
                 <input
                   type='text'
                   name='fullName'
-                  value={voucher}
+                  value={voucherStr}
                   onChange={(value) => {
-                    setVoucher(value.target.value)
+                    setVoucherStr(value.target.value)
                   }}
                   className='h-full w-full px-4 py-2 rounded border border-zinc-500 text-black'
                 />
               </div>
-              <div className='h-11 w-20 bg-green-300 flex justify-center items-center rounded-md'>
-                <div className="font-semibold text-zinc-900 text-sm  font-['Montserrat'] ">Apply</div>
+              <div
+                className='h-11 w-20 bg-green-300 flex justify-center items-center rounded-md'
+                onClick={handleGetVoucher}
+              >
+                {loadingVoucher ? (
+                  <svg
+                    className='w-30 h-5  text-white animate-spin'
+                    xmlns='http://www.w3.org/2000/svg'
+                    fill='none'
+                    viewBox='0 0 24 24'
+                  >
+                    <circle
+                      className='opacity-25'
+                      cx='12'
+                      cy='12'
+                      r='10'
+                      stroke='currentColor'
+                      strokeWidth='4'
+                    ></circle>
+                    <path
+                      className='opacity-75'
+                      fill='currentColor'
+                      d='M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z'
+                    ></path>
+                  </svg>
+                ) : (
+                  <div className="font-semibold text-zinc-900 text-sm  font-['Montserrat'] ">Apply</div>
+                )}
               </div>
+
+              {voucher !== null ? (
+                <div className="opacity-75 text-neutral-900 text-base font-medium font-['Montserrat']">
+                  Successfully apply {voucher.voucherName} voucher
+                </div>
+              ) : null}
             </div>
 
             <div className='h-6'></div>
@@ -210,27 +268,29 @@ export const PassengerInformation = () => {
             className='flex flex-col justify-between items-start w-full h-fit  px-8 pt-4 pb-4 rounded-2xl bg-white hover:bg-slate-50  my-4 gap-3 '
             style={{ boxShadow: '0px 4px 16px 0 rgba(141,211,187,0.15)' }}
           >
-            <div className='flex gap-3'>
-              {/* <img className='w-[120px] h-[120px] rounded-xl object-cover' src={} /> */}
-              <div className='flex flex-col grow '>
-                <div className="text-green-300 text-2xl font-semibold font-['Montserrat'] ">Departure flight</div>
+            {selectDepartFlight ? (
+              <div className='flex gap-3'>
+                {/* <img className='w-[120px] h-[120px] rounded-xl object-cover' src={} /> */}
+                <div className='flex flex-col grow '>
+                  <div className="text-green-300 text-2xl font-semibold font-['Montserrat'] ">Departure flight</div>
 
-                {/* <div className="opacity-75 text-neutral-900 text-base font-medium font-['Montserrat']">Economy </div> */}
-                <div className="text-neutral-900 text-xl font-semibold font-['Montserrat']">
-                  {departureAirline?.airlineName}
-                </div>
+                  {/* <div className="opacity-75 text-neutral-900 text-base font-medium font-['Montserrat']">Economy </div> */}
+                  <div className="text-neutral-900 text-xl font-semibold font-['Montserrat']">
+                    {departureAirline?.airlineName}
+                  </div>
 
-                <div className="opacity-75 text-neutral-900 text-base font-medium font-['Montserrat']">
-                  {departureAirport?.airportName} - {departureAirport?.iataCode}
-                </div>
+                  <div className="opacity-75 text-neutral-900 text-base font-medium font-['Montserrat']">
+                    {departureAirport?.airportName} - {departureAirport?.iataCode}
+                  </div>
 
-                <div className="opacity-75 text-neutral-900 text-base font-medium font-['Montserrat']">
-                  {format(new Date(selectFlights[0].departureDate), 'dd-MM-yyyy HH:mm')}
+                  <div className="opacity-75 text-neutral-900 text-base font-medium font-['Montserrat']">
+                    {format(new Date(selectDepartFlight.departureDate), 'dd-MM-yyyy HH:mm')}
+                  </div>
                 </div>
               </div>
-            </div>
+            ) : null}
 
-            {selectFlights.length === 2 && (
+            {selectReturnFlight && (
               <div className='flex gap-3'>
                 {/* <img className='w-[120px] h-[120px] rounded-xl object-cover' src={} /> */}
                 <div className='flex flex-col grow '>
@@ -246,7 +306,7 @@ export const PassengerInformation = () => {
                   </div>
 
                   <div className="opacity-75 text-neutral-900 text-base font-medium font-['Montserrat']">
-                    {format(new Date(selectFlights[0].departureDate), 'dd-MM-yyyy HH:mm')}
+                    {format(new Date(selectReturnFlight.departureDate), 'dd-MM-yyyy HH:mm')}
                   </div>
                 </div>
               </div>
@@ -274,7 +334,7 @@ export const PassengerInformation = () => {
               </div>
             </div>
 
-            {selectFlights.length === 2 && (
+            {selectReturnFlight && (
               <div className='w-full justify-between items-start inline-flex'>
                 <div className="text-neutral-900 text-base font-medium font-['Montserrat']">Return flight price </div>
                 <div className="text-neutral-900 text-base font-semibold font-['Montserrat']">
@@ -285,15 +345,14 @@ export const PassengerInformation = () => {
 
             <div className='w-full justify-between items-start inline-flex'>
               <div className="text-neutral-900 text-base font-medium font-['Montserrat']">Discount </div>
-              <div className="text-neutral-900 text-base font-semibold font-['Montserrat']">$0</div>
-            </div>
-            <div className='w-full justify-between items-start inline-flex'>
-              <div className="text-neutral-900 text-base font-medium font-['Montserrat']">Taxes </div>
-              <div className="text-neutral-900 text-base font-semibold font-['Montserrat']">$0</div>
-            </div>
-            <div className='w-full justify-between items-start inline-flex'>
-              <div className="text-neutral-900 text-base font-medium font-['Montserrat']">Service Fee </div>
-              <div className="text-neutral-900 text-base font-semibold font-['Montserrat']">$0</div>
+              <div className="text-neutral-900 text-base font-semibold font-['Montserrat']">
+                $
+                {voucher !== null
+                  ? (voucher.discountAmount / 100) *
+                    ((bookingTempDeparture !== undefined ? bookingTempDeparture?.price : 0) +
+                      (bookingTempReturn !== undefined ? bookingTempReturn?.price : 0))
+                  : 0}
+              </div>
             </div>
 
             <div className='w-full h-[0.50px] opacity-25 bg-neutral-900' />
@@ -302,8 +361,14 @@ export const PassengerInformation = () => {
               <div className="text-neutral-900 text-base font-medium font-['Montserrat']">Total </div>
               <div className="text-neutral-900 text-base font-semibold font-['Montserrat']">
                 $
-                {(bookingTempDeparture !== undefined ? bookingTempDeparture?.price : 0) +
-                  (bookingTempReturn !== undefined ? bookingTempReturn?.price : 0)}
+                {voucher !== null
+                  ? (bookingTempDeparture !== undefined ? bookingTempDeparture?.price : 0) +
+                    (bookingTempReturn !== undefined ? bookingTempReturn?.price : 0) -
+                    (voucher.discountAmount / 100) *
+                      ((bookingTempDeparture !== undefined ? bookingTempDeparture?.price : 0) +
+                        (bookingTempReturn !== undefined ? bookingTempReturn?.price : 0))
+                  : (bookingTempDeparture !== undefined ? bookingTempDeparture?.price : 0) +
+                    (bookingTempReturn !== undefined ? bookingTempReturn?.price : 0)}
               </div>
             </div>
           </div>
