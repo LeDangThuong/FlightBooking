@@ -530,31 +530,6 @@ export const Fillter: React.FC<FillterProps> = ({ onClickError }) => {
           </div>
         </div>
         <div className='w-full h-[0.50px] opacity-25 bg-neutral-900 my-6' />
-        <div className='w-full h-fit flex-col justify-start items-start  inline-flex'>
-          <div className='self-stretch justify-between items-start inline-flex mt-2  mb-1'>
-            <div className="text-neutral-900 text-base font-semibold font-['Montserrat']">Trips</div>
-          </div>
-
-          <div className='h-fit'>
-            <div className='w-full h-6 justify-start items-center gap-2 flex '>
-              <input type='checkbox' className='self-center h-full' />
-              <div className="text-neutral-900 text-sm font-medium font-['Montserrat']">Round trip</div>
-            </div>
-            <div className='w-full h-6 justify-start items-center gap-2 flex '>
-              <input type='checkbox' className='self-center h-full' />
-              <div className="text-neutral-900 text-sm font-medium font-['Montserrat']">On Way</div>
-            </div>
-            <div className='w-full h-6 justify-start items-center gap-2 flex '>
-              <input type='checkbox' className='self-center h-full' />
-              <div className="text-neutral-900 text-sm font-medium font-['Montserrat']">Multi-City</div>
-            </div>
-
-            <div className='w-full h-6 justify-start items-center gap-2 flex '>
-              <input type='checkbox' className='self-center h-full' />
-              <div className="text-neutral-900 text-sm font-medium font-['Montserrat']">My Dates Are Flexible</div>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   )
