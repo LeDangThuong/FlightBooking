@@ -205,7 +205,6 @@ const CustomerChat: React.FC = () => {
                                 </ChatMessage>
                             </div>
                         ))}
-                        {!isSupportActive && messages.length > 0 && <div>Waiting for a support agent...</div>}
                     </ChatBody>
                     <ChatInputContainer>
                         <ChatInput

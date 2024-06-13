@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import useRouteElements from './hooks/useRouteElements'
 import { useNavigate } from 'react-router-dom'
-import CustomerChat from './modules/chat/ChatBox'
+import CustomerChat from './modules/chat/CustomerChat'
 function App() {
   const navigate = useNavigate()
 
