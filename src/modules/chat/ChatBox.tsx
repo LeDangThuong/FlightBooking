@@ -98,10 +98,11 @@ const CustomerChat: React.FC = () => {
     const [receiverId, setReceiverId] = useState<number | null>(null);
     const [supportAgentName, setSupportAgentName] = useState<string>('');
     const [isVisible, setIsVisible] = useState<boolean>(false);
+    const [initialPrompt, setInitialPrompt] = useState<boolean>(true);
     const socketRef = useRef<WebSocket | null>(null);
     const chatBodyRef = useRef<HTMLDivElement>(null);
 
-    const token = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0aHVvbmdsZSIsImlhdCI6MTcxODE4MTIwNiwiZXhwIjoxNzE4MTk1NjA2fQ.hJZ7PyD7u2KFOnb6H-JV-C-MC68J-48Smq0c3lPeLwc"; // Token của customer
+    const token = localStorage.getItem('tokenAccess');
 
     useEffect(() => {
         const fetchCustomerId = async () => {
@@ -173,11 +174,12 @@ const CustomerChat: React.FC = () => {
                 content: message,
                 senderId: customerId,
                 receiverId: receiverId,
-                createdAt: new Date().toISOString() // Use ISO 8601 format
+                createdAt: new Date().toISOString()
             };
 
             socketRef.current.send(JSON.stringify(messageContent));
             setMessage('');
+            setInitialPrompt(false);
         }
     };
 
@@ -198,6 +200,11 @@ const CustomerChat: React.FC = () => {
             {isVisible && (
                 <>
                     <ChatBody ref={chatBodyRef}>
+                        {initialPrompt && (
+                            <div>
+                                Hỗ trợ viên 24/7
+                            </div>
+                        )}
                         {messages.map((msg, index) => (
                             <div key={index} style={{ textAlign: msg.senderId === customerId ? 'right' : 'left' }}>
                                 <ChatMessage key={index} isCustomer={msg.senderId === customerId}>
@@ -206,8 +213,8 @@ const CustomerChat: React.FC = () => {
                                 </ChatMessage>
                             </div>
                         ))}
-                        {!isSupportActive && <div>Chờ nhân viên phản hồi</div>}
-                        {isSupportActive && <div>Nhân viên {supportAgentName} đang trong cuộc trò chuyện với bạn</div>}
+                        {!isSupportActive && messages.length > 0 && <div>Đang chờ nhân viên hỗ trợ trong giây lát</div>}
+                        {isSupportActive && <div>Nhân viên {supportAgentName} đang hỗ trợ bạn</div>}
                     </ChatBody>
                     <ChatInputContainer>
                         <ChatInput
